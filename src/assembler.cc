@@ -15,7 +15,7 @@ See LICENSE for licensing.
 #include "genome.h"
 #include "assembler.h"
 #include "bundle.h"
-#include "scallop.h"
+#include "aster.h"
 #include "sgraph_compare.h"
 #include "super_graph.h"
 #include "filter.h"
@@ -226,23 +226,26 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 		{
 			string gid = "gene." + tostring(index) + "." + tostring(k) + "." + tostring(r);
 			gr.gid = gid;
-			scallop sc(gr, hs, r == 0 ? false : true);
-			sc.assemble();
+
+			//TODO: modiciation starts
+			aster asterInstance(gr, hs, r == 0 ? false : true);
+			asterInstance.assemble();
 
 			if(verbose >= 2)
 			{
-				printf("assembly with r = %d, total %lu transcripts:\n", r, sc.trsts.size());
-				for(int i = 0; i < sc.trsts.size(); i++) sc.trsts[i].write(cout);
+				printf("assembly with r = %d, total %lu transcripts:\n", r, asterInstance.trsts.size());
+				for(int i = 0; i < asterInstance.trsts.size(); i++) asterInstance.trsts[i].write(cout);
 			}
 
-			for(int i = 0; i < sc.trsts.size(); i++)
+			for(int i = 0; i < asterInstance.trsts.size(); i++)
 			{
-				ts1.add(sc.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				ts1.add(asterInstance.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
-			for(int i = 0; i < sc.non_full_trsts.size(); i++)
+			for(int i = 0; i < asterInstance.non_full_trsts.size(); i++)
 			{
-				ts2.add(sc.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				ts2.add(asterInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
+			//TODO:
 
 			/*
 			filter ft(sc.trsts);
