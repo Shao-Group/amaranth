@@ -21,7 +21,7 @@ install-sh
 config.h.in
 missing
 stamp-h1
-config.h
+/config.h
 src/scallop2
 config.guess
 config.h.in
