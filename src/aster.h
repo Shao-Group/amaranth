@@ -1,0 +1,74 @@
+/*
+Part of Aster Assembler
+(c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
+See LICENSE for licensing.
+*/
+
+#ifndef __ASTER_H__
+#define __ASTER_H__
+
+#include "splice_graph.h"
+#include "hyper_set.h"
+#include "equation.h"
+#include "router.h"
+#include "path.h"
+
+typedef map< edge_descriptor, vector<int> > MEV;
+typedef pair< edge_descriptor, vector<int> > PEV;
+typedef pair< vector<int>, vector<int> > PVV;
+typedef pair<PEE, int> PPEEI;
+typedef map<PEE, int> MPEEI;
+typedef pair<int, int> PI;
+typedef map<int, int> MI;
+
+
+class aster
+{
+public:
+	aster(const splice_graph &gr, const hyper_set &hs, bool random_ordering = false);
+	int assemble();
+
+
+public:
+	splice_graph gr;					// splice graph
+	hyper_set hs;						// hyper edges
+	MEI e2i;							// edge map, from edge to index, sorted
+	VE i2e;								// edge map, from index to edge, sorted
+    vector<transcript> trsts;			// predicted transcripts
+	vector<transcript> non_full_trsts;		// predicted non full length transcripts
+
+private:
+	bool random_ordering;				// whether using random ordering
+	int round;							// iteration
+	vector<path> paths;					// predicted paths
+
+private: 
+	int topological_sort_vertices();
+	int topological_sort_index_edges();
+};
+
+class astron
+{
+public:
+	astron(const aster*, const vector<int>& _canonial, const vector<int>& _illegal);
+
+private:
+	const aster* as;
+    vector<int> canonial;		// canonical events
+	vector<int> illegal;		// illegal events
+    vector<int> alternative;	// alternative events
+
+public:
+	int dist;
+	vector<path> subpaths;
+
+private:
+	int classify();
+	int divide_and_conquer();
+	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
+
+	// help functions	
+	int event_size_penalty(int eventSize);
+};
+
+#endif
