@@ -101,38 +101,49 @@ int aster::topological_sort_index_edges()
 ** astron is the divide-and-conquer base of aster
 ** aston runs an iterative choice of event of concern and remove it from the graph
 */
-astron::astron(const aster* _as, const vector<int>& _canonial,  const vector<int>& _illegal)
-	: as(_as), canonial(_canonial), illegal(_illegal), dist(-1)
+astron::astron(const aster* _as, const vector<int>& _canons,  const vector<int>& _illegal, const vector<int>& _alts)
+	: as(_as), canons(_canons), illegals(_illegal), alternatives(_alts), dist(-1)
 {
 	classify();
-	dist = divide_and_conquer();
+	
+	if(alternatives.size() != 0) dist = divide_and_conquer();
+	else collect_trivial_path();
+
 	assert(dist >= 0);
+	assert(paths.size() >= 1);
 }
 
 int astron::classify()
 {	
-	for (int i: canonial) assert(find(illegal.begin(),  illegal.end(), i)  == illegal.end());
-	for (int i: illegal)  assert(find(canonial.begin(), canonial.end(), i) == canonial.end());
-	for (int i = 0; i< as->gr.num_vertices(); i++)
+	for (int i: canons)    assert(find(illegals.begin(),  illegals.end(), i)  == illegals.end());
+	for (int i: illegals)  assert(find(canons.begin(),    canons.end(), i)    == canons.end());
+	if(alternatives.size() != 0) return 0;
+	
+	int altSize = as->gr.num_vertices() - 2 - canons.size() - illegals.size();
+	assert(altSize >= 0);
+	alternatives.resize(altSize);
+	for (int i = 1; i < as->gr.num_vertices() - 1; i++)
 	{
-
+		if(find(illegals.begin(),  illegals.end(), i)  != illegals.end()) continue;
+		if(find(canons.begin(),    canons.end(), i)    != canons.end())  continue;
+		alternatives.push_back(i);
 	}	
+	return 0;
 }
 
 int astron::divide_and_conquer()
 {
-	int minDist = event_size_penalty(alternative.size());
-
-	for(int eventOfConcern: alternative)
+	int minDist = event_size_penalty(alternatives.size());
+	
+	for(int eventOfConcern: alternatives)
 	{	
 		int exclusiveEvents = 1;
 		int eventPenalty = event_size_penalty(exclusiveEvents);
-		unique_ptr<astron> canonChild; // TODO: one child is enough. This child do work by removing all events of concern
-		unique_ptr<astron> illegalChild;
+		unique_ptr<astron> canonChild; // TODO: one child is enough. Alt child distance can be calculated from canonChild
+
 		assert(canonChild->dist >= 1);
-		assert(illegalChild->dist >= 1);
 		// dnc_combine(); // TODO:
-		int newDist = canonChild->dist + illegalChild->dist + eventPenalty;
+		int newDist = canonChild->dist + eventPenalty;
 		if (minDist > newDist) minDist = newDist;
 	}
 

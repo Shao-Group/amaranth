@@ -12,6 +12,7 @@ See LICENSE for licensing.
 #include "equation.h"
 #include "router.h"
 #include "path.h"
+#include "config.h"
 
 typedef map< edge_descriptor, vector<int> > MEV;
 typedef pair< edge_descriptor, vector<int> > PEV;
@@ -50,13 +51,13 @@ private:
 class astron
 {
 public:
-	astron(const aster*, const vector<int>& _canonial, const vector<int>& _illegal);
+	astron(const aster*, const vector<int>& _canons, const vector<int>& _illegal, const vector<int>& _alts = {});
 
 private:
 	const aster* as;
-    vector<int> canonial;		// canonical events
-	vector<int> illegal;		// illegal events
-    vector<int> alternative;	// alternative events
+    vector<int> canons;		// canonical events
+	vector<int> illegals;		// illegal events
+    vector<int> alternatives;	// alternative events
 
 public:
 	int dist;
