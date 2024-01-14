@@ -144,6 +144,40 @@ int astron::dnc_combine(const vector<path> subpaths, int eventOfConcern)
 
 }
 
+/*
+** collect paths based on canon events
+*/
+int astron::collect_trivial_path()
+{
+	const splice_graph& gr = as->gr;
+
+	vector<int> v = canons;
+	sort(v.begin(), v.end());
+
+	// v does not contain source & sink
+	assert(v[0] != 0); 
+	assert(v[v.size() - 1] != gr.num_vertices()); 
+	assert(gr.valid_path(v)); //FIXME: not implemented
+	
+
+	// filter empty-vertex
+	bool empty = false;
+	for(int i = 0; i < v.size(); i++)
+	{
+		if(as->gr.get_vertex_info(v[i]).type != EMPTY_VERTEX) continue;
+		empty = true;
+		break;
+	}
+
+	path p;
+	p.v = v;
+	p.nf = empty? 1: 0;
+	// p.abd = gr.get_edge_weight(i2e[e]);//FIXME:
+	paths.push_back(p);
+
+	return 0;
+}
+
 int astron::event_size_penalty(int eventSize)
 {
 	assert(eventSize >= 1);

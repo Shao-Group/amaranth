@@ -56,6 +56,7 @@ public:
 	virtual int degree(int v) const;
 	virtual PEB edge(int s, int t);
 	virtual PEEI edges() const;
+	virtual bool valid_path(vector<int> path) const;
 	virtual vector<edge_descriptor> edges(int x, int y);
 	virtual set<int> adjacent_vertices(int v);
 	virtual PEEI out_edges(int x) = 0;

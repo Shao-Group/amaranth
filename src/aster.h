@@ -60,12 +60,13 @@ private:
 
 public:
 	int dist;
-	vector<path> subpaths;
+	vector<path> paths;
 
 private:
 	int classify();
 	int divide_and_conquer();
 	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
+	int collect_trivial_path();
 
 	// help functions	
 	int event_size_penalty(int eventSize);
