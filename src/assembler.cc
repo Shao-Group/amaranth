@@ -101,6 +101,8 @@ int assembler::assemble()
 	pool.push_back(bb2);
 	process(0);
 
+	aster::print_stats();
+
 	assign_RPKM();
 
 	filter ft(trsts);

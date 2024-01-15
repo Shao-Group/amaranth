@@ -28,7 +28,15 @@ class aster
 public:
 	aster(const splice_graph &gr, const hyper_set &hs, bool random_ordering = false);
 	int assemble();
+	static int print_stats();
 
+// static stats
+private:
+	inline static int num_graph = 0;
+	inline static int num_intron = 0;
+	inline static int num_exon = 0;
+	inline static int num_overlapping_intron_count = 0;
+	inline static int num_overlapping_intron_pair = 0;
 
 public:
 	splice_graph gr;					// splice graph
@@ -46,6 +54,7 @@ private:
 private: 
 	int topological_sort_vertices();
 	int topological_sort_index_edges();
+	int make_stats();
 };
 
 class astron

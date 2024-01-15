@@ -13,6 +13,7 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool r)
 {
     topological_sort_vertices();
 	topological_sort_index_edges();
+	make_stats();
 	assemble();
 }
 
@@ -94,6 +95,44 @@ int aster::topological_sort_index_edges()
 	assert(e2i.size() == index); 
 	assert(i2e.size() == index);
 
+	return 0;
+}
+
+int aster::make_stats()
+{
+	num_graph ++;
+	num_exon = num_exon + gr.num_vertices();
+	num_intron = num_intron + gr.num_edges();
+	for (int i = 0; i < i2e.size() - 1; i ++)
+	{
+		int c = num_overlapping_intron_pair;
+		for (int j = i + 1; j < i2e.size(); j ++)
+		{
+			if (i2e[i]->target() > i2e[j]->source() && i2e[i]->target() < i2e[j]->target() && gr.get_edge_weight(i2e[i]) > 2) 
+				num_overlapping_intron_pair ++;
+		}
+		
+		if (c < num_overlapping_intron_pair) 
+		{
+			num_overlapping_intron_count++;
+			if(i == i2e.size() - 2) num_overlapping_intron_count ++;
+		}
+	}
+
+	if(num_graph % 100 == 0)	print_stats();
+
+	return 0;
+}
+
+int aster::print_stats()
+{
+	cout << "aster print stats" << endl;
+	cout << "num graph " << num_graph  << endl; 
+	cout << "num intron " << num_intron << endl;
+	cout << "num_exon " << num_exon  << endl; 
+	cout << "num_overlapping_intron_count " << num_overlapping_intron_count << endl;
+	cout << "num_overlapping_intron_pair " << num_overlapping_intron_pair << endl;
+	cout << "aster printed stats" << endl;
 	return 0;
 }
 
@@ -196,3 +235,7 @@ int astron::event_size_penalty(int eventSize)
 	return pow(2, eventSize - 1);
 }
 
+int astron::heuristic()
+{
+	
+}
