@@ -508,7 +508,7 @@ int bridger::bridge_hard_fragments()
 	//print open clusters
 	for(int k = 0; k < open.size(); k++)
 	{
-		open[k].print(k);
+		if(verbose >= 3) open[k].print(k);
 	}
 
 	/*
