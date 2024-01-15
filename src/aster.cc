@@ -13,6 +13,7 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool r)
 {
     topological_sort_vertices();
 	topological_sort_index_edges();
+	make_stats();
 	assemble();
 }
 
@@ -93,6 +94,35 @@ int aster::topological_sort_index_edges()
 	}
 	assert(e2i.size() == index + 1 && i2e.size() == index + 1);
 
+	return 0;
+}
+
+int aster::make_stats()
+{
+	num_graph ++;
+	num_exon = num_exon + gr.num_vertices();
+	num_intron = num_intron + gr.num_edges();
+	for (int i = 0; i < i2e.size() - 1; i ++)
+	{
+		for (int j = i + 1; j < i2e.size(); j ++)
+		{
+			if (i2e[i]->target() > i2e[j]->source()) num_overlapping_intron_pair ++;
+		}
+	}
+
+	if(verbose >= 2 && num_graph % 100 == 0)	print_stats();
+
+	return 0;
+}
+
+int aster::print_stats()
+{
+	cout << "aster print stats" << endl;
+	cout << "num graph " << num_graph  << endl; 
+	cout << "num intron " << num_intron << endl;
+	cout << "num_exon " << num_exon  << endl; 
+	cout << "num_overlapping_intron_pair " << num_overlapping_intron_pair << endl;
+	cout << "aster printed stats" << endl;
 	return 0;
 }
 
