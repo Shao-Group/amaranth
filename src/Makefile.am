@@ -1,4 +1,4 @@
-bin_PROGRAMS = scallop2
+bin_PROGRAMS = aster
 
 
 GTF_INCLUDE = $(top_srcdir)/lib/gtf
@@ -9,11 +9,11 @@ GTF_LIB = $(top_builddir)/lib/gtf
 UTIL_LIB = $(top_builddir)/lib/util
 GRAPH_LIB = $(top_builddir)/lib/graph
 
-scallop2_CPPFLAGS = -std=c++11 -I$(GTF_INCLUDE) -I$(GRAPH_INCLUDE) -I$(UTIL_INCLUDE)
-scallop2_LDFLAGS = -pthread -L$(GTF_LIB) -L$(GRAPH_LIB) -L$(UTIL_LIB)
-scallop2_LDADD = -lgtf -lgraph -lutil
+aster_CPPFLAGS = -std=c++17 -I$(GTF_INCLUDE) -I$(GRAPH_INCLUDE) -I$(UTIL_INCLUDE)
+aster_LDFLAGS = -pthread -L$(GTF_LIB) -L$(GRAPH_LIB) -L$(UTIL_LIB)
+aster_LDADD = -lgtf -lgraph -lutil
 
-scallop2_SOURCES = splice_graph.h splice_graph.cc \
+aster_SOURCES = splice_graph.h splice_graph.cc \
 				   super_graph.h super_graph.cc \
 				   sgraph_compare.h sgraph_compare.cc \
 				   vertex_info.h vertex_info.cc \

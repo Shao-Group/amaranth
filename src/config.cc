@@ -551,7 +551,7 @@ int print_command_line(int argc, const char ** argv)
 int print_help()
 {
 	printf("\n");
-	printf("Usage: scallop2 -i <bam-file> -o <gtf-file> [options]\n");
+	printf("Usage: aster -i <bam-file> -o <gtf-file> [options]\n");
 	printf("\n");
 	printf("Options:\n");
 	printf(" %-42s  %s\n", "--help",  "print usage of Scallop and exit");
@@ -577,7 +577,7 @@ int print_help()
 
 int print_copyright()
 {
-	printf("Scallop2 %s (c) 2021 Qimin Zhang, Qian Shi, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
+	printf("Aster assembler %s (c) 2024 X. Carl Zang, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
 	return 0;
 }
 
