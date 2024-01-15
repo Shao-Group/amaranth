@@ -42,7 +42,7 @@ int aster::topological_sort_vertices()
 		// proceeding out edges
 		if (i < gr.num_vertices() - 1) 
 		{
-			PEEI ei = gr.in_edges(i);
+			PEEI ei = gr.out_edges(i);
 			edge_iterator it1 = ei.first; 
 			edge_iterator it2 = ei.second;
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).rpos <= gr.get_vertex_info((*it1)->target()).lpos);
@@ -51,10 +51,10 @@ int aster::topological_sort_vertices()
 		// trailing in edges
 		if (i >= 1) 
 		{
-			PEEI ei = gr.out_edges(i);
+			PEEI ei = gr.in_edges(i);
 			edge_iterator it1 = ei.first; 
 			edge_iterator it2 = ei.second;
-			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->target()).rpos);
+			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->source()).rpos);
 		}
 	}
 
@@ -92,7 +92,8 @@ int aster::topological_sort_index_edges()
 		i2e.push_back(e);
 		index++;
 	}
-	assert(e2i.size() == index + 1 && i2e.size() == index + 1);
+	assert(e2i.size() == index); 
+	assert(i2e.size() == index);
 
 	return 0;
 }
