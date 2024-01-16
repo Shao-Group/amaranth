@@ -123,7 +123,7 @@ int aster::make_stats()
 		}
 	}
 
-	num_intersecting_graph ++;
+	if(intersting_graph) num_intersecting_graph ++;
 
 	if(num_graph % 100 == 0)	print_stats();
 
