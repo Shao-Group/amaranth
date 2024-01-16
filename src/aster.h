@@ -34,6 +34,7 @@ public:
 private:
 	inline static int num_graph = 0;
 	inline static int num_intersecting_graph = 0;
+	inline static int num_intersecting_graph2 = 0;
 	inline static int num_intron = 0;
 	inline static int num_exon = 0;
 	inline static int num_intersecting_intron_count = 0;

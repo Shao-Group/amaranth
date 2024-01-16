@@ -100,46 +100,48 @@ int aster::topological_sort_index_edges()
 
 int aster::make_stats()
 {
+	// num graph, exon, intron
 	num_graph ++;
-	num_exon = num_exon + gr.num_vertices();
-	num_intron = num_intron + gr.num_edges();
-	bool intersting_graph = false;
+	num_exon = num_exon + gr.num_vertices() - 2;
+	for (int i = 0; i < i2e.size(); i ++) 
+	{
+		if(i2e[i]->source() == 0) continue; 
+		if(i2e[i]->target() == gr.num_vertices() - 1) continue;
+		num_intron++;
+	}
+	
+	// num intersecting introns, intron_pairs, graphs
+	bool intersecting = false;
 	for (int i = 0; i < i2e.size() - 1; i ++)
 	{
-		int c = num_intersecting_intron_pair;
 		for (int j = i + 1; j < i2e.size(); j ++)
 		{
-			if (gr.intersect(i2e.at(i), i2e.at(j))) 
-			{
-				num_intersecting_intron_pair ++;
-				intersting_graph = true;
-			}
+			if (!gr.intersect(i2e.at(i), i2e.at(j))) continue;
+			num_intersecting_intron_pair ++;
+			intersecting = true;
 		}
 		
-		if (c < num_intersecting_intron_pair) 
-		{
-			num_intersecting_intron_count++;
-			if(i == i2e.size() - 2) num_intersecting_intron_count ++;
-		}
+		if (!intersecting) continue;
+		num_intersecting_intron_count++;
+		if(i == i2e.size() - 2) num_intersecting_intron_count ++;
 	}
-
-	if(intersting_graph) num_intersecting_graph ++;
+	if(intersecting) num_intersecting_graph ++;
+	if(gr.check_nested()) num_intersecting_graph2 ++;
 
 	if(num_graph % 100 == 0)	print_stats();
-
 	return 0;
 }
 
 int aster::print_stats()
 {
 	cout << "aster print stats" << endl;
-	cout << "num graph " << num_graph  << endl; 
-	cout << "num_intersecting_graph" << num_intersecting_graph  << endl; 
-	cout << "num intron " << num_intron << endl;
-	cout << "num_exon " << num_exon  << endl; 
-	cout << "num_intersecting_intron_count " << num_intersecting_intron_count << endl;
-	cout << "num_intersecting_intron_pair " << num_intersecting_intron_pair << endl;
-
+	cout << "\t num graph " << num_graph  << endl; 
+	cout << "\t num_intersecting_graph" << num_intersecting_graph  << endl; 
+	cout << "\t num_intersecting_graph2" << num_intersecting_graph2  << endl; 
+	cout << "\t num intron " << num_intron << endl;
+	cout << "\t num_exon " << num_exon  << endl; 
+	cout << "\t num_intersecting_intron_count " << num_intersecting_intron_count << endl;
+	cout << "\t num_intersecting_intron_pair " << num_intersecting_intron_pair << endl;
 	cout << "aster printed stats" << endl;
 	return 0;
 }
