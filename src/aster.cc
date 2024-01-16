@@ -105,17 +105,16 @@ int aster::make_stats()
 	num_intron = num_intron + gr.num_edges();
 	for (int i = 0; i < i2e.size() - 1; i ++)
 	{
-		int c = num_overlapping_intron_pair;
+		int c = num_intersecting_intron_pair;
 		for (int j = i + 1; j < i2e.size(); j ++)
 		{
-			if (i2e[i]->target() > i2e[j]->source() && i2e[i]->target() < i2e[j]->target() && gr.get_edge_weight(i2e[i]) > 2) 
-				num_overlapping_intron_pair ++;
+			if (gr.intersect(i2e.at(i), i2e.at(j))) num_intersecting_intron_pair ++;
 		}
 		
-		if (c < num_overlapping_intron_pair) 
+		if (c < num_intersecting_intron_pair) 
 		{
-			num_overlapping_intron_count++;
-			if(i == i2e.size() - 2) num_overlapping_intron_count ++;
+			num_intersecting_intron_count++;
+			if(i == i2e.size() - 2) num_intersecting_intron_count ++;
 		}
 	}
 
@@ -130,8 +129,8 @@ int aster::print_stats()
 	cout << "num graph " << num_graph  << endl; 
 	cout << "num intron " << num_intron << endl;
 	cout << "num_exon " << num_exon  << endl; 
-	cout << "num_overlapping_intron_count " << num_overlapping_intron_count << endl;
-	cout << "num_overlapping_intron_pair " << num_overlapping_intron_pair << endl;
+	cout << "num_intersecting_intron_count " << num_intersecting_intron_count << endl;
+	cout << "num_intersecting_intron_pair " << num_intersecting_intron_pair << endl;
 	cout << "aster printed stats" << endl;
 	return 0;
 }
