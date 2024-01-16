@@ -125,8 +125,9 @@ int aster::make_stats()
 		num_intersecting_intron_count++;
 		if(i == i2e.size() - 2) num_intersecting_intron_count ++;
 	}
+
 	if(intersecting) num_intersecting_graph ++;
-	if(gr.check_nested()) num_intersecting_graph2 ++;
+	if(!gr.check_nested()) num_intersecting_graph2 ++;
 
 	if(num_graph % 100 == 0)	print_stats();
 	return 0;
@@ -136,8 +137,8 @@ int aster::print_stats()
 {
 	cout << "aster print stats" << endl;
 	cout << "\t num graph " << num_graph  << endl; 
-	cout << "\t num_intersecting_graph" << num_intersecting_graph  << endl; 
-	cout << "\t num_intersecting_graph2" << num_intersecting_graph2  << endl; 
+	cout << "\t num_intersecting_graph " << num_intersecting_graph  << endl; 
+	cout << "\t num_intersecting_graph2 " << num_intersecting_graph2  << endl; 
 	cout << "\t num intron " << num_intron << endl;
 	cout << "\t num_exon " << num_exon  << endl; 
 	cout << "\t num_intersecting_intron_count " << num_intersecting_intron_count << endl;
