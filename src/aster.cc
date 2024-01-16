@@ -145,12 +145,15 @@ astron::astron(const aster* _as, const vector<int>& _canons,  const vector<int>&
 	: as(_as), canons(_canons), illegals(_illegal), alternatives(_alts), dist(-1)
 {
 	classify();
-	
-	if(alternatives.size() != 0) dist = divide_and_conquer();
-	else collect_trivial_path();
 
-	assert(dist >= 0);
-	assert(paths.size() >= 1);
+	string aster_algo = "heuristic";
+	if (aster_algo == "heuristic") heuristic();
+	else if (aster_algo == "dnc")  dist = divide_and_conquer();
+	else assert(0);
+
+	// if(alternatives.size() == 0) collect_trivial_path();
+	// assert(dist >= 0);
+	// assert(paths.size() >= 1);
 }
 
 int astron::classify()
@@ -231,6 +234,8 @@ int astron::collect_trivial_path()
 
 int astron::event_size_penalty(int eventSize)
 {
+	if (eventSize == 0) return 0;
+
 	assert(eventSize >= 1);
 	return pow(2, eventSize - 1);
 }
