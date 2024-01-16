@@ -38,6 +38,7 @@ private:
 	inline static int num_intersecting_intron_count = 0;
 	inline static int num_intersecting_intron_pair = 0;
 
+
 public:
 	splice_graph gr;					// splice graph
 	hyper_set hs;						// hyper edges

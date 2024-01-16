@@ -131,6 +131,7 @@ int aster::print_stats()
 	cout << "num_exon " << num_exon  << endl; 
 	cout << "num_intersecting_intron_count " << num_intersecting_intron_count << endl;
 	cout << "num_intersecting_intron_pair " << num_intersecting_intron_pair << endl;
+
 	cout << "aster printed stats" << endl;
 	return 0;
 }
