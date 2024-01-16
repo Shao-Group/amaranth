@@ -89,7 +89,7 @@ int simulation_num_edges = 0;
 int simulation_max_edge_weight = 0;
 
 // input and output
-string algo = "scallop2";
+string algo = "aster";
 string input_file;
 string ref_file;
 string ref_file1;
