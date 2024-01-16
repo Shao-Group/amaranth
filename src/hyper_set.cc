@@ -632,3 +632,26 @@ int hyper_set::print()
 	
 	return 0;
 }
+
+int hyper_set::sort_nodes(vector<vector<int>>& ppNodes, vector<int>& ppCounts) const
+{
+	map<int, vector<int>> sortNodes;
+	for(const auto& pp : nodes) sortNodes.insert({pp.second, pp.first});
+
+	size_t pp_num = nodes.size();
+	ppNodes.clear();
+	ppCounts.clear();
+	ppNodes.resize(pp_num);
+	ppCounts.resize(pp_num);
+	int _i_ = 0;
+	for(const auto& pp: sortNodes)
+	{
+		ppNodes[_i_] = pp.second;
+		ppCounts[_i_] = pp.first;
+	}
+	assert(pp_num == sortNodes.size()); 
+	assert(pp_num == ppNodes.size()); 
+	assert(pp_num == ppCounts.size());
+
+	return 0;
+}

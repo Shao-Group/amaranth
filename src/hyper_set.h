@@ -64,6 +64,10 @@ public:
 	bool right_extend(const vector<int> &s);
 	bool left_dominate(int e);
 	bool right_dominate(int e);
+
+public:
+	int sort_nodes(vector<vector<int>>& ppNodes, vector<int>& ppCounts) const;
+
 };
 
 #endif
