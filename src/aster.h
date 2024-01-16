@@ -79,6 +79,8 @@ private:
 	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
 	int collect_trivial_path();
 
+	int heuristic();
+
 	// help functions	
 	int event_size_penalty(int eventSize);
 };
