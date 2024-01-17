@@ -8,6 +8,7 @@ See LICENSE for licensing.
 #include "config.h"
 #include <algorithm>
 #include <cstdio>
+#include <cassert>
 
 int hyper_set::clear()
 {
