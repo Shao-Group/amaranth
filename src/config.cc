@@ -63,6 +63,9 @@ int32_t min_subregion_len = 15;
 int32_t min_subregion_max = 3;
 double min_subregion_ave = 1.5;
 
+// for aster
+bool aster_stats = false;
+
 // for revising/decomposing splice graph
 double min_guaranteed_edge_weight = 0.01;
 double min_surviving_edge_weight = 1.5;
@@ -325,7 +328,9 @@ int parse_arguments(int argc, const char ** argv)
 			min_router_count = atoi(argv[i + 1]);
 			i++;
 		}
+		else if(string(argv[i]) == "--aster_stats")
 		{
+			aster_stats = true;
 		}
 		else if(string(argv[i]) == "--library_type")
 		{
