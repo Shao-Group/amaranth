@@ -94,6 +94,9 @@ extern int32_t min_subregion_len;
 extern int32_t min_subregion_max;
 extern double min_subregion_ave;
 
+// for aster
+extern bool aster_stats;
+
 // for subsetsum and router
 extern int max_dp_table_size;
 extern int min_router_count;

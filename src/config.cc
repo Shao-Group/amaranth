@@ -325,40 +325,7 @@ int parse_arguments(int argc, const char ** argv)
 			min_router_count = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--max_decompose_error_ratio0")
 		{
-			max_decompose_error_ratio[0] = atof(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "--max_decompose_error_ratio1")
-		{
-			max_decompose_error_ratio[1] = atof(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "--max_decompose_error_ratio2")
-		{
-			max_decompose_error_ratio[2] = atof(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "--max_decompose_error_ratio3")
-		{
-			max_decompose_error_ratio[3] = atof(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "--max_decompose_error_ratio4")
-		{
-			max_decompose_error_ratio[4] = atof(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "--max_decompose_error_ratio5")
-		{
-			max_decompose_error_ratio[5] = atof(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "--max_decompose_error_ratio6")
-		{
-			max_decompose_error_ratio[6] = atof(argv[i + 1]);
-			i++;
 		}
 		else if(string(argv[i]) == "--library_type")
 		{
