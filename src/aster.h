@@ -64,13 +64,14 @@ private:
 class astron
 {
 public:
-	astron(const aster*, const vector<int>& _canons, const vector<int>& _illegal, const vector<int>& _alts = {});
+	astron(const aster*, const vector<int>& _canons, const vector<int>& _illegal, const vector<int>& _alts = {}, string algo = "dp");
 
 private:
 	const aster* as;
     vector<int> canons;		// canonical events
 	vector<int> illegals;		// illegal events
     vector<int> alternatives;	// alternative events
+	string aster_algo;
 
 public:
 	int dist;
@@ -80,11 +81,12 @@ private:
 	int classify();
 	int divide_and_conquer();
 	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
-	int collect_trivial_path();
-
 	int heuristic();
+	int heuristic_search(vector<int> );
+	int dynamic_programming();
 
 	// help functions	
+	int collect_trivial_path();
 	int event_size_penalty(int eventSize);
 };
 
