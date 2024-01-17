@@ -197,6 +197,7 @@ astron::astron(const aster* _as, const vector<int>& _canons,  const vector<int>&
 	else if (aster_algo == "heuristic") 	dist = heuristic();
 	else assert(0);
 
+
 	// if(alternatives.size() == 0) collect_trivial_path();
 	// assert(dist >= 0);
 	// assert(paths.size() >= 1);
