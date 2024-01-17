@@ -57,6 +57,7 @@ private:
 private: 
 	int topological_sort_vertices();
 	int topological_sort_index_edges();
+	int aggressive_purge_intersecting_edges();	
 	int make_stats();
 };
 

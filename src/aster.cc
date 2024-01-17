@@ -14,7 +14,13 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool r)
     topological_sort_vertices();
 	topological_sort_index_edges();
 	make_stats();
-	assemble();
+	
+	aggressive_purge_intersecting_edges();
+	topological_sort_vertices();
+	topological_sort_index_edges();
+
+
+	// assemble();
 }
 
 int aster::assemble()
@@ -98,8 +104,32 @@ int aster::topological_sort_index_edges()
 	return 0;
 }
 
+/*
+** aggresively remove intersecting edges, whichever is topilocially smaller
+*/
+int aster::aggressive_purge_intersecting_edges()
+{
+	for (int i = 0; i < i2e.size() - 1; i ++)
+	{
+		edge_descriptor edge1 = i2e[i];
+		if (edge1 == null_edge) continue;
+		for (int j = i + 1; j < i2e.size(); j ++)
+		{
+			edge_descriptor edge2 = i2e[j];
+			if (edge2 == null_edge) continue;
+			if (!gr.intersect(edge1, edge2)) continue;
+			i2e[i] = null_edge;
+			e2i.erase(edge1);
+			gr.remove_edge(edge1);
+			break;
+		}
+	}
+	return 0;
+}
+
 int aster::make_stats()
 {
+	cout << "make stats" << endl;
 	// num graph, exon, intron
 	num_graph ++;
 	num_exon = num_exon + gr.num_vertices() - 2;
@@ -114,14 +144,18 @@ int aster::make_stats()
 	bool intersecting = false;
 	for (int i = 0; i < i2e.size() - 1; i ++)
 	{
+		bool intersecting_edge = false;
+		if(i2e[i] == null_edge) continue;
 		for (int j = i + 1; j < i2e.size(); j ++)
 		{
-			if (!gr.intersect(i2e.at(i), i2e.at(j))) continue;
+			if (i2e[j] == null_edge) continue;
+			if (!gr.intersect(i2e[i], i2e[j])) continue;
 			num_intersecting_intron_pair ++;
+			intersecting_edge = true;
 			intersecting = true;
 		}
 		
-		if (!intersecting) continue;
+		if (!intersecting_edge) continue;
 		num_intersecting_intron_count++;
 		if(i == i2e.size() - 2) num_intersecting_intron_count ++;
 	}
