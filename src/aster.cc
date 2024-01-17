@@ -186,14 +186,15 @@ int aster::print_stats()
 ** astron is the divide-and-conquer base of aster
 ** aston runs an iterative choice of event of concern and remove it from the graph
 */
-astron::astron(const aster* _as, const vector<int>& _canons,  const vector<int>& _illegal, const vector<int>& _alts)
-	: as(_as), canons(_canons), illegals(_illegal), alternatives(_alts), dist(-1)
+astron::astron(const aster* _as, const vector<int>& _canons,  const vector<int>& _illegal, const vector<int>& _alts, string _algo)
+	: as(_as), canons(_canons), illegals(_illegal), alternatives(_alts), aster_algo(_algo), dist(-1)
 {
 	classify();
 
-	string aster_algo = "heuristic";
-	if (aster_algo == "heuristic") heuristic();
-	else if (aster_algo == "dnc")  dist = divide_and_conquer();
+	aster_algo = "heuristic";
+	if 		(aster_algo == "dp") 			dist = dynamic_programming();
+	else if (aster_algo == "dnc")  			dist = divide_and_conquer();
+	else if (aster_algo == "heuristic") 	dist = heuristic();
 	else assert(0);
 
 	// if(alternatives.size() == 0) collect_trivial_path();
