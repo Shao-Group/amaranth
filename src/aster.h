@@ -79,15 +79,19 @@ public:
 
 private:
 	int classify();
+	// algo dp
+	int dynamic_programming();
+	// algo dnc
 	int divide_and_conquer();
 	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
+	// algo heuristic
 	int heuristic();
-	int heuristic_search(vector<int> );
-	int dynamic_programming();
+	int heuristic_search(vector<vector<int>>);
 
 	// help functions	
 	int collect_trivial_path();
 	int event_size_penalty(int eventSize);
+	int closest_path(vector<int> nodes);
 };
 
 #endif
