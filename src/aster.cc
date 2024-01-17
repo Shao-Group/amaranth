@@ -133,7 +133,14 @@ int aster::make_stats()
 {
 	// num graph, exon, intron
 	num_graph ++;
-	num_exon = num_exon + gr.num_vertices() - 2;
+
+	for(int i = 1; i < gr.num_vertices() - 1; i++)
+	{
+		if(gr.degree(i) == 0) continue;
+		num_exon ++;
+	}
+
+	
 	for (int i = 0; i < i2e.size(); i ++) 
 	{
 		if(i2e[i]->source() == 0) continue; 
