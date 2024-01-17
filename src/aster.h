@@ -86,12 +86,14 @@ private:
 	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
 	// algo heuristic
 	int heuristic();
-	int heuristic_search(vector<vector<int>>);
+	bool heuristic_search(vector<vector<int>>& ppNodes);
+	bool heuristic_search(vector<edge_descriptor>& edges);
 
 	// help functions	
 	int collect_trivial_path();
 	int event_size_penalty(int eventSize);
 	int closest_path(vector<int> nodes);
+	int path_distance(const vector<int>& v1, const vector<int>& v2, int maxAllow);
 };
 
 #endif

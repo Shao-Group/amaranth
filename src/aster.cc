@@ -269,10 +269,34 @@ int astron::heuristic()
 	assert(ppNodes.size()  == as->hs.nodes.size());
 	assert(ppCounts.size() == as->hs.nodes.size());
 	
-	for(const auto& pp: ppNodes)
-	{
+	vector<edge_descriptor> edges;
+	for(const auto& edgeIndex: as->e2i) edges.push_back(edgeIndex.first);
 
+	// heuristics to cover a pp or edge through
+	while (ppNodes.size() != 0 && edges.size() != 0)  
+	{
+		if (heuristic_search(ppNodes)) continue;
+		else heuristic_search(edges);
 	}
+	
+
+	return dist;
+}
+
+/*
+** try to cover a pp through heuristics
+*/
+bool astron::heuristic_search(vector<vector<int>>& ppNodes)
+{
+
+}
+
+/*
+** try to cover an edge through heuristics
+*/
+bool astron::heuristic_search(vector<edge_descriptor>& edges)
+{
+
 }
 
 int astron::dynamic_programming()
@@ -323,3 +347,42 @@ int astron::event_size_penalty(int eventSize)
 	assert(eventSize >= 1);
 	return pow(2, eventSize - 1);
 }
+
+int astron::closest_path(vector<int> nodes)
+{
+	int x = 1; //TODO:
+	for(int i = 0; i < paths.size(); i++)
+	{
+		int d = path_distance(paths[i].v, nodes, x);
+		assert(d >= 0);
+	}
+}
+
+/*
+** return: 
+**		positive int: number of edits
+**		-1: not overlapping at all
+**		-2: edits more than allowed
+**		assertion error: size not positive
+*/
+int astron::path_distance(const vector<int>& v1, const vector<int>& v2, int maxAllow)
+{
+	assert(v1.size() > 0);
+	assert(v2.size() > 0);
+	if(v1.back() > v2.front()) return -1;
+	if(v2.back() > v1.front()) return -1;
+
+	int edits = 0;
+	int k1 = v1.size() - 1;
+	int k2 = v2.size() - 1;
+	while(k1 >= 0 && k2 >= 0 && k1 <= v1.size() - 1 && k2 <= v2.size() - 1)
+	{
+		basic_algo::smith_waterman //FIXME:
+	}
+
+
+	return -1;
+}
+
+
+
