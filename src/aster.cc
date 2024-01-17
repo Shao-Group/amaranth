@@ -244,6 +244,35 @@ int astron::dnc_combine(const vector<path> subpaths, int eventOfConcern)
 
 }
 
+
+/*
+** Search for a new path using a new phasing path
+** s.t. 1. the phasing path is completely contained
+**		2. the new path has edit distance < `x` from at least 1 of acceptable path
+**			2.1 for (x = 1 to 5) if new search found, reset x, otherwise increase x
+*/
+int astron::heuristic()
+{
+	// sort pashing paths by counts
+	vector<vector<int>> ppNodes;
+	vector<int> 		ppCounts;
+	as->hs.sort_nodes(ppNodes, ppCounts);
+	assert(ppNodes.size()  == as->hs.nodes.size());
+	assert(ppCounts.size() == as->hs.nodes.size());
+	
+	for(const auto& pp: ppNodes)
+	{
+
+	}
+}
+
+int astron::dynamic_programming()
+{
+
+}
+
+
+
 /*
 ** collect paths based on canon events
 */
@@ -284,9 +313,4 @@ int astron::event_size_penalty(int eventSize)
 
 	assert(eventSize >= 1);
 	return pow(2, eventSize - 1);
-}
-
-int astron::heuristic()
-{
-	
 }
