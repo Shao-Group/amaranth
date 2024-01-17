@@ -11,6 +11,7 @@ See LICENSE for licensing.
 aster::aster(const splice_graph &g, const hyper_set &h, bool r)
 	: gr(g), hs(h), random_ordering(r)
 {
+	// prepare
     topological_sort_vertices();
 	topological_sort_index_edges();
 	make_stats();
@@ -19,8 +20,7 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool r)
 	topological_sort_vertices();
 	topological_sort_index_edges();
 
-
-	// assemble();
+	assemble();
 }
 
 int aster::assemble()
@@ -129,7 +129,6 @@ int aster::aggressive_purge_intersecting_edges()
 
 int aster::make_stats()
 {
-	cout << "make stats" << endl;
 	// num graph, exon, intron
 	num_graph ++;
 	num_exon = num_exon + gr.num_vertices() - 2;
