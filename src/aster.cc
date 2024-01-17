@@ -16,6 +16,7 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool r)
 	topological_sort_index_edges();
 	make_stats();
 	
+	// revise
 	aggressive_purge_intersecting_edges();
 	topological_sort_vertices();
 	topological_sort_index_edges();
