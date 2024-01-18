@@ -1,5 +1,5 @@
 /*
-Part of Aster Assembler
+Part of Aster Transcript Assembler
 (c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
 See LICENSE for licensing.
 */
@@ -36,8 +36,8 @@ int aster::assemble()
 }
 
 /*
-** sort vertices according to pair<lpos, rpos>
-** assuming no two vertices have the same <lpos, rpos>
+* sort vertices according to pair<lpos, rpos>
+* assuming no two vertices have the same <lpos, rpos>
 */
 int aster::topological_sort_vertices()
 {
@@ -70,7 +70,7 @@ int aster::topological_sort_vertices()
 }
 
 /*
-** For future compatibility, edges should be sorted & fetched independent of splice_graph implementation
+* For future compatibility, edges should be sorted & fetched independent of splice_graph implementation
 */ 
 int aster::topological_sort_index_edges()
 {
@@ -107,7 +107,7 @@ int aster::topological_sort_index_edges()
 }
 
 /*
-** aggresively remove intersecting edges, whichever is topilocially smaller
+*  aggresively remove intersecting edges, whichever is topilocially smaller
 */
 int aster::aggressive_purge_intersecting_edges()
 {
@@ -191,8 +191,8 @@ int aster::print_stats()
 
 
 /*
-** astron is the divide-and-conquer base of aster
-** aston runs an iterative choice of event of concern and remove it from the graph
+* astron is the divide-and-conquer base of aster
+* aston runs an iterative choice of event of concern and remove it from the graph
 */
 astron::astron(const aster* _as, const vector<int>& _canons,  const vector<int>& _illegal, const vector<int>& _alts, string _algo)
 	: as(_as), canons(_canons), illegals(_illegal), alternatives(_alts), aster_algo(_algo), dist(-1)
@@ -255,10 +255,10 @@ int astron::dnc_combine(const vector<path> subpaths, int eventOfConcern)
 
 
 /*
-** Search for a new path using a new phasing path
-** s.t. 1. the phasing path is completely contained
-**		2. the new path has edit distance < `x` from at least 1 of acceptable path
-**			2.1 for (x = 1 to 5) if new search found, reset x, otherwise increase x
+* Search for a new path using a new phasing path
+* s.t. 1. the phasing path is completely contained
+*	   2. the new path has edit distance < `x` from at least 1 of acceptable path
+*	   	2.1 for (x = 1 to 5) if new search found, reset x, otherwise increase x
 */
 int astron::heuristic()
 {
@@ -283,16 +283,14 @@ int astron::heuristic()
 	return dist;
 }
 
-/*
-** try to cover a pp through heuristics
+/* try to cover a pp through heuristics
 */
 bool astron::heuristic_search(vector<vector<int>>& ppNodes)
 {
 
 }
 
-/*
-** try to cover an edge through heuristics
+/* try to cover an edge through heuristics
 */
 bool astron::heuristic_search(vector<edge_descriptor>& edges)
 {
@@ -304,10 +302,8 @@ int astron::dynamic_programming()
 
 }
 
-
-
 /*
-** collect paths based on canon events
+* collect paths based on canon events
 */
 int astron::collect_trivial_path()
 {
@@ -359,11 +355,9 @@ int astron::closest_path(vector<int> nodes)
 }
 
 /*
-** return: 
-**		positive int: number of edits
-**		-1: not overlapping at all
-**		-2: edits more than allowed
-**		assertion error: size not positive
+* return: 
+*		positive int: number of edits
+*		assertion error: size not positive
 */
 int astron::path_distance(const vector<int>& v1, const vector<int>& v2, int maxAllow)
 {

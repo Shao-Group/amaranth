@@ -69,7 +69,7 @@ public:
 
 private:
 	const aster* as;
-    vector<int> canons;		// canonical events
+    vector<int> canons;			// canonical events
 	vector<int> illegals;		// illegal events
     vector<int> alternatives;	// alternative events
 	string aster_algo;
