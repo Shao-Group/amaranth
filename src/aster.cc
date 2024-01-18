@@ -31,7 +31,17 @@ int aster::assemble()
 	vector<int> illegal;
 	canonical.clear();
 	illegal.clear();
-	astron asterPetal(this, canonical, illegal);
+	
+	string aster_algo = "dp";
+	if (aster_algo == "greedy" && gr.num_edges() >= 2)
+	{
+		astron asterPetal(this, canonical, illegal, {}, aster_algo);
+	}	
+	if (aster_algo == "dp" && gr.num_edges() >= 2)
+	{
+		astron asterPetal(this, canonical, illegal, {}, aster_algo);
+	}
+
 	return 0;
 }
 
@@ -102,7 +112,6 @@ int aster::topological_sort_index_edges()
 	}
 	assert(e2i.size() == index); 
 	assert(i2e.size() == index);
-
 	return 0;
 }
 
@@ -197,20 +206,14 @@ int aster::balance_vertex(int vertexIndex)
 	return 0;
 }
 
-
-
 int aster::make_stats()
 {
-	// num graph, exon, intron
 	num_graph ++;
-
 	for(int i = 1; i < gr.num_vertices() - 1; i++)
 	{
 		if(gr.degree(i) == 0) continue;
 		num_exon ++;
 	}
-
-	
 	for (int i = 0; i < i2e.size(); i ++) 
 	{
 		if(i2e[i]->source() == 0) continue; 
@@ -218,7 +221,7 @@ int aster::make_stats()
 		num_intron++;
 	}
 	
-	// num intersecting introns, intron_pairs, graphs
+	// num intersecting: introns, intron_pairs, graphs
 	bool intersecting = false;
 	for (int i = 0; i < i2e.size() - 1; i ++)
 	{
@@ -264,7 +267,7 @@ int aster::print_stats()
 * astron is the divide-and-conquer base of aster
 * aston runs an iterative choice of event of concern and remove it from the graph
 */
-astron::astron(const aster* _as, const vector<int>& _canons,  const vector<int>& _illegal, const vector<int>& _alts, string _algo)
+astron::astron(aster* _as, const vector<int>& _canons,  const vector<int>& _illegal, const vector<int>& _alts, string _algo)
 	: as(_as), canons(_canons), illegals(_illegal), alternatives(_alts), aster_algo(_algo), dist(-1)
 {
 	classify();
@@ -419,9 +422,7 @@ int astron::dynamic_programming()
 
 }
 
-/*
-* collect paths based on canon events
-*/
+/* collect paths based on canon events */
 int astron::collect_trivial_path()
 {
 	const splice_graph& gr = as->gr;
@@ -432,8 +433,7 @@ int astron::collect_trivial_path()
 	// v does not contain source & sink
 	assert(v[0] != 0); 
 	assert(v[v.size() - 1] != gr.num_vertices()); 
-	assert(gr.valid_path(v)); //FIXME: not implemented
-	
+	assert(gr.valid_path(v));
 
 	// filter empty-vertex
 	bool empty = false;
@@ -461,12 +461,12 @@ int astron::event_size_penalty(int eventSize)
 	return pow(2, eventSize - 1);
 }
 
-int astron::closest_path(vector<int> nodes)
+// find closest path not exceeding maxDist
+int astron::closest_path(vector<int> nodes, int maxDist) // FIXME:
 {
-	int x = 1; //TODO:
 	for(int i = 0; i < paths.size(); i++)
 	{
-		int d = path_distance(paths[i].v, nodes, x);
+		int d = path_distance(paths[i].v, nodes);
 		assert(d >= 0);
 	}
 }
@@ -476,24 +476,15 @@ int astron::closest_path(vector<int> nodes)
 *		positive int: number of edits
 *		assertion error: size not positive
 */
-int astron::path_distance(const vector<int>& v1, const vector<int>& v2, int maxAllow)
+int astron::path_distance(const vector<int>& v1, const vector<int>& v2)
 {
 	assert(v1.size() > 0);
 	assert(v2.size() > 0);
 	if(v1.back() > v2.front()) return -1;
 	if(v2.back() > v1.front()) return -1;
 
-	int edits = 0;
-	int k1 = v1.size() - 1;
-	int k2 = v2.size() - 1;
-	while(k1 >= 0 && k2 >= 0 && k1 <= v1.size() - 1 && k2 <= v2.size() - 1)
-	{
-		basic_algo::smith_waterman //FIXME:
-	}
+	int edits = - basic_algo::ref_sw_query_nw(v1, v2, -1, -2, 0);
 
-
-	return -1;
+	return edits; //TODO: not finished
 }
-
-
 
