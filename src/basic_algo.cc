@@ -17,7 +17,7 @@ int basic_algo::smith_waterman(vector<int>& s, vector<int>& r, int gap_panelty, 
     {
         for (int j = 1; j < n; ++j)
         {
-			int cost = (s[i - 1] == r[j - 1]? mis_panelty : mis_panelty);
+			int cost = (s[i - 1] == r[j - 1]? match_reward : mis_panelty);
             int match    = opt[i - 1][j - 1] + cost;
             int gap_in_s = opt[i][j - 1]  + gap_panelty;
             int gap_in_r = opt[i - 1][j]  + gap_panelty;
@@ -44,7 +44,7 @@ int basic_algo::needleman_wunsch(vector<int>& s, vector<int>& r,  int gap_panelt
     {
         for (int j = 1; j < n; ++j)
         {
-			int cost = (s[i - 1] == r[j - 1]? mis_panelty : mis_panelty);
+			int cost = (s[i - 1] == r[j - 1]? match_reward : mis_panelty);
             int match    = opt[i - 1][j - 1] + cost;
             int gap_in_s = opt[i][j - 1]  + gap_panelty;
             int gap_in_r = opt[i - 1][j]  + gap_panelty;
