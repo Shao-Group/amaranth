@@ -9,8 +9,8 @@ using namespace::std;
 
 namespace basic_algo
 {
-    int needleman_wunsch(vector<int>& s, vector<int>& r);
-    int smith_waterman(vector<int>& s, vector<int>& r);    
+    int needleman_wunsch(vector<int>& s, vector<int>& r, int gap = -1, int mis_panelty = -1, int match = 1);
+    int smith_waterman(vector<int>& s, vector<int>& r,  int gap = -1, int mis_panelty = -1, int match = 1);    
 }
 
 template<typename T>
