@@ -22,7 +22,7 @@ typedef map<PEE, int> MPEEI;
 typedef pair<int, int> PI;
 typedef map<int, int> MI;
 
-
+/* aster class performs the preparation and revise work */
 class aster
 {
 public:
@@ -61,6 +61,7 @@ private:
 	int make_stats();
 };
 
+/* astron class executes algorithms under clear assumptions */
 class astron
 {
 public:
