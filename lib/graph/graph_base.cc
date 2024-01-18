@@ -84,6 +84,21 @@ int graph_base::degree(int v) const
 	return vv[v]->degree();
 }
 
+bool graph_base::edge_exists(int s, int t) const
+{
+	assert(s >= 0 && s < vv.size());
+	assert(t >= 0 && t < vv.size());
+	PEEI p = vv[s]->out_edges();
+	for(edge_iterator it = p.first; it != p.second; it++)
+	{
+		assert((*it)->source() == s);
+		int x = (*it)->target();
+		if(x != t) continue;
+		return true;
+	}
+	return false;
+}
+
 PEB graph_base::edge(int s, int t) 
 {
 	assert(s >= 0 && s < vv.size());
@@ -119,12 +134,18 @@ PEEI graph_base::edges() const
 
 bool graph_base::valid_path(vector<int> path) const
 {
-// 	for(int i = 0; i < path.size(); i++)
-// 	{
-// 		if(i == 0 && path[i] == 0) continue;
-// 		if(i == path.size() - 1 && path[i] == num_vertices() - 1) continue;
-// TODO:
-// 	}
+	for(int i = 0; i < path.size(); i++) assert(path[i] >= 0);
+	for(int i = 0; i < path.size(); i++) assert(path[i] < num_vertices());
+	
+	if(path.size() <= 1) return true;
+	for(int i = 0; i < path.size() - 1; i++)
+	{
+		int s = path[i];
+		int t = path[i + 1];
+		assert(s != t);
+		if (! edge_exists(s, t)) return false;
+	}
+	return true;
 }
 
 set<int> graph_base::adjacent_vertices(int s)

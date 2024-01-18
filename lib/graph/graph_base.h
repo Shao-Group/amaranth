@@ -54,6 +54,7 @@ public:
 	virtual size_t num_vertices() const;
 	virtual size_t num_edges() const;
 	virtual int degree(int v) const;
+	virtual bool edge_exists(int s, int t) const;
 	virtual PEB edge(int s, int t);
 	virtual PEEI edges() const;
 	virtual bool valid_path(vector<int> path) const;
