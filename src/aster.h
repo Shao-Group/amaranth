@@ -79,12 +79,12 @@ public:
 
 private:
 	int classify();
-	// algo dp
-	int dynamic_programming();
-	// algo dnc
+	// algo dp	//TODO:
+	int dynamic_programming();	
+	// algo dnc //TODO:
 	int divide_and_conquer();
 	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
-	// algo heuristic
+	// algo heuristic	//TODO:
 	int heuristic();
 	bool heuristic_search(vector<vector<int>>& ppNodes);
 	bool heuristic_search(vector<edge_descriptor>& edges);
@@ -93,7 +93,7 @@ private:
 	int collect_trivial_path();
 	int event_size_penalty(int eventSize);
 	int closest_path(vector<int> nodes);
-	int path_distance(const vector<int>& v1, const vector<int>& v2, int maxAllow);
+	int path_distance(const vector<int>& v1, const vector<int>& v2);
 };
 
 #endif

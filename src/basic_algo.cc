@@ -1,6 +1,6 @@
 #include "basic_algo.h"
 
-int basic_algo::smith_waterman(vector<int>& s, vector<int>& r, int gap_panelty, int mis_panelty, int match_reward)
+int basic_algo::smith_waterman(const vector<int>& s, const vector<int>& r, int gap_panelty, int mis_panelty, int match_reward)
 {
     int m = s.size() + 1;
     int n = r.size() + 1;
@@ -28,7 +28,7 @@ int basic_algo::smith_waterman(vector<int>& s, vector<int>& r, int gap_panelty, 
     return opt[m - 1][n - 1];
 }
 
-int basic_algo::needleman_wunsch(vector<int>& s, vector<int>& r,  int gap_panelty, int mis_panelty, int match_reward)
+int basic_algo::needleman_wunsch(const vector<int>& s, const vector<int>& r,  int gap_panelty, int mis_panelty, int match_reward)
 {
     int m = s.size() + 1;
     int n = r.size() + 1;

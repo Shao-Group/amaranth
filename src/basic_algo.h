@@ -9,10 +9,11 @@ using namespace::std;
 
 namespace basic_algo
 {
-    int needleman_wunsch(vector<int>& s, vector<int>& r, int gap = -1, int mis_panelty = -1, int match = 1);
-    int smith_waterman(vector<int>& s, vector<int>& r,  int gap = -1, int mis_panelty = -1, int match = 1);    
+    int needleman_wunsch(const vector<int>& s, const vector<int>& r, int gap = -1, int mis = -1, int match = 1);
+    int smith_waterman(const vector<int>& s, const vector<int>& r,  int gap = -1, int mis = -1, int match = 1);    
 }
 
+// max value of a vector
 template<typename T>
 T maxv(vector<T> vt)
 {
