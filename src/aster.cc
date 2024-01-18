@@ -129,6 +129,76 @@ int aster::aggressive_purge_intersecting_edges()
 	return 0;
 }
 
+int aster::balance_vertex(int vertexIndex)
+{
+	int v = vertexIndex;
+	if(gr.degree(v) <= 0) return 0;
+
+	edge_iterator it1, it2;
+	PEEI pei;
+	double w1 = 0, w2 = 0;
+	for(pei = gr.in_edges(v), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+	{
+		double w = gr.get_edge_weight(*it1);
+		w1 += w;
+	}
+	for(pei = gr.out_edges(v), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+	{
+		double w = gr.get_edge_weight(*it1);
+		w2 += w;
+	}
+
+	assert(w1 >= SMIN);
+	assert(w2 >= SMIN);
+
+	// use sqrt-meature
+	double ww = sqrt(w1 * w2);
+
+	double r1 = ww / w1;
+	double r2 = ww / w2;
+
+	double m1 = 0, m2 = 0;
+	for(pei = gr.in_edges(v), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+	{
+		double wx = gr.get_edge_weight(*it1);
+		double wy = wx * r1;
+		if(wy < min_guaranteed_edge_weight)
+		{
+			m1 += (min_guaranteed_edge_weight - wy);
+			wy = min_guaranteed_edge_weight;
+		}
+		gr.set_edge_weight(*it1, wy);
+	}
+	for(pei = gr.out_edges(v), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+	{
+		double wx = gr.get_edge_weight(*it1);
+		double wy = wx * r2;
+		if(wy < min_guaranteed_edge_weight)
+		{
+			m2 += min_guaranteed_edge_weight - wy;
+			wy = min_guaranteed_edge_weight;
+		}
+		gr.set_edge_weight(*it1, wy);
+	}
+
+	if(m1 > m2)
+	{
+		edge_descriptor e = gr.max_out_edge(v);
+		double w = gr.get_edge_weight(e);
+		gr.set_edge_weight(e, w + m1 - m2);
+	}
+	else if(m1 < m2)
+	{
+		edge_descriptor e = gr.max_in_edge(v);
+		double w = gr.get_edge_weight(e);
+		gr.set_edge_weight(e, w + m2 - m1);
+	}
+
+	return 0;
+}
+
+
+
 int aster::make_stats()
 {
 	// num graph, exon, intron
