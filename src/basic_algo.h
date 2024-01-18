@@ -10,7 +10,8 @@ using namespace::std;
 namespace basic_algo
 {
     int needleman_wunsch(const vector<int>& s, const vector<int>& r, int gap = -1, int mis = -1, int match = 1);
-    int smith_waterman(const vector<int>& s, const vector<int>& r,  int gap = -1, int mis = -1, int match = 1);    
+    int smith_waterman(const vector<int>& complate_s, const vector<int>& partial_r,  int gap = -1, int mis = -1, int match = 1);    
+    int ref_sw_query_nw(const vector<int>& s, const vector<int>& r, int gap = -1, int mis = -1, int match = 1);
 }
 
 // max value of a vector
