@@ -29,6 +29,7 @@ public:
 	aster(const splice_graph &gr, const hyper_set &hs, bool random_ordering = false);
 	int assemble();
 	static int print_stats();
+	int balance_vertex(int);
 
 // static stats
 private:
@@ -39,7 +40,6 @@ private:
 	inline static int num_exon = 0;
 	inline static int num_intersecting_intron_count = 0;
 	inline static int num_intersecting_intron_pair = 0;
-
 
 public:
 	splice_graph gr;					// splice graph
@@ -65,10 +65,10 @@ private:
 class astron
 {
 public:
-	astron(const aster*, const vector<int>& _canons, const vector<int>& _illegal, const vector<int>& _alts = {}, string algo = "dp");
+	astron(aster*, const vector<int>& _canons, const vector<int>& _illegal, const vector<int>& _alts = {}, string algo = "dp");
 
 private:
-	const aster* as;
+	aster* as;
     vector<int> canons;			// canonical events
 	vector<int> illegals;		// illegal events
     vector<int> alternatives;	// alternative events
@@ -80,20 +80,19 @@ public:
 
 private:
 	int classify();
-	// algo dp	//TODO:
-	int dynamic_programming();	
-	// algo dnc //TODO:
-	int divide_and_conquer();
-	int dnc_combine(const vector<path> subpaths, int eventOfConcern);
-	// algo heuristic	//TODO:
-	int heuristic();
-	bool heuristic_search(vector<vector<int>>& ppNodes);
-	bool heuristic_search(vector<edge_descriptor>& edges);
+	int dynamic_programming();												// algo dp	//TODO:
+	int divide_and_conquer();												// algo dnc //TODO:
+	int dnc_combine(const vector<path> subpaths, int eventOfConcern);		// algo dnc //TODO:
+	int heuristic();														// algo heuristic	//TODO:
+	bool heuristic_search(vector<vector<int>>& ppNodes, int maxDist);
+	bool heuristic_search(vector<edge_descriptor>& edges, int maxDist);
+	int greedy();
+	bool greedy_longest_path();
+	bool greedy_edit_path(int maxDist);
 
-	// help functions	
 	int collect_trivial_path();
 	int event_size_penalty(int eventSize);
-	int closest_path(vector<int> nodes);
+	int closest_path(vector<int> nodes, int maxDist);						// find closest path not exceeding max penalty
 	int path_distance(const vector<int>& v1, const vector<int>& v2);
 };
 
