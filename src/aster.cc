@@ -297,12 +297,13 @@ int aster::print_stats()
 astron::astron(aster* _as, const vector<int>& _canons,  const vector<int>& _illegal, const vector<int>& _alts, string _algo)
 	: as(_as), canons(_canons), illegals(_illegal), alternatives(_alts), aster_algo(_algo), dist(-1)
 {
-	classify();
-	if 		(aster_algo == "dp") 			dist = dynamic_programming();
-	// else if (aster_algo == "dnc")  			dist = divide_and_conquer();
-	// else if (aster_algo == "heuristic") 	dist = heuristic();
-	// else if (aster_algo == "greedy")		dist = greedy();
-	else assert(0);
+	// classify();
+
+	// if 		(aster_algo == "dp") 			dist = dynamic_programming();
+	// // else if (aster_algo == "dnc")  			dist = divide_and_conquer();
+	// // else if (aster_algo == "heuristic") 	dist = heuristic();
+	// // else if (aster_algo == "greedy")		dist = greedy();
+	// else assert(0);
 
 	// if(alternatives.size() == 0) collect_trivial_path();
 	// assert(dist >= 0);
@@ -443,11 +444,6 @@ astron::astron(aster* _as, const vector<int>& _canons,  const vector<int>& _ille
 // {
 
 // }
-
-int astron::dynamic_programming()
-{
-
-}
 
 /* collect paths based on canon events */
 int astron::collect_trivial_path()
