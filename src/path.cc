@@ -25,6 +25,20 @@ path::path()
 	ex2 = 0;
 }
 
+path::path(vector<int> _v, double _abd)
+{
+	v.clear();
+	v = _v;
+	type = 0;
+	abd = _abd;
+	reads = 0;
+	score = 0;
+	length = 0;
+	fcindex = -1;
+	ex1 = 0;
+	ex2 = 0;
+}
+
 path::~path()
 {}
 
