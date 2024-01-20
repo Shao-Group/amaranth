@@ -40,18 +40,20 @@ int aster::assemble()
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	}
 
-	dynamic_programming();
+	divide_conquer();
 	return 0;
 }
 
+int aster::divide_conquer()
 {
-	int m = gr.num_vertices();
-	aster_dp_table optPaths(m, aster_dp_row(m)); 	// opt[i][j] means optimal min evo dist aster_dp_dot from vertex i to j
+	assert(gr.num_vertices() > 2);
+	int s = 0;
+	int t = gr.num_vertices() - 1;
 	
-	{
-			else	    dynamic_programming(j, i, optPaths);
-		}
-	}
+	aster_result res;
+	divide_conquer(s, t, res);
+	paths = res.subpaths;
+
 	return 0;
 }
 
