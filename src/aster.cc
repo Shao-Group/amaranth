@@ -77,6 +77,8 @@ int aster::dynamic_programming(int source, int target, aster_dp_table& optPaths)
 
 }
 
+
+
 /*
 * sort vertices according to pair<lpos, rpos>
 * assuming no two vertices have the same <lpos, rpos>
@@ -232,6 +234,13 @@ int aster::balance_vertex(int vertexIndex)
 
 	return 0;
 }
+
+
+int aster::get_transcripts()
+{
+	//TODO:
+}
+
 
 int aster::make_stats()
 {
