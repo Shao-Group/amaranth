@@ -21,15 +21,17 @@ typedef pair<PEE, int> PPEEI;
 typedef map<PEE, int> MPEEI;
 typedef pair<int, int> PI;
 typedef map<int, int> MI;
+typedef vector<path> aster_dp_dot;
+typedef vector<aster_dp_dot> aster_dp_row;
+typedef vector<aster_dp_row> aster_dp_table; 
 
 /* aster class performs the preparation and revise work */
 class aster
 {
 public:
-	aster(const splice_graph &gr, const hyper_set &hs, bool random_ordering = false);
+	aster(const splice_graph &gr, const hyper_set &hs);
 	int assemble();
 	static int print_stats();
-	int balance_vertex(int);
 
 // static stats
 private:
@@ -46,18 +48,20 @@ public:
 	hyper_set hs;						// hyper edges
 	MEI e2i;							// edge map, from edge to index, sorted
 	VE i2e;								// edge map, from index to edge, sorted
+	vector<path> paths;					// predicted paths
     vector<transcript> trsts;			// predicted transcripts
 	vector<transcript> non_full_trsts;		// predicted non full length transcripts
-
-private:
-	bool random_ordering;				// whether using random ordering
-	int round;							// iteration
-	vector<path> paths;					// predicted paths
 
 private: 
 	int topological_sort_vertices();
 	int topological_sort_index_edges();
-	int aggressive_purge_intersecting_edges();	
+	int aggressive_purge_intersecting_edges();
+	int balance_vertex(int);
+
+	int dynamic_programming();
+	int dynamic_programming(int source, int target, aster_dp_table& table);
+	
+	int get_transcripts();
 	int make_stats();
 };
 

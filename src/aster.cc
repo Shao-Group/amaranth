@@ -9,8 +9,8 @@ See LICENSE for licensing.
 #include "aster.h"
 #include "basic_algo.h"
 
-aster::aster(const splice_graph &g, const hyper_set &h, bool r)
-	: gr(g), hs(h), random_ordering(r)
+aster::aster(const splice_graph &g, const hyper_set &h)
+	: gr(g), hs(h)
 {
 	// prepare
     topological_sort_vertices();
@@ -23,6 +23,7 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool r)
 	topological_sort_index_edges();
 
 	assemble();
+	get_transcripts();
 }
 
 int aster::assemble()
