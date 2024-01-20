@@ -63,6 +63,25 @@ int splice_graph::copy(const splice_graph &gr, MEE &x2y, MEE &y2x)
 	return 0;
 }
 
+bool splice_graph::refine_splice_graph()
+{
+	bool c = false;
+	while(true)
+	{
+		bool b = false;
+		for(int i = 1; i < num_vertices() - 1; i++)
+		{
+			if(degree(i) == 0) continue;
+			if(in_degree(i) >= 1 && out_degree(i) >= 1) continue;
+			clear_vertex(i);
+			b = true;
+			c = true;
+		}
+		if(b == false) break;
+	}
+	return c;
+}
+
 int splice_graph::clear()
 {
 	directed_graph::clear();
@@ -496,6 +515,30 @@ long splice_graph::compute_num_paths()
 long splice_graph::compute_num_paths(int a, int b)
 {
 	long max = 9999999999;
+	vector<long> table;
+	int n = (b - a + 1);
+	table.resize(n, 0);
+	table[0] = 1;
+	for(int i = a + 1; i <= b; i++)
+	{
+		edge_iterator it1, it2;
+		PEEI pei;
+		for(pei = in_edges(i), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+		{
+			int s = (*it1)->source();
+			int t = (*it1)->target();
+			assert(t == i);
+			if(s < a) continue;
+			table[t] += table[s - a];
+			if(table[t] >= max) return max;
+		}
+	}
+	return table[n - 1];
+}
+
+long splice_graph::compute_num_paths(int a, int b, int _max)
+{
+	long max = _max;
 	vector<long> table;
 	int n = (b - a + 1);
 	table.resize(n, 0);

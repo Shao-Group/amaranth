@@ -71,6 +71,7 @@ public:
 	// modify the splice_graph
 	int clear();
 	int copy(const splice_graph &gr, MEE &x2y, MEE &y2x);
+	bool refine_splice_graph();
 
 	// read, write, and simulate splice graph
 	int build(const string &file);
@@ -80,6 +81,7 @@ public:
 	// analysis the structure of splice graph
 	long compute_num_paths();
 	long compute_num_paths(int a, int b);
+	long compute_num_paths(int a, int b, int max);
 	int compute_decomp_paths();
 	bool check_fully_connected();
 	int compute_independent_subgraphs();
