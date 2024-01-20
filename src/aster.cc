@@ -84,22 +84,17 @@ int aster::dynamic_programming(int source, int target, aster_dp_table& optPaths)
 int aster::topological_sort_vertices()
 {
 	assert(gr.num_vertices() >= 2);
-
 	for(int i = 0; i < gr.num_vertices(); i++)	
 	{
 		if(i >= 1) assert(gr.get_vertex_info(i - 1).rpos <= gr.get_vertex_info(i).lpos);
-		
-		// proceeding out edges
-		if (i < gr.num_vertices() - 1) 
+		if (i < gr.num_vertices() - 1) 		// proceeding out edges
 		{
 			PEEI ei = gr.out_edges(i);
 			edge_iterator it1 = ei.first; 
 			edge_iterator it2 = ei.second;
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).rpos <= gr.get_vertex_info((*it1)->target()).lpos);
 		}
-
-		// trailing in edges
-		if (i >= 1) 
+		if (i >= 1) 						// trailing in edges
 		{
 			PEEI ei = gr.in_edges(i);
 			edge_iterator it1 = ei.first; 
@@ -107,7 +102,6 @@ int aster::topological_sort_vertices()
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->source()).rpos);
 		}
 	}
-
 	return 0;
 }
 
@@ -167,6 +161,7 @@ int aster::aggressive_purge_intersecting_edges()
 			break;
 		}
 	}
+	gr.refine_splice_graph();
 	return 0;
 }
 
