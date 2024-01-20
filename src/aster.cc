@@ -49,11 +49,9 @@ int aster::divide_conquer()
 	assert(gr.num_vertices() > 2);
 	int s = 0;
 	int t = gr.num_vertices() - 1;
-	
 	aster_result res;
 	divide_conquer(s, t, res);
 	paths = res.subpaths;
-
 	return 0;
 }
 
