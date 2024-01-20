@@ -28,7 +28,7 @@ typedef map<int, int> MI;
 struct aster_result
 {
 	vector<path> subpaths;
-	int dist;
+	int dist = -1;
 };
 
 /* aster class performs the preparation and revise work */
@@ -65,7 +65,11 @@ private:
 	int balance_vertex(int);
 
 	int divide_conquer();
-	int divide_conquer(int source, int target, aster_result& table);
+	int divide_conquer(int source, int target, aster_result& res);
+	bool divide_conquer_single_vertex(int source, int target, aster_result& res);
+	bool divide_conquer_unitig(int source, int target, aster_result& res);
+	bool divide_conquer_disjoint(int source, int target, aster_result& res);
+	bool divide_conquer_abutting(int source, int target, aster_result& res);
 	
 	int get_transcripts();
 	int make_stats();

@@ -52,32 +52,60 @@ int aster::divide_conquer()
 	aster_result res;
 	divide_conquer(s, t, res);
 	paths = res.subpaths;
+	assert(paths.size() > 0);
+	for(const path & p : paths)	assert(gr.valid_path(p.v));
 	return 0;
 }
 
-int aster::dynamic_programming(int source, int target, aster_dp_table& optPaths)
+// divide_conquer(i ,j) solves a subproblem between 
+int aster::divide_conquer(int source, int target, aster_result& res)
 {
 	assert(source <= target);
 	int s = source;
 	int t = target;
+	assert(res.subpaths.size() == 0);
+	assert(res.dist == -1);
 
-	assert(optPaths[s][t].size() == 0);
-	if(s == t) optPaths[s][t].push_back({});
-
-	if(int n = gr.compute_num_paths(s, t, 2); n <= 1) 
-	{
-		
-		vector<int> vertexPath;
-		gr.compute_shortest_path(s, t, vertexPath);
-		assert(vertexPath.size() > 0);
-		double abd = 0;
-		paths.push_back(path(vertexPath, abd));
-		return 0;
-	}
-
+	if (divide_conquer_single_vertex(s, t, res))      return 0;
+	if (divide_conquer_unitig(s, t, res))             return 0;
+	if (divide_conquer_disjoint(s, t, res))     	  return 0;
+	if (divide_conquer_abutting(s, t, res))			  return 0;
+	
+	assert(0);
+	return -1;
 }
 
+/* examine if dnc unitig between s to t; if true, populate res */
+bool aster::divide_conquer_unitig(int s, int t, aster_result& res)
+{
+	assert(s < t);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
+	if(gr.out_degree(s) > 1 || gr.in_degree(t) > 1) return false;
+
+	int n = gr.compute_num_paths(s, t, 2);
+	assert(n >= 1);
+	if(n > 1) return false;
+
+	vector<int> vertexPath;
+	gr.compute_shortest_path(s, t, vertexPath);
+	assert(vertexPath.size() > 0);
+	double abd = 0;															//TODO
+	res.subpaths.push_back(path(vertexPath, abd));
+	res.dist = 0;
+	
+	return true;
+}
+
+/* examine if dnc single vertex; if true, populate res */
+bool aster::divide_conquer_single_vertex(int s, int t, aster_result& res)
+{
+	assert(s <= t);
+	if(s != t) return false;
+	res.subpaths.push_back({}); 
+	res.dist = 0;
+	return true;
+}
 
 /*
 * sort vertices according to pair<lpos, rpos>
