@@ -27,23 +27,54 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 }
 
 int aster::assemble()
-{
-	vector<int> canonical;
-	vector<int> illegal;
-	canonical.clear();
-	illegal.clear();
-	
-	string aster_algo = "dp";
-	if (aster_algo == "greedy" && gr.num_edges() >= 2)
+{	
+
+	if(gr.num_edges() == 0) return 0;
+	if(gr.num_edges() == 2) return 0;
+	assert(gr.num_vertices() > 2);
+
+	//CLEAN: balance?
+	if (true)
 	{
-		astron asterPetal(this, canonical, illegal, {}, aster_algo);
-	}	
-	if (aster_algo == "dp" && gr.num_edges() >= 2)
-	{
-		astron asterPetal(this, canonical, illegal, {}, aster_algo);
+		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
+		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	}
 
+	dynamic_programming();
 	return 0;
+}
+
+{
+	int m = gr.num_vertices();
+	aster_dp_table optPaths(m, aster_dp_row(m)); 	// opt[i][j] means optimal min evo dist aster_dp_dot from vertex i to j
+	
+	{
+			else	    dynamic_programming(j, i, optPaths);
+		}
+	}
+	return 0;
+}
+
+int aster::dynamic_programming(int source, int target, aster_dp_table& optPaths)
+{
+	assert(source <= target);
+	int s = source;
+	int t = target;
+
+	assert(optPaths[s][t].size() == 0);
+	if(s == t) optPaths[s][t].push_back({});
+
+	if(int n = gr.compute_num_paths(s, t, 2); n <= 1) 
+	{
+		
+		vector<int> vertexPath;
+		gr.compute_shortest_path(s, t, vertexPath);
+		assert(vertexPath.size() > 0);
+		double abd = 0;
+		paths.push_back(path(vertexPath, abd));
+		return 0;
+	}
+
 }
 
 /*
