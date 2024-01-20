@@ -21,9 +21,15 @@ typedef pair<PEE, int> PPEEI;
 typedef map<PEE, int> MPEEI;
 typedef pair<int, int> PI;
 typedef map<int, int> MI;
-typedef vector<path> aster_dp_dot;
-typedef vector<aster_dp_dot> aster_dp_row;
-typedef vector<aster_dp_row> aster_dp_table; 
+// typedef vector<path> aster_dp_dot;
+// typedef vector<aster_dp_dot> aster_dp_row;
+// typedef vector<aster_dp_row> aster_dp_table; 
+
+struct aster_result
+{
+	vector<path> subpaths;
+	int dist;
+};
 
 /* aster class performs the preparation and revise work */
 class aster
@@ -58,8 +64,8 @@ private:
 	int aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
 
-	int dynamic_programming();
-	int dynamic_programming(int source, int target, aster_dp_table& table);
+	int divide_conquer();
+	int divide_conquer(int source, int target, aster_result& table);
 	
 	int get_transcripts();
 	int make_stats();
