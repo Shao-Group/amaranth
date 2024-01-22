@@ -76,25 +76,51 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	return -1;
 }
 
-/* examine if dnc unitig between s to t; if true, populate res */
-bool aster::divide_conquer_unitig(int s, int t, aster_result& res)
+bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 {
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
 	if(gr.out_degree(s) > 1 || gr.in_degree(t) > 1) return false;
+	vector<int> unitig;
+	int    ss    = s;
+	bool   _avg_ = false;        // average if true, geom mean if false
+	double w     = _avg_? 0: 1;
+	int    c     = 0;
+	while(true)
+	{
+		unitig.push_back(ss);
+		assert(s <= t);
+		if (ss == t) break;
+		if (gr.out_degree(ss) > 1) return false;
+		edge_descriptor e = (*gr.out_edges(ss).first);
+		if(_avg_) w += gr.get_edge_weight(e);
+		else w  *= gr.get_edge_weight(e);
+		c  += 1;
+		ss  = e->target();
+	}
+	if(_avg_) w = w / double(c);
+	else 	  w = pow(w, 1.0/c);
+	res.subpaths.push_back(path(unitig, w));
+	res.dist = 0;
+	return true;
 
+	/*
 	int n = gr.compute_num_paths(s, t, 2);
 	assert(n >= 1);
-	if(n > 1) return false;
-
+	if(n > 1) return false;	
+	vector<edge_descriptor> edgePath;
+	double abd = gr.compute_maximum_st_path_w(edgePath, s, t);
+	assert(edgePath.size() > 0);
 	vector<int> vertexPath;
-	gr.compute_shortest_path(s, t, vertexPath);
-	assert(vertexPath.size() > 0);
-	double abd = 0;															//TODO
+	edge_path_to_vertex_path(edgePath, vertexPath);
 	res.subpaths.push_back(path(vertexPath, abd));
 	res.dist = 0;
-	
+	*/
 	return true;
 }
 
