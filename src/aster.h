@@ -21,15 +21,18 @@ typedef pair<PEE, int> PPEEI;
 typedef map<PEE, int> MPEEI;
 typedef pair<int, int> PI;
 typedef map<int, int> MI;
+typedef vector<int> VI;
+enum class comb_strat {GREEDY_MIN, GREEDY_MAX};
 // typedef vector<path> aster_dp_dot;
 // typedef vector<aster_dp_dot> aster_dp_row;
 // typedef vector<aster_dp_row> aster_dp_table; 
 
 struct aster_result
 {
-	vector<path> subpaths;
+	vector<path> subpaths;	// predicted paths, original v index, inclusive
 	int dist = -1;
 };
+
 
 /* aster class performs the preparation and revise work */
 class aster
@@ -48,18 +51,21 @@ private:
 	inline static int num_exon = 0;
 	inline static int num_intersecting_intron_count = 0;
 	inline static int num_intersecting_intron_pair = 0;
+	const splice_graph& origr;		// original splice graph
+	splice_graph gr;					// splice graph with modification
+	hyper_set hs;						// hyper edges
+	MEI e2i;							// edge map, from edge to index, sorted by position
+	VE i2e;								// edge map, from index to edge, sorted	by position
+	VI tp2v;							// DFS-based topologically sorted index to vertex index. This guarantees all disjoint subgraphs are gathered together
 
 public:
-	splice_graph gr;					// splice graph
-	hyper_set hs;						// hyper edges
-	MEI e2i;							// edge map, from edge to index, sorted
-	VE i2e;								// edge map, from index to edge, sorted
-	vector<path> paths;					// predicted paths
-    vector<transcript> trsts;			// predicted transcripts
+	vector<path> paths;					// predicted paths, original v index, inclusive
+    vector<transcript> trsts;			// predicted transcripts, original v index
 	vector<transcript> non_full_trsts;		// predicted non full length transcripts
 
 private: 
 	int topological_sort_vertices();
+	int topological_sort_vertices_visit(int i, vector<bool>& visited);
 	int topological_sort_index_edges();
 	int aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
@@ -68,9 +74,16 @@ private:
 	int divide_conquer(int source, int target, aster_result& res);
 	bool divide_conquer_single_vertex(int source, int target, aster_result& res);
 	bool divide_conquer_unitig(int source, int target, aster_result& res);
-	bool divide_conquer_disjoint(int source, int target, aster_result& res);
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
+	bool divide_conquer_disjoint_subgraphs(int source, int target, aster_result& res);
+	bool divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res);
+	int  divide_conquer_find_pivot(int source, int target);
+	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, aster_result& comb, comb_strat st);
 	
+	int event_size_penalty(int eventSize);
+	int path_distance(const path& p1, const path& p2);
+	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath);
+
 	int get_transcripts();
 	int make_stats();
 };
