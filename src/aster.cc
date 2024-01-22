@@ -163,6 +163,37 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 	res.subpaths.insert(res.subpaths.begin(), res2.subpaths.begin(), res2.subpaths.end());
 	return true;
 }
+
+/* check if the graph can be divided to two disjoint graphs at a pivot k
+** divide and conquer the problem to dnc[s, k], dnc [k, t]
+** not disjoint: (s,t) edge exists, or multiple subgraphs can be found
+*/
+bool aster::divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res, comb_strat st)
+{
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+	assert(s < t - 1);
+	assert(source < target - 1);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
+	if(gr.edge_exists(s,t)) return false;
+	
+	int pivot = divide_conquer_find_pivot(source, target);
+	assert(pivot > source);
+	assert(pivot < target);
+
+	aster_result res1;
+	divide_conquer(source, pivot, res1);
+	assert(res1.subpaths.size() > 0);
+	aster_result res2;
+	divide_conquer(pivot, target, res2);
+	assert(res2.subpaths.size() > 0);
+
+	divide_conquer_combine(res1, res2, res, st);
+	
+	return true;
+}
 int aster::divide_conquer_find_pivot(int source, int target)
 {
 	assert(source < target - 1);
