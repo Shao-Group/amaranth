@@ -366,6 +366,7 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--assemble_duplicates")
 		{
 			assemble_duplicates = atoi(argv[i + 1]);
+			assert(assemble_duplicates == 1 && "assemble_duplicates is not supported yet");
 			i++;
 		}
 		else if(string(argv[i]) == "--batch_bundle_size")
