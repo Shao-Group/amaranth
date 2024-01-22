@@ -146,21 +146,15 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 	assert(res2.subpaths.size() > 0);
 
 	//TODO: assert res1 res2 subpaths are completely disjoint except s/t
-	int shortestPathSize1 = res1.subpaths.front().v.size();
-	for(const path& p: res1.subpaths) 
-	{
-		if(p.v.size() < shortestPathSize1) shortestPathSize1 = p.v.size();
-	}
-	int shortestPathSize2 = res2.subpaths.front().v.size();
-	for(const path& p: res2.subpaths) 
-	{
-		if(p.v.size() < shortestPathSize2) shortestPathSize2 = p.v.size();
-	}
+
+	int shortestPathSize1 = find_shortest_path(res1);
+	int shortestPathSize2 = find_shortest_path(res2);
 	assert(shortestPathSize1 - 2 >= 1);
 	assert(shortestPathSize2 - 2 >= 1);
 	int eventSize = shortestPathSize1 - 2 + shortestPathSize2 - 2;
 	assert(eventSize >= 1);
-	res.dist += event_size_penalty(eventSize);
+	res.dist = event_size_penalty(eventSize) + res1.dist + res2.dist;
+	res.subpaths.clear();
 	res.subpaths.insert(res.subpaths.begin(), res1.subpaths.begin(), res1.subpaths.end());
 	res.subpaths.insert(res.subpaths.begin(), res2.subpaths.begin(), res2.subpaths.end());
 	return true;
