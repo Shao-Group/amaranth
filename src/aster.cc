@@ -22,6 +22,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	topological_sort_vertices();
 	topological_sort_index_edges();
 
+	if(asterMode == aster_mode::STAT_ONLY) print_stats();
 	assemble();
 	get_transcripts();	
 }
