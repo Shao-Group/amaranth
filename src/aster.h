@@ -51,7 +51,7 @@ private:
 	inline static int num_exon = 0;
 	inline static int num_intersecting_intron_count = 0;
 	inline static int num_intersecting_intron_pair = 0;
-	const splice_graph& origr;		// original splice graph
+	inline static vector<int> dnc_counter = vector<int>(5, 0);
 
 	const splice_graph& origr;			// original splice graph
 	splice_graph gr;					// splice graph with modification
@@ -79,13 +79,15 @@ private:
 	bool divide_conquer_unitig(int source, int target, aster_result& res);
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
 	bool divide_conquer_disjoint_subgraphs(int source, int target, aster_result& res);
-	bool divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res);
+	bool divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_find_pivot(int source, int target);
-	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, aster_result& comb, comb_strat st);
+	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
 	
 	int event_size_penalty(int eventSize);
 	int path_distance(const path& p1, const path& p2);
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath);
+	int find_longest_path(const aster_result& res);
+	int find_shortest_path(const aster_result& res);
 
 	int get_transcripts();
 	int make_stats();
