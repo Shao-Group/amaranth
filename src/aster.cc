@@ -245,6 +245,7 @@ int aster::topological_sort_vertices()
 	reverse(tp2v.begin(), tp2v.end());
 
 	// assertions
+	// assertions topo sorted
 	for(int i = 0; i < gr.num_vertices(); i++)	
 	{
 		if(i >= 1) assert(gr.get_vertex_info(i - 1).rpos <= gr.get_vertex_info(i).lpos);
@@ -263,6 +264,20 @@ int aster::topological_sort_vertices()
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->source()).rpos);
 		}
 	}
+	// assertions disjoint sorted
+	for(int i = 0; i < gr.num_vertices() - 1; i++)	
+	{
+		bool previouslyIsDisjoint = false;
+		for(int j = i + 1; j < gr.num_vertices(); j++)
+		{
+			int ss = tp2v[i];
+			int tt = tp2v[j];
+			bool hasEdge = gr.edge_exists(ss, tt);
+			if(previouslyIsDisjoint) assert(! hasEdge);
+			if(!hasEdge) previouslyIsDisjoint = true;
+		}
+	}
+
 	assert(tp2v.front() == 0);
 	assert(tp2v.back() == gr.num_vertices() - 1);
 	assert(tp2v.size() == gr.num_vertices());
