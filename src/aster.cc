@@ -99,11 +99,17 @@ bool aster::divide_conquer_unitig(int s, int t, aster_result& res)
 }
 
 /* examine if dnc single vertex; if true, populate res */
-bool aster::divide_conquer_single_vertex(int s, int t, aster_result& res)
+bool aster::divide_conquer_single_vertex(int source, int target, aster_result& res)
 {
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s <= t);
 	if(s != t) return false;
-	res.subpaths.push_back({}); 
+	assert(source == target);
+	double abd = gr.get_vertex_weight(s);
+	res.subpaths.push_back(path({s}, abd)); 
 	res.dist = 0;
 	return true;
 }
