@@ -82,7 +82,8 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	int s = tp2v[source];
 	int t = tp2v[target];
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
-	assert(s < t);
+	assert(s < t - 1);
+	assert(source < target - 1);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
 	if(! gr.edge_exists(s,t)) return false;
