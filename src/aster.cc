@@ -305,16 +305,18 @@ int aster::divide_conquer_find_pivot(int source, int target)
 	int s = tp2v[source];
 	int t = tp2v[target];
 	PEEI peei = gr.out_edges(s);
-	int edgeIndex = -1;
+	int k = -1;
 	for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 	{
 		edge_descriptor e = *it1;
 		assert(e != null_edge);
-		int i = e2i[e];
-		if(i > edgeIndex) edgeIndex = i;
+		int tt = e->target();
+		assert(tt > s);
+		if(tt >= t) continue;
+		if(tt > k) k = tt;
 	}
-	assert(edgeIndex >= 0);
-	int k = i2e.at(edgeIndex)->target();
+	assert(k >= 0);
+
 	int pivot = v2tp.at(k);
 	assert(pivot > source);
 	assert(pivot < target);
