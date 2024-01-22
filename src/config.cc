@@ -64,7 +64,8 @@ int32_t min_subregion_max = 3;
 double min_subregion_ave = 1.5;
 
 // for aster
-bool aster_stats = false;
+aster_mode asterMode = aster_mode::MIN_DIST;
+
 
 // for revising/decomposing splice graph
 double min_guaranteed_edge_weight = 0.01;
@@ -328,9 +329,11 @@ int parse_arguments(int argc, const char ** argv)
 			min_router_count = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--aster_stats")
+		else if(string(argv[i]) == "--asterMode")
 		{
-			aster_stats = true;
+			//FIXME:
+			throw runtime_error("asterMode config not done yet");
+			i++;
 		}
 		else if(string(argv[i]) == "--library_type")
 		{
@@ -414,6 +417,10 @@ int parse_arguments(int argc, const char ** argv)
 		{
 			insertsize_high = atof(argv[i + 1]);
 			i++;
+		}
+		else
+		{
+			throw runtime_error("Unknown argument is provided: " + string(argv[i]));
 		}
 	}
 
