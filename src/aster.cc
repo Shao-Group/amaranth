@@ -109,12 +109,23 @@ bool aster::divide_conquer_single_vertex(int s, int t, aster_result& res)
 }
 
 /*
-* sort vertices according to pair<lpos, rpos>
+* DFS based topological sort 
+* This guarantees all disjoint subgraphs are gathered together
 * assuming no two vertices have the same <lpos, rpos>
 */
 int aster::topological_sort_vertices()
 {
 	assert(gr.num_vertices() >= 2);
+	tp2v.clear();
+
+	vector<bool> visited(gr.num_vertices(), false);
+	for(int i = 0; i < gr.num_vertices(); i++)	
+	{
+		topological_sort_vertices_visit(i, visited);
+	}
+	reverse(tp2v.begin(), tp2v.end());
+
+	// assertions
 	for(int i = 0; i < gr.num_vertices(); i++)	
 	{
 		if(i >= 1) assert(gr.get_vertex_info(i - 1).rpos <= gr.get_vertex_info(i).lpos);
@@ -133,11 +144,37 @@ int aster::topological_sort_vertices()
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->source()).rpos);
 		}
 	}
+	assert(tp2v.front() == 0);
+	assert(tp2v.back() == gr.num_vertices() - 1);
+	assert(tp2v.size() == gr.num_vertices());
 	return 0;
 }
 
-/*
-* For future compatibility, edges should be sorted & fetched independent of splice_graph implementation
+/* visit a node i in DFS, push i to tp2v */
+int aster::topological_sort_vertices_visit(int i, vector<bool>& visited)
+{
+	if(visited[i]) return 0;
+	visited[i] = true;
+
+	if(gr.out_degree(i) == 0)
+	{
+		tp2v.push_back(i);
+		return 0;
+	}
+
+	PEEI peei;
+	edge_iterator it1, it2;
+	for(peei = gr.out_edges(i), it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
+	{
+		int j = (*it1)->target();
+		topological_sort_vertices_visit(j , visited);
+	}
+	tp2v.push_back(i);
+	return 0;
+}
+
+/* For future compatibility
+*  edges should be sorted & fetched independent of splice_graph implementation
 */ 
 int aster::topological_sort_index_edges()
 {
@@ -261,6 +298,26 @@ int aster::balance_vertex(int vertexIndex)
 		gr.set_edge_weight(e, w + m2 - m1);
 	}
 
+	return 0;
+}
+
+int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath)
+{
+	if (edgePath.size() == 0) return 0;
+	vertexPath.clear();
+	vertexPath.resize(edgePath.size() + 1);
+	vertexPath[0] = edgePath.front()->source();
+	int i = 1;
+	for(const edge_descriptor& e: edgePath)
+	{
+		int s = e->source();
+		int t = e->target();
+		assert(s == vertexPath[i - 1]);
+		vertexPath[i] = t;
+		i ++;
+	}
+	assert(vertexPath.size() >= 2);
+	assert(origr.valid_path(vertexPath));
 	return 0;
 }
 
