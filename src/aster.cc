@@ -326,10 +326,12 @@ int aster::topological_sort_vertices()
 		}
 	}
 	// assertions disjoint sorted
+	printv(tp2v);
 	cout << endl;
 	for(int i = 0; i < gr.num_vertices() - 2; i++)	
 	{
 		bool previouslyIsDisjoint = false;
+		int ss = tp2v[i];
 		int tt = tp2v[i + 1];
 		bool hasEdge = gr.edge_exists(ss, tt);
 		if(hasEdge) continue;
