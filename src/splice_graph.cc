@@ -1256,11 +1256,11 @@ int splice_graph::output_transcripts1(vector<transcript> &v, vector<transcript> 
 {
         for(int i = 0; i < p.size(); i++)
         {
-                string tid = gid + "." + tostring(i);
-		transcript trst;
-                output_transcript(trst, p[i], tid);
-		if(p[i].nf == 1) v1.push_back(trst);
-		else if(p[i].nf == 0) v.push_back(trst);
+            string tid = gid + "." + tostring(i);
+			transcript trst;
+            output_transcript(trst, p[i], tid);
+			if(p[i].nf == 1) v1.push_back(trst);
+			else if(p[i].nf == 0) v.push_back(trst);
         }
         return 0;
 }
