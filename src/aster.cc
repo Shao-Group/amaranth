@@ -124,6 +124,7 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	assert(! gr.edge_exists(s,t));
 	
+	// examine if disjoint subgraphs; as the graph is DFS topo-sorted
 	int disjointPoint = -1;
 	for(int i = source; i < target; i++)
 	{
@@ -133,6 +134,7 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 		disjointPoint = i;
 		break;
 	}
+	if(disjointPoint == -1) return false;
 
 	aster_result res1;
 	divide_conquer(source, disjointPoint, res1);
