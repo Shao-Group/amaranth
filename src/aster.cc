@@ -163,6 +163,35 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 	res.subpaths.insert(res.subpaths.begin(), res2.subpaths.begin(), res2.subpaths.end());
 	return true;
 }
+int aster::divide_conquer_find_pivot(int source, int target)
+{
+	assert(source < target - 1);
+	int s = tp2v[source];
+	int t = tp2v[target];
+	PEEI peei = gr.out_edges(s);
+	int edgeIndex = -1;
+	for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
+	{
+		edge_descriptor e = *it1;
+		assert(e != null_edge);
+		int i = e2i[e];
+		if(i > edgeIndex) edgeIndex = i;
+	}
+	assert(edgeIndex >= 0);
+	int k = i2e.at(edgeIndex)->target();
+	int pivot = v2tp.at(k);
+	assert(pivot > source);
+	assert(pivot < target);
+
+	//assertion
+	splice_graph gr2(gr);
+	gr2.clear_vertex(k);
+	assert(! gr2.check_path(s, t));
+
+	return pivot;
+}
+
+/* examine if dnc unitig between source to target; if true, populate res */
 bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
