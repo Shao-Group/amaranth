@@ -190,10 +190,72 @@ bool aster::divide_conquer_disjoint_at_pivot(int source, int target, aster_resul
 	divide_conquer(pivot, target, res2);
 	assert(res2.subpaths.size() > 0);
 
-	divide_conquer_combine(res1, res2, res, st);
+	divide_conquer_combine(res1, res2, pivot, res, st);
 	
 	return true;
 }
+
+/*  combines subpaths of left and right sides of pivot k */
+int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st)
+{
+	int k = tp2v[pivot];
+	assert(res1.subpaths.size() > 0);
+	assert(res2.subpaths.size() > 0);
+	for(const path& p: res1.subpaths)	
+	{
+		assert(p.v.size() >= 1); 
+		assert(p.v.back() == k);
+	}
+	for(const path& p: res2.subpaths)	
+	{
+		assert(p.v.size() >= 1); 
+		assert(p.v.front() == k);
+	}
+
+	int index1 = find_shortest_path(res1);
+	int index2 = find_shortest_path(res2);
+	assert(index1 >= 0);
+	assert(index2 >= 0);
+	assert(index1 < res1.subpaths.size());
+	assert(index2 < res2.subpaths.size());
+	
+	comb.subpaths.clear();
+	comb.dist = -1;	
+	const path& rAnchor = res1.subpaths[index2];
+	for(int i = 0; i < res1.subpaths.size(); i++)	
+	{
+		if(i == index1) continue;
+		const path& p = res1.subpaths[i];
+		double abd = p.abd < rAnchor.abd? p.abd: rAnchor.abd;
+		vector<int> v;
+		v.insert(v.end(), p.v.begin(), p.v.end());
+		v.insert(v.end(), next(rAnchor.v.begin()), rAnchor.v.end());
+		assert(origr.valid_path(v));
+		comb.subpaths.push_back(path(v, abd));
+	}
+	const path& lAnchor = res1.subpaths[index2];
+	for(int i = 0; i < res2.subpaths.size(); i++)	
+	{
+		if(i == index2) continue;
+		const path& p = res2.subpaths[i];
+		double abd = p.abd < lAnchor.abd? p.abd: lAnchor.abd;
+		vector<int> v;
+		v.insert(v.end(), lAnchor.v.begin(), lAnchor.v.end());
+		v.insert(v.end(), next(p.v.begin()), p.v.end());
+		assert(origr.valid_path(v));
+		comb.subpaths.push_back(path(v, abd));
+	}
+	double abd = lAnchor.abd < rAnchor.abd? lAnchor.abd: rAnchor.abd;
+	vector<int> v;
+	v.insert(v.end(), lAnchor.v.begin(), lAnchor.v.end());
+	v.insert(v.end(), next(rAnchor.v.begin()), rAnchor.v.end());
+	assert(origr.valid_path(v));
+	comb.subpaths.push_back(path(v, abd));
+
+	assert(comb.subpaths.size() >= res1.subpaths.size() + res2.subpaths.size() - 1);
+	return 0;
+}
+
 int aster::divide_conquer_find_pivot(int source, int target)
 {
 	assert(source < target - 1);
