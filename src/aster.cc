@@ -111,6 +111,55 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	res.dist += event_size_penalty(eventSize);
 	return true;
 }	
+
+bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_result& res)
+{
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+	assert(s < t - 1);
+	assert(source < target - 1);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
+	assert(! gr.edge_exists(s,t));
+	
+	int disjointPoint = -1;
+	for(int i = source; i < target; i++)
+	{
+		int ss = tp2v[i];
+		int tt = tp2v[i + 1];
+		if(gr.edge_exists(ss, tt)) continue;
+		disjointPoint = i;
+		break;
+	}
+
+	aster_result res1;
+	divide_conquer(source, disjointPoint, res1);
+	assert(res1.subpaths.size() > 0);
+	aster_result res2;
+	divide_conquer(disjointPoint + 1, target, res2);
+	assert(res2.subpaths.size() > 0);
+
+	//TODO: assert res1 res2 subpaths are completely disjoint except s/t
+	int shortestPathSize1 = res1.subpaths.front().v.size();
+	for(const path& p: res1.subpaths) 
+	{
+		if(p.v.size() < shortestPathSize1) shortestPathSize1 = p.v.size();
+	}
+	int shortestPathSize2 = res2.subpaths.front().v.size();
+	for(const path& p: res2.subpaths) 
+	{
+		if(p.v.size() < shortestPathSize2) shortestPathSize2 = p.v.size();
+	}
+	assert(shortestPathSize1 - 2 >= 1);
+	assert(shortestPathSize2 - 2 >= 1);
+	int eventSize = shortestPathSize1 - 2 + shortestPathSize2 - 2;
+	assert(eventSize >= 1);
+	res.dist += event_size_penalty(eventSize);
+	res.subpaths.insert(res.subpaths.begin(), res1.subpaths.begin(), res1.subpaths.end());
+	res.subpaths.insert(res.subpaths.begin(), res2.subpaths.begin(), res2.subpaths.end());
+	return true;
+}
 bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
