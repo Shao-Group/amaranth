@@ -28,7 +28,6 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 
 int aster::assemble()
 {	
-
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_edges() == 2) return 0;
 	assert(gr.num_vertices() > 2);
@@ -99,7 +98,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 
 	divide_conquer(source, target, res);
 
-	// put back abutting subpath
+	// push back abutting subpath
 	int shortestPathSize = res.subpaths.front().v.size();
 	for(const path& p: res.subpaths) 
 	{
