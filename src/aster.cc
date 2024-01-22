@@ -31,7 +31,7 @@ int aster::assemble()
 {	
 	if(asterMode == aster_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
-	if(gr.num_edges() == 2) return 0;
+	if(gr.num_vertices() == 2) return 0;
 	assert(gr.num_vertices() > 2);
 	//CLEAN: balance?
 	if (true)
