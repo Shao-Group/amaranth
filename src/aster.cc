@@ -676,6 +676,8 @@ int aster::find_shortest_path(const aster_result& res)
 int aster::get_transcripts()
 {
 	if(asterMode == aster_mode::STAT_ONLY) return 0;
+	if(gr.num_edges() == 0) return 0;
+	if(gr.num_vertices() == 2) return 0;
 	assert(paths.size() > 0);
 	trsts.clear();	
 	non_full_trsts.clear();
