@@ -243,6 +243,8 @@ int aster::topological_sort_vertices()
 		topological_sort_vertices_visit(i, visited);
 	}
 	reverse(tp2v.begin(), tp2v.end());
+	v2tp.resize(tp2v.size());
+	for(int i = 0; i < tp2v.size(); i++) v2tp[tp2v[i]] = i;
 
 	// assertions topo sorted
 	for(int i = 0; i < gr.num_vertices(); i++)	
@@ -264,16 +266,21 @@ int aster::topological_sort_vertices()
 		}
 	}
 	// assertions disjoint sorted
-	for(int i = 0; i < gr.num_vertices() - 1; i++)	
+	cout << endl;
+	for(int i = 0; i < gr.num_vertices() - 2; i++)	
 	{
 		bool previouslyIsDisjoint = false;
-		for(int j = i + 1; j < gr.num_vertices(); j++)
+		int tt = tp2v[i + 1];
+		bool hasEdge = gr.edge_exists(ss, tt);
+		if(hasEdge) continue;
+		previouslyIsDisjoint = true;
+
+		for(int j = i + 2; j < gr.num_vertices() - 1; j++)
 		{
-			int ss = tp2v[i];
 			int tt = tp2v[j];
+			cout << ss << " " << tt << endl;
 			bool hasEdge = gr.edge_exists(ss, tt);
 			if(previouslyIsDisjoint) assert(! hasEdge);
-			if(!hasEdge) previouslyIsDisjoint = true;
 		}
 	}
 
@@ -306,7 +313,7 @@ int aster::topological_sort_vertices_visit(int i, vector<bool>& visited)
 	return 0;
 }
 
-/* For future compatibility
+/* Edges are sorted by their <source, target> represented by tp2v
 *  edges should be sorted & fetched independent of splice_graph implementation
 */ 
 int aster::topological_sort_index_edges()
@@ -316,7 +323,7 @@ int aster::topological_sort_index_edges()
 	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
 	{
 		edge_descriptor e = *it1;
-		sortedEdges.insert({{e->source(), e->target()}, e});	
+		sortedEdges.insert({{v2tp[e->source()], v2tp[e->target()]}, e});	
 	}
 	for(auto it = next(sortedEdges.begin()); it != sortedEdges.end(); it++) 
 	{
@@ -363,6 +370,7 @@ int aster::aggressive_purge_intersecting_edges()
 		}
 	}
 	gr.refine_splice_graph();
+	assert(gr.check_nested());
 	return 0;
 }
 
