@@ -67,11 +67,31 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 
 	comb_strat st = comb_strat::GREEDY_MIN; //TODO: which is better
 
-	if (divide_conquer_single_vertex(source, target, res))			return 0;
-	if (divide_conquer_unitig(source, target, res))					return 0;
-	if (divide_conquer_abutting(source, target, res))				return 0;
-	if (divide_conquer_disjoint_subgraphs(source, target, res)) 	return 0;
-	if (divide_conquer_disjoint_at_pivot(source, target, res, st))		return 0;
+	if (divide_conquer_single_vertex(source, target, res))			
+	{
+		dnc_counter[0]++; 
+		return 0;
+	}
+	if (divide_conquer_unitig(source, target, res))					
+	{
+		dnc_counter[1]++;
+		return 0;
+	}
+	if (divide_conquer_abutting(source, target, res))				
+	{
+		dnc_counter[2]++;
+		return 0;
+	}
+	if (divide_conquer_disjoint_subgraphs(source, target, res)) 	
+	{
+		dnc_counter[3]++;
+		return 0;
+	}
+	if (divide_conquer_disjoint_at_pivot(source, target, res, st))		
+	{
+		dnc_counter[4] ++;
+		return 0;
+	}
 	
 	assert(0);
 	return -1;
@@ -679,6 +699,9 @@ int aster::print_stats()
 	cout << "\t num_exon " << num_exon  << endl; 
 	cout << "\t num_intersecting_intron_count " << num_intersecting_intron_count << endl;
 	cout << "\t num_intersecting_intron_pair " << num_intersecting_intron_pair << endl;
+	cout << "\t D&C counter: ";
+	printv(dnc_counter);
+	cout << endl;
 	cout << "aster printed stats" << endl;
 	return 0;
 }
@@ -698,6 +721,7 @@ int aster::event_size_penalty(int eventSize)
 */
 int aster::path_distance(const path& p1, const path& p2)
 {
+	throw runtime_error("aster::path_distancen not implemented yet");
 	const vector<int>& v1 = p1.v; 
 	const vector<int>& v2 = p2.v;
 	assert(v1.size() > 0);
