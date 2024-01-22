@@ -76,6 +76,42 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	return -1;
 }
 
+/* remove abutting edge, then call divide_conquer(source, target, res) again */
+bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
+{	
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+	assert(s < t);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
+
+	if(! gr.edge_exists(s,t)) return false;
+
+	// remove abutting edge
+	edge_descriptor e = gr.edge(s, t).first;
+	assert(e != null_edge);
+	double w = gr.get_edge_weight(e);
+	i2e[e2i.at(e)] = null_edge;
+	e2i.erase(e);
+	gr.remove_edge(e);
+	assert(gr.check_path(s, t));
+
+	divide_conquer(source, target, res);
+
+	// put back abutting subpath
+	int shortestPathSize = res.subpaths.front().v.size();
+	for(const path& p: res.subpaths) 
+	{
+		if(p.v.size() < shortestPathSize) shortestPathSize = p.v.size();
+	}
+	int eventSize = shortestPathSize - 2;
+	assert(eventSize >= 1);
+	path p({s, t}, w);
+	res.subpaths.push_back(p);
+	res.dist += event_size_penalty(eventSize);
+	return true;
+}	
 bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
