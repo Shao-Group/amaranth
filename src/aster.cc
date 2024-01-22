@@ -522,6 +522,44 @@ int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath)
 	return 0;
 }
 
+// return index of longest path in res.subpaths
+int aster::find_longest_path(const aster_result& res)
+{
+	int longestPathIndex = -1;
+	int longestPathSize = -1;
+	if (res.subpaths.size() == 0) return longestPathIndex;
+
+	longestPathIndex = 0;
+	longestPathSize = res.subpaths.front().v.size();
+	for(int i = 0; i < res.subpaths.size(); i++) 
+	{
+		const path& p = res.subpaths[i];
+		if(p.v.size() <= longestPathSize) continue;
+		longestPathSize = p.v.size();
+		longestPathIndex = i;
+	}
+	return longestPathIndex;
+}
+
+// return index of shortest path in res.subpaths
+int aster::find_shortest_path(const aster_result& res)
+{
+	int shortestPathIndex = -1;
+	int shortestPathSize = -1;
+	if (res.subpaths.size() == 0) return shortestPathIndex;
+
+	shortestPathIndex = 0;
+	shortestPathSize = res.subpaths.front().v.size();
+	for(int i = 0; i < res.subpaths.size(); i++) 
+	{
+		const path& p = res.subpaths[i];
+		if(p.v.size() >= shortestPathSize) continue;
+		shortestPathSize = p.v.size();
+		shortestPathIndex = i;
+	}
+	return shortestPathIndex;
+}
+
 
 int aster::get_transcripts()
 {
