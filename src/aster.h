@@ -75,39 +75,5 @@ private:
 	int make_stats();
 };
 
-/* astron class executes algorithms under clear assumptions */
-class astron
-{
-public:
-	astron(aster*, const vector<int>& _canons, const vector<int>& _illegal, const vector<int>& _alts = {}, string algo = "dp");
-
-private:
-	aster* as;
-    vector<int> canons;			// canonical events
-	vector<int> illegals;		// illegal events
-    vector<int> alternatives;	// alternative events
-	string aster_algo;
-
-public:
-	int dist;
-	vector<path> paths;
-
-private:
-	int classify();
-	int dynamic_programming();												// algo dp	//TODO:
-	int divide_and_conquer();												// algo dnc //TODO:
-	int dnc_combine(const vector<path> subpaths, int eventOfConcern);		// algo dnc //TODO:
-	int heuristic();														// algo heuristic	//TODO:
-	bool heuristic_search(vector<vector<int>>& ppNodes, int maxDist);
-	bool heuristic_search(vector<edge_descriptor>& edges, int maxDist);
-	int greedy();
-	bool greedy_longest_path();
-	bool greedy_edit_path(int maxDist);
-
-	int collect_trivial_path();
-	int event_size_penalty(int eventSize);
-	int closest_path(vector<int> nodes, int maxDist);						// find closest path not exceeding max penalty
-	int path_distance(const vector<int>& v1, const vector<int>& v2);
-};
 
 #endif
