@@ -10,7 +10,7 @@ See LICENSE for licensing.
 #include "basic_algo.h"
 
 aster::aster(const splice_graph &g, const hyper_set &h)
-	: gr(g), hs(h)
+	: origr(g), gr(g), hs(h)
 {
 	// prepare
     topological_sort_vertices();
