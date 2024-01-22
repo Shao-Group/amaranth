@@ -47,29 +47,30 @@ int aster::assemble()
 int aster::divide_conquer()
 {
 	assert(gr.num_vertices() > 2);
-	int s = 0;
-	int t = gr.num_vertices() - 1;
+	assert(tp2v.size() == gr.num_vertices());
+	int s = 0;									// tp2v index
+	int t = gr.num_vertices() - 1;				// tp2v index
 	aster_result res;
 	divide_conquer(s, t, res);
 	paths = res.subpaths;
 	assert(paths.size() > 0);
-	for(const path & p : paths)	assert(gr.valid_path(p.v));
+	for(const path & p : paths)	assert(origr.valid_path(p.v));
 	return 0;
 }
 
 // divide_conquer(i ,j) solves a subproblem between 
+// i, j are tp2v indices
 int aster::divide_conquer(int source, int target, aster_result& res)
 {
 	assert(source <= target);
-	int s = source;
-	int t = target;
 	assert(res.subpaths.size() == 0);
 	assert(res.dist == -1);
 
-	if (divide_conquer_single_vertex(s, t, res))      return 0;
-	if (divide_conquer_unitig(s, t, res))             return 0;
-	if (divide_conquer_disjoint(s, t, res))     	  return 0;
-	if (divide_conquer_abutting(s, t, res))			  return 0;
+	if (divide_conquer_single_vertex(source, target, res))			return 0;
+	if (divide_conquer_unitig(source, target, res))					return 0;
+	if (divide_conquer_abutting(source, target, res))				return 0;
+	if (divide_conquer_disjoint_subgraphs(source, target, res)) 	return 0;
+	if (divide_conquer_disjoint_at_pivot(source, target, res))		return 0;
 	
 	assert(0);
 	return -1;
