@@ -108,7 +108,7 @@ string fixed_gene_name = "";
 int batch_bundle_size = 100;
 int verbose = 1;
 int assemble_duplicates = 1; //TODO:
-string version = "v1.1.2";
+string version = "v0.0.1";
 
 int parse_arguments(int argc, const char ** argv)
 {
@@ -557,7 +557,7 @@ int print_help()
 
 int print_copyright()
 {
-	printf("Aster assembler %s (c) 2024 X. Carl Zang, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
+	printf("Aster assembler %s (c) 2024 Xiaofei Carl Zang, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
 	return 0;
 }
 
