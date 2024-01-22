@@ -176,9 +176,21 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 	aster_result res1;
 	divide_conquer(source, disjointPoint, res1);
 	assert(res1.subpaths.size() > 0);
+	for(path& p: res1.subpaths)
+	{
+		assert(p.v.back() != t);
+		p.v.push_back(t);
+		assert(origr.valid_path(p.v));
+	}
 	aster_result res2;
 	divide_conquer(disjointPoint + 1, target, res2);
 	assert(res2.subpaths.size() > 0);
+	for(path& p: res2.subpaths)
+	{
+		assert(p.v.front() != s);
+		p.v.insert(p.v.begin(), s);
+		assert(origr.valid_path(p.v));
+	}
 
 	//TODO: assert res1 res2 subpaths are completely disjoint except s/t
 
