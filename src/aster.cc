@@ -244,7 +244,6 @@ int aster::topological_sort_vertices()
 	}
 	reverse(tp2v.begin(), tp2v.end());
 
-	// assertions
 	// assertions topo sorted
 	for(int i = 0; i < gr.num_vertices(); i++)	
 	{
