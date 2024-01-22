@@ -116,7 +116,9 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	edge_descriptor e = gr.edge(s, t).first;
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
-	i2e[e2i.at(e)] = null_edge;
+	char strand = gr.get_edge_info(e).strand;
+	int eIdx = e2i.at(e);
+	i2e[eIdx] = null_edge;
 	e2i.erase(e);
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
@@ -134,6 +136,17 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	path p({s, t}, w);
 	res.subpaths.push_back(p);
 	res.dist += event_size_penalty(eventSize);
+
+	// put back abutting edge
+	edge_descriptor e_new = gr.add_edge(s, t);
+	edge_info ei;
+	ei.weight = w;
+	ei.strand = strand;
+	gr.set_edge_info(e_new, ei);
+	gr.set_edge_weight(e_new, w);
+	i2e[eIdx] = e_new;
+	e2i.insert({e_new, eIdx});
+
 	return true;
 }	
 
