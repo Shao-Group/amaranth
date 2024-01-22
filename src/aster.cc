@@ -23,23 +23,24 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	topological_sort_index_edges();
 
 	assemble();
-	get_transcripts();
+	get_transcripts();	
 }
 
 int aster::assemble()
 {	
+	if(asterMode == aster_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_edges() == 2) return 0;
 	assert(gr.num_vertices() > 2);
-
 	//CLEAN: balance?
 	if (true)
 	{
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	}
-
 	divide_conquer();
+
+	if (verbose >= 2)  for(int i = 0; i < paths.size(); i++) paths[i].print(i);
 	return 0;
 }
 
@@ -643,7 +644,13 @@ int aster::find_shortest_path(const aster_result& res)
 
 int aster::get_transcripts()
 {
-	//TODO:
+	if(asterMode == aster_mode::STAT_ONLY) return 0;
+	assert(paths.size() > 0);
+	trsts.clear();	
+	non_full_trsts.clear();
+	origr.output_transcripts1(trsts, non_full_trsts, paths);
+	if (verbose >= 2) cout << "Aster assembled bundle " << gr.gid.c_str() << endl;
+	return 0;
 }
 
 

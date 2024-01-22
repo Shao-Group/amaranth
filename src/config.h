@@ -95,7 +95,8 @@ extern int32_t min_subregion_max;
 extern double min_subregion_ave;
 
 // for aster
-extern bool aster_stats;
+enum class aster_mode {STAT_ONLY, MIN_DIST};
+extern aster_mode asterMode;
 
 // for subsetsum and router
 extern int max_dp_table_size;
