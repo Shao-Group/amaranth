@@ -339,7 +339,10 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
-	if(gr.out_degree(s) > 1 || gr.in_degree(t) > 1) return false;
+	int n = gr.compute_num_paths(s, t, 2);
+	assert(n >= 1);
+	if(n > 1) return false;	
+
 	vector<int> unitig;
 	int    ss    = s;
 	bool   _avg_ = false;        // average if true, geom mean if false
