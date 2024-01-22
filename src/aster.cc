@@ -65,11 +65,13 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	assert(res.subpaths.size() == 0);
 	assert(res.dist == -1);
 
+	comb_strat st = comb_strat::GREEDY_MIN; //TODO: which is better
+
 	if (divide_conquer_single_vertex(source, target, res))			return 0;
 	if (divide_conquer_unitig(source, target, res))					return 0;
 	if (divide_conquer_abutting(source, target, res))				return 0;
 	if (divide_conquer_disjoint_subgraphs(source, target, res)) 	return 0;
-	if (divide_conquer_disjoint_at_pivot(source, target, res))		return 0;
+	if (divide_conquer_disjoint_at_pivot(source, target, res, st))		return 0;
 	
 	assert(0);
 	return -1;
@@ -122,7 +124,7 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 	assert(s < t - 1);
 	assert(source < target - 1);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
-	assert(! gr.edge_exists(s,t));
+	if(gr.edge_exists(s,t)) return false;
 	
 	// examine if disjoint subgraphs; as the graph is DFS topo-sorted
 	int disjointPoint = -1;
