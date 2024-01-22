@@ -238,7 +238,7 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 	
 	comb.subpaths.clear();
 	comb.dist = -1;	
-	const path& rAnchor = res1.subpaths[index2];
+	const path& rAnchor = res2.subpaths[index2];
 	for(int i = 0; i < res1.subpaths.size(); i++)	
 	{
 		if(i == index1) continue;
@@ -250,7 +250,7 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 		assert(origr.valid_path(v));
 		comb.subpaths.push_back(path(v, abd));
 	}
-	const path& lAnchor = res1.subpaths[index2];
+	const path& lAnchor = res1.subpaths[index1];
 	for(int i = 0; i < res2.subpaths.size(); i++)	
 	{
 		if(i == index2) continue;
