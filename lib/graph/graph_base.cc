@@ -114,6 +114,12 @@ PEB graph_base::edge(int s, int t)
 	return PEB(null_edge, false);
 }
 
+bool graph_base::edge(edge_descriptor e) 
+{
+	if(se.find(e) != se.end())	return true;
+	return false;
+}
+
 vector<edge_descriptor> graph_base::edges(int s, int t)
 {
 	vector<edge_descriptor> v;

@@ -56,6 +56,7 @@ public:
 	virtual int degree(int v) const;
 	virtual bool edge_exists(int s, int t) const;
 	virtual PEB edge(int s, int t);
+	virtual bool edge(edge_descriptor e);
 	virtual PEEI edges() const;
 	virtual bool valid_path(vector<int> path) const;
 	virtual vector<edge_descriptor> edges(int x, int y);
