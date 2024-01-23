@@ -50,6 +50,7 @@ int aster::assemble()
 
 int aster::divide_conquer()
 {
+	if(verbose >= 3) gr.graphviz(gr.gid + ".dot", tp2v_to_string()); //CLEAN:
 	assert(gr.num_vertices() > 2);
 	assert(tp2v.size() == gr.num_vertices());
 	int s = 0;									// tp2v index
@@ -123,6 +124,14 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 
 	if(! gr.edge_exists(s,t)) return false;
 
+
+	if(verbose >= 2) 
+	{
+		string msg = "aster D&C with a direct abutting edge between vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		cout << msg << endl;
+	}
+
 	// remove abutting edge
 	edge_descriptor e = gr.edge(s, t).first;
 	assert(e != null_edge);
@@ -184,6 +193,23 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 	}
 	if(disjointPoint == -1) return false;
 
+	if(verbose >= 2) 
+	{
+		string msg = "aster D&C with nested subgraphs, vertex [" + to_string(s) + "," + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		cout << msg << endl;
+	}
+
+	for(int i = source + 1; i <= disjointPoint; i++)
+	{
+		for(int j = disjointPoint + 1; j <= target - 1; j++)
+		{
+			bool b = gr.check_path(tp2v[i], tp2v[j]);
+			if (b) cout << "nested subgraph wrong " << i << " " << tp2v[i] << " " << j << " " << tp2v[j]  << endl;
+			assert(!b);
+		}
+	}
+
 	aster_result res1;
 	divide_conquer(source, disjointPoint, res1);
 	assert(res1.subpaths.size() > 0);
@@ -233,6 +259,13 @@ bool aster::divide_conquer_disjoint_at_pivot(int source, int target, aster_resul
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	
+	if(verbose >= 2)
+	{
+		string msg = "aster D&C with disjoint graphs at pivot, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		cout << msg << endl;
+	}
+
 	int pivot = divide_conquer_find_pivot(source, target);
 	assert(pivot > source);
 	assert(pivot < target);
@@ -329,6 +362,12 @@ int aster::divide_conquer_find_pivot(int source, int target)
 	assert(k >= 0);
 
 	int pivot = v2tp.at(k);
+	if(verbose >= 2) 
+	{
+		string msg = "\t inside ["+ to_string(s) + ", " + to_string(t) + "], " + " pivot = " + to_string(tp2v[pivot]);
+		msg += " (topoIndex = " + to_string(pivot) + ")";
+		cout << msg << endl;
+	}
 	assert(pivot > source);
 	assert(pivot < target);
 
@@ -371,6 +410,17 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 		c  += 1;
 		ss  = e->target();
 	}
+
+	if(verbose >= 2) 
+	{
+		string msg = "aster D&C with unitig subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		cout << msg << endl;
+		cout << "\t unitig path is: ";
+		printv(unitig);
+		cout << endl;
+	}
+
 	if(_avg_) w = w / double(c);
 	else 	  w = pow(w, 1.0/c);
 	res.subpaths.push_back(path(unitig, w));
@@ -392,7 +442,9 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	return true;
 }
 
-/* examine if dnc single vertex; if true, populate res */
+/* WON'T USE. CASE TAKEN BY divide_conquer_unitig
+* examine if dnc single vertex; if true, populate res 
+*/
 bool aster::divide_conquer_single_vertex(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
@@ -402,6 +454,17 @@ bool aster::divide_conquer_single_vertex(int source, int target, aster_result& r
 	assert(s <= t);
 	if(s != t) return false;
 	assert(source == target);
+	
+	if(verbose >= 2) 
+	{
+		string msg = "aster D&C with single-vertex subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		cout << msg << endl;
+	}
+
+	res.subpaths.clear();
+	res.dist = -1;
+	if(gr.degree(s) == 0)  return true;
 	double abd = gr.get_vertex_weight(s);
 	res.subpaths.push_back(path({s}, abd)); 
 	res.dist = 0;
@@ -466,10 +529,10 @@ int aster::topological_sort_vertices()
 			if(previouslyIsDisjoint) assert(! hasEdge);
 		}
 	}
-
 	assert(tp2v.front() == 0);
 	assert(tp2v.back() == gr.num_vertices() - 1);
 	assert(tp2v.size() == gr.num_vertices());
+	
 	return 0;
 }
 
@@ -751,7 +814,7 @@ int aster::make_stats()
 	if(intersecting) num_intersecting_graph ++;
 	if(!gr.check_nested()) num_intersecting_graph2 ++;
 
-	if(num_graph % 100 == 0)	print_stats();
+	if(verbose >= 3 && num_graph % 100 == 0)	print_stats();
 	return 0;
 }
 
@@ -766,12 +829,27 @@ int aster::print_stats()
 	cout << "\t num_intersecting_intron_count " << num_intersecting_intron_count << endl;
 	cout << "\t num_intersecting_intron_pair " << num_intersecting_intron_pair << endl;
 	cout << "\t D&C counter: ";
-	printv(dnc_counter);
+	cout << "\t " << dnc_counter_single;
+	cout << "\t " << dnc_counter_unitig;
+	cout << "\t " << dnc_counter_abutting;
+	cout << "\t " << dnc_counter_nested;
+	cout << "\t " << dnc_counter_disjoint;
 	cout << endl;
 	cout << "aster printed stats" << endl;
 	return 0;
 }
 
+string aster::tp2v_to_string()
+{
+	string tp2vString = gr.gid + " DFS TopoSorted vertex index vector:";
+	for (int i = 0; i < tp2v.size(); i++)
+	{
+		if (i % 10 == 0)  tp2vString += "\n\t[" + to_string(i) + "]:";
+		tp2vString += to_string(tp2v[i]);
+		tp2vString += " ";
+	}
+	return tp2vString;
+}
 
 // exponential penalty guarantees to violate triangle inequality
 int aster::event_size_penalty(int eventSize)
