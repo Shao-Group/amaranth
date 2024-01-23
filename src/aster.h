@@ -51,7 +51,11 @@ private:
 	inline static int num_exon = 0;
 	inline static int num_intersecting_intron_count = 0;
 	inline static int num_intersecting_intron_pair = 0;
-	inline static vector<int> dnc_counter = vector<int>(5, 0);
+	inline static int dnc_counter_single = 0;
+	inline static int dnc_counter_unitig = 0;
+	inline static int dnc_counter_abutting = 0;
+	inline static int dnc_counter_nested = 0;
+	inline static int dnc_counter_disjoint = 0;
 
 	const splice_graph& origr;			// original splice graph
 	splice_graph gr;					// splice graph with modification
@@ -70,7 +74,7 @@ private:
 	int topological_sort_vertices();
 	int topological_sort_vertices_visit(int i, vector<bool>& visited);
 	int topological_sort_index_edges();
-	int aggressive_purge_intersecting_edges();
+	bool aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
 
 	int divide_conquer();
@@ -78,7 +82,7 @@ private:
 	bool divide_conquer_single_vertex(int source, int target, aster_result& res);
 	bool divide_conquer_unitig(int source, int target, aster_result& res);
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
-	bool divide_conquer_disjoint_subgraphs(int source, int target, aster_result& res);
+	bool divide_conquer_nested_subgraphs(int source, int target, aster_result& res);
 	bool divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_find_pivot(int source, int target);
 	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
@@ -88,8 +92,9 @@ private:
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath);
 	int find_longest_path(const aster_result& res);
 	int find_shortest_path(const aster_result& res);
-
 	int get_transcripts();
+	
+	string tp2v_to_string();
 	int make_stats();
 };
 
