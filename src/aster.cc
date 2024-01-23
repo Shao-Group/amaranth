@@ -170,7 +170,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	return true;
 }	
 
-bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_result& res)
+bool aster::divide_conquer_nested_subgraphs(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
 	int s = tp2v[source];
@@ -189,7 +189,6 @@ bool aster::divide_conquer_disjoint_subgraphs(int source, int target, aster_resu
 		int tt = tp2v[i + 1];
 		if(gr.edge_exists(ss, tt)) continue;
 		disjointPoint = i;
-		break;
 	}
 	if(disjointPoint == -1) return false;
 
@@ -509,24 +508,15 @@ int aster::topological_sort_vertices()
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->source()).rpos);
 		}
 	}
-	// assertions disjoint sorted
-	printv(tp2v);
-	cout << endl;
-	for(int i = 0; i < gr.num_vertices() - 2; i++)	
-	{
-		bool previouslyIsDisjoint = false;
-		int ss = tp2v[i];
-		int tt = tp2v[i + 1];
-		bool hasEdge = gr.edge_exists(ss, tt);
-		if(hasEdge) continue;
-		previouslyIsDisjoint = true;
 
-		for(int j = i + 2; j < gr.num_vertices() - 1; j++)
+	// assertions disjoint sorted
+	if(verbose >= 3)	cout << tp2v_to_string() << endl;
+	for(int i = 0; i < gr.num_vertices(); i++)	
+	{
+		for(int j = 0; j < gr.num_vertices(); j++)
 		{
-			int tt = tp2v[j];
-			cout << ss << " " << tt << endl;
-			bool hasEdge = gr.edge_exists(ss, tt);
-			if(previouslyIsDisjoint) assert(! hasEdge);
+			if(j == i) continue;
+			if (gr.check_path(i, j)) assert(v2tp[i] < v2tp[j]);
 		}
 	}
 	assert(tp2v.front() == 0);
