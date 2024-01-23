@@ -16,11 +16,8 @@ aster::aster(const splice_graph &g, const hyper_set &h)
     topological_sort_vertices();
 	topological_sort_index_edges();
 	make_stats();
-	
-	// revise
 	aggressive_purge_intersecting_edges();
-	topological_sort_vertices();
-	topological_sort_index_edges();
+
 
 	if(asterMode == aster_mode::STAT_ONLY) print_stats();
 	assemble();
@@ -32,6 +29,12 @@ int aster::assemble()
 	if(asterMode == aster_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
+	if(gr.num_vertices() > 1000) //FIXME:
+	{
+		cerr << "graph too big to process with D&C " << gr.num_vertices() << endl; 
+		return 0;
+	}
+
 	assert(gr.num_vertices() > 2);
 	//CLEAN: balance?
 	if (true)
@@ -524,8 +527,15 @@ int aster::topological_sort_index_edges()
 /*
 *  aggresively remove intersecting edges, whichever is topilocially smaller
 */
-int aster::aggressive_purge_intersecting_edges()
+bool aster::aggressive_purge_intersecting_edges()
 {
+	if(gr.num_vertices() > 1000) //FIXME:
+	{
+		cerr << "graph too big to pruge, #vertex = " << gr.num_vertices() << endl;
+		return 0;
+	}
+
+	int purgeCount = 0;
 	for (int i = 0; i < i2e.size() - 1; i ++)
 	{
 		edge_descriptor edge1 = i2e[i];
@@ -538,12 +548,20 @@ int aster::aggressive_purge_intersecting_edges()
 			i2e[i] = null_edge;
 			e2i.erase(edge1);
 			gr.remove_edge(edge1);
+			purgeCount ++;
 			break;
 		}
 	}
+	// if (verbose >= 2 && purgeCount <  1) cout << "graph does not have intersecting edges." << endl;
+	if (verbose >= 2 && purgeCount >= 1) cout << "removed " << purgeCount << " intersecting edges from graph.\nSort graph again" << endl;
 	gr.refine_splice_graph();
 	assert(gr.check_nested());
-	return 0;
+	if (purgeCount >= 1)
+	{
+		topological_sort_vertices();
+		topological_sort_index_edges();
+	}
+	return (purgeCount >= 1);
 }
 
 int aster::balance_vertex(int vertexIndex)
