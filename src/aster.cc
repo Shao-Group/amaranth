@@ -66,35 +66,43 @@ int aster::divide_conquer()
 // i, j are tp2v indices
 int aster::divide_conquer(int source, int target, aster_result& res)
 {
-	assert(source <= target);
 	assert(res.subpaths.size() == 0);
 	assert(res.dist == -1);
+	assert(source <= target);
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s <= t);
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+
+	// if(gr.degree(s) == 0 && s < t) divide_conquer(source + 1, target, res);
+	// if(gr.degree(t) == 0 && s < t) divide_conquer(target - 1, source, res);
 
 	comb_strat st = comb_strat::GREEDY_MIN; //TODO: which is better
 
 	if (divide_conquer_single_vertex(source, target, res))			
 	{
-		dnc_counter[0]++; 
+		dnc_counter_single ++;
 		return 0;
-	}
+	} 
 	if (divide_conquer_unitig(source, target, res))					
 	{
-		dnc_counter[1]++;
+		dnc_counter_unitig ++;
 		return 0;
 	}
 	if (divide_conquer_abutting(source, target, res))				
 	{
-		dnc_counter[2]++;
+		dnc_counter_abutting ++;
 		return 0;
 	}
-	if (divide_conquer_disjoint_subgraphs(source, target, res)) 	
+	if (divide_conquer_nested_subgraphs(source, target, res)) 	
 	{
-		dnc_counter[3]++;
+		dnc_counter_nested ++;
 		return 0;
 	}
 	if (divide_conquer_disjoint_at_pivot(source, target, res, st))		
 	{
-		dnc_counter[4] ++;
+		dnc_counter_disjoint ++;
 		return 0;
 	}
 	
