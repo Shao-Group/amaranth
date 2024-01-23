@@ -228,8 +228,6 @@ bool aster::divide_conquer_nested_subgraphs(int source, int target, aster_result
 		assert(origr.valid_path(p.v));
 	}
 
-	//TODO: assert res1 res2 subpaths are completely disjoint except s/t
-
 	int shortestPathSize1 = find_shortest_path(res1);
 	int shortestPathSize2 = find_shortest_path(res2);
 	assert(shortestPathSize1 - 2 >= 1);
