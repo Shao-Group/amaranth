@@ -342,6 +342,7 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 	return 0;
 }
 
+// find a pivot s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
 int aster::divide_conquer_find_pivot(int source, int target)
 {
 	assert(source < target - 1);
