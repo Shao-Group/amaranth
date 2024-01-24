@@ -74,7 +74,7 @@ private:
 	int topological_sort_vertices();
 	int topological_sort_vertices_visit(int i, vector<bool>& visited);
 	int topological_sort_index_edges();
-	bool aggressive_purge_intersecting_edges();
+	// bool aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
 
 	int divide_conquer();

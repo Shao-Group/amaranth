@@ -16,7 +16,6 @@ aster::aster(const splice_graph &g, const hyper_set &h)
     topological_sort_vertices();
 	topological_sort_index_edges();
 	make_stats();
-	aggressive_purge_intersecting_edges();
 
 
 	if(asterMode == aster_mode::STAT_ONLY) print_stats();
@@ -588,9 +587,9 @@ int aster::topological_sort_index_edges()
 /*
 *  aggresively remove intersecting edges, whichever is topilocially smaller
 */
-bool aster::aggressive_purge_intersecting_edges()
+/* bool aster::aggressive_purge_intersecting_edges()
 {
-	if(gr.num_vertices() > 1000) //FIXME:
+	if(gr.num_vertices() > 1000)
 	{
 		cerr << "graph too big to pruge, #vertex = " << gr.num_vertices() << endl;
 		return 0;
@@ -616,14 +615,14 @@ bool aster::aggressive_purge_intersecting_edges()
 	// if (verbose >= 2 && purgeCount <  1) cout << "graph does not have intersecting edges." << endl;
 	if (verbose >= 2 && purgeCount >= 1) cout << "removed " << purgeCount << " intersecting edges from graph.\nSort graph again" << endl;
 	gr.refine_splice_graph();
-	assert(gr.check_nested());
+
 	if (purgeCount >= 1)
 	{
 		topological_sort_vertices();
 		topological_sort_index_edges();
 	}
 	return (purgeCount >= 1);
-}
+} */
 
 int aster::balance_vertex(int vertexIndex)
 {
