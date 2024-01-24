@@ -105,8 +105,27 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 		dnc_counter_disjoint ++;
 		return 0;
 	}
-	
-	assert(0);
+	if (resolve_trivial_intersection(source, target, res))		
+	{
+		counter_resolve_trivial_itsct ++;
+		return 0;
+	}
+	if(mode != aster_mode::MINI)
+	{
+		//FIXME: TODO: heuristics 	
+		return 0;
+	}
+
+	num_intersecting_graph ++;
+
+	string msg = "aster-mini D&C failed on graph " + gr.gid;
+	msg += " [" + gr.chrm + to_string(gr.get_vertex_info(0).lpos) + ":" + to_string(gr.get_vertex_info(0).rpos) + "]";
+	msg += "in subgraph vertexIndex [" + to_string(s) + ", " + to_string(t) + "]";
+	msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])\n";
+	cout << msg << endl;
+
+	res.subpaths.clear();
+	res.dist = -1;
 	return -1;
 }
 
@@ -758,7 +777,7 @@ int aster::get_transcripts()
 	if(mode == aster_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
-	assert(paths.size() > 0);
+	if(paths.size() == 0) return 0;
 	trsts.clear();	
 	non_full_trsts.clear();
 	origr.output_transcripts1(trsts, non_full_trsts, paths);

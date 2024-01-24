@@ -41,7 +41,6 @@ public:
 private:
 	inline static int num_graph = 0;
 	inline static int num_intersecting_graph = 0;
-	inline static int num_intersecting_graph2 = 0;
 	inline static int num_intron = 0;
 	inline static int num_exon = 0;
 	inline static int num_intersecting_intron_count = 0;
@@ -51,6 +50,7 @@ private:
 	inline static int dnc_counter_abutting = 0;
 	inline static int dnc_counter_nested = 0;
 	inline static int dnc_counter_disjoint = 0;
+	inline static int counter_resolve_trivial_itsct = 0;
 
 	const splice_graph& origr;			// original splice graph
 	splice_graph gr;					// splice graph with modification
