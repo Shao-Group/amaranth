@@ -23,18 +23,12 @@ typedef pair<int, int> PI;
 typedef map<int, int> MI;
 typedef vector<int> VI;
 enum class comb_strat {GREEDY_MIN, GREEDY_MAX};
-// typedef vector<path> aster_dp_dot;
-// typedef vector<aster_dp_dot> aster_dp_row;
-// typedef vector<aster_dp_row> aster_dp_table; 
-
-class graph_intersection_error : public runtime_error {};
 
 struct aster_result
 {
 	vector<path> subpaths;	// predicted paths, original v index, inclusive
 	int dist = -1;
 };
-
 
 class aster
 {
