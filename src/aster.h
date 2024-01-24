@@ -60,10 +60,11 @@ private:
 	const splice_graph& origr;			// original splice graph
 	splice_graph gr;					// splice graph with modification
 	hyper_set hs;						// hyper edges
-	MEI e2i;							// edge map, from edge to index, sorted by position
-	VE i2e;								// edge map, from index to edge, sorted	by position
 	VI tp2v;							// DFS-based topologically sorted index to vertex index. This guarantees all disjoint subgraphs are gathered together
 	VI v2tp;
+
+	aster_mode mode;
+
 
 public:
 	vector<path> paths;					// predicted paths, original v index, inclusive

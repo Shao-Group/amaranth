@@ -12,20 +12,20 @@ See LICENSE for licensing.
 aster::aster(const splice_graph &g, const hyper_set &h)
 	: origr(g), gr(g), hs(h)
 {
-	// prepare
+	mode = aster_mode::STAT_ONLY;
+
     topological_sort_vertices();
-	topological_sort_index_edges();
+	// topological_sort_index_edges();
 	make_stats();
 
-
-	if(asterMode == aster_mode::STAT_ONLY) print_stats();
+	if(mode == aster_mode::STAT_ONLY) print_stats();
 	assemble();
 	get_transcripts();	
 }
 
 int aster::assemble()
 {	
-	if(asterMode == aster_mode::STAT_ONLY) return 0;
+	if(mode == aster_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
 	if(gr.num_vertices() > 1000) //FIXME:
@@ -136,9 +136,9 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
 	char strand = gr.get_edge_info(e).strand;
-	int eIdx = e2i.at(e);
-	i2e[eIdx] = null_edge;
-	e2i.erase(e);
+	// int eIdx = e2i.at(e);
+	// i2e[eIdx] = null_edge;
+	// e2i.erase(e);
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
 
@@ -163,8 +163,8 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	ei.strand = strand;
 	gr.set_edge_info(e_new, ei);
 	gr.set_edge_weight(e_new, w);
-	i2e[eIdx] = e_new;
-	e2i.insert({e_new, eIdx});
+	// i2e[eIdx] = e_new;
+	// e2i.insert({e_new, eIdx});
 
 	return true;
 }	
@@ -553,6 +553,8 @@ int aster::topological_sort_vertices_visit(int i, vector<bool>& visited)
 */ 
 int aster::topological_sort_index_edges()
 {
+	MEI e2i;							// edge map, from edge to index, sorted by position
+	VE i2e;								// edge map, from index to edge, sorted	by position
 	map<pair<int, int>, edge_descriptor> sortedEdges;
 	PEEI pei = gr.edges(); 
 	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
@@ -753,7 +755,7 @@ int aster::find_shortest_path(const aster_result& res)
 
 int aster::get_transcripts()
 {
-	if(asterMode == aster_mode::STAT_ONLY) return 0;
+	if(mode == aster_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
 	assert(paths.size() > 0);
@@ -773,13 +775,15 @@ int aster::make_stats()
 		if(gr.degree(i) == 0) continue;
 		num_exon ++;
 	}
-	for (int i = 0; i < i2e.size(); i ++) 
+
+	PEEI pei = gr.edges();
+	for (auto it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
 	{
-		if(i2e[i]->source() == 0) continue; 
-		if(i2e[i]->target() == gr.num_vertices() - 1) continue;
+		edge_descriptor e = *it1;
+		if(e->source() == 0) continue; 
+		if(e->target() == gr.num_vertices() - 1) continue;
 		num_intron++;
-	}
-	
+	}	
 
 	if(verbose >= 3 && num_graph % 100 == 0)	print_stats();
 	return 0;
