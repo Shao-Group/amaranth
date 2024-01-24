@@ -781,29 +781,7 @@ int aster::make_stats()
 		num_intron++;
 	}
 	
-	// num intersecting: introns, intron_pairs, graphs
-	bool intersecting = false;
-	for (int i = 0; i < i2e.size() - 1; i ++)
-	{
-		bool intersecting_edge = false;
-		if(i2e[i] == null_edge) continue;
-		for (int j = i + 1; j < i2e.size(); j ++)
-		{
-			if (i2e[j] == null_edge) continue;
-			if (!gr.intersect(i2e[i], i2e[j])) continue;
-			num_intersecting_intron_pair ++;
-			intersecting_edge = true;
-			intersecting = true;
-		}
-		
-		if (!intersecting_edge) continue;
-		num_intersecting_intron_count++;
-		if(i == i2e.size() - 2) num_intersecting_intron_count ++;
-	}
 
-	if(intersecting) num_intersecting_graph ++;
-	if(!gr.check_nested()) num_intersecting_graph2 ++;
-	assert(num_intersecting_graph == num_intersecting_graph2);
 	if(verbose >= 3 && num_graph % 100 == 0)	print_stats();
 	return 0;
 }
