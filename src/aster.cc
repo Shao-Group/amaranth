@@ -30,7 +30,7 @@ int aster::assemble()
 	if(gr.num_vertices() == 2) return 0;
 	if(gr.num_vertices() > 1000) //FIXME:
 	{
-		cerr << "graph too big to process with D&C " << gr.num_vertices() << endl; 
+		cout << "graph too big to process with D&C " << gr.num_vertices() << endl; 
 		return 0;
 	}
 
@@ -95,7 +95,7 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 		dnc_counter_abutting ++;
 		return 0;
 	}
-	if (divide_conquer_nested_subgraphs(source, target, res)) 	
+	if (divide_conquer_disjoint_at_termini(source, target, res)) 	
 	{
 		dnc_counter_nested ++;
 		return 0;
@@ -169,7 +169,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	return true;
 }	
 
-bool aster::divide_conquer_nested_subgraphs(int source, int target, aster_result& res)
+bool aster::divide_conquer_disjoint_at_termini(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
 	int s = tp2v[source];
@@ -193,7 +193,7 @@ bool aster::divide_conquer_nested_subgraphs(int source, int target, aster_result
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster D&C with nested subgraphs, vertex [" + to_string(s) + "," + to_string(t) + "]"; 
+		string msg = "aster D&C with disjoint graphs at termini, vertex [" + to_string(s) + "," + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
@@ -203,7 +203,7 @@ bool aster::divide_conquer_nested_subgraphs(int source, int target, aster_result
 		for(int j = disjointPoint + 1; j <= target - 1; j++)
 		{
 			bool b = gr.check_path(tp2v[i], tp2v[j]);
-			if (b) cout << "nested subgraph wrong " << i << " " << tp2v[i] << " " << j << " " << tp2v[j]  << endl;
+			if (b) cerr << gr.gid << " disjoint_at_termini subgraph wrong " << i << " " << tp2v[i] << " " << j << " " << tp2v[j]  << endl;
 			assert(!b);
 		}
 	}
@@ -593,7 +593,7 @@ int aster::topological_sort_index_edges()
 {
 	if(gr.num_vertices() > 1000)
 	{
-		cerr << "graph too big to pruge, #vertex = " << gr.num_vertices() << endl;
+		cout << "graph too big to pruge, #vertex = " << gr.num_vertices() << endl;
 		return 0;
 	}
 

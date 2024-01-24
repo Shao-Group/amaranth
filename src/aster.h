@@ -61,8 +61,7 @@ private:
 	splice_graph gr;					// splice graph with modification
 	hyper_set hs;						// hyper edges
 	VI tp2v;							// DFS-based topologically sorted index to vertex index. This guarantees all disjoint subgraphs are gathered together
-	VI v2tp;
-
+	VI v2tp;							// vertex index to DFS-based topologically sorted index. This guarantees all disjoint subgraphs are gathered together
 	aster_mode mode;
 
 
@@ -83,11 +82,12 @@ private:
 	bool divide_conquer_single_vertex(int source, int target, aster_result& res);
 	bool divide_conquer_unitig(int source, int target, aster_result& res);
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
-	bool divide_conquer_nested_subgraphs(int source, int target, aster_result& res);
+	bool divide_conquer_disjoint_at_termini(int source, int target, aster_result& res);
 	bool divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_find_pivot(int source, int target);
 	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
-	
+	bool resolve_trivial_intersection(int source, int target, aster_result& res);
+
 	int event_size_penalty(int eventSize);
 	int path_distance(const path& p1, const path& p2);
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath);
