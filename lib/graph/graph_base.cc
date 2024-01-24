@@ -331,6 +331,7 @@ bool graph_base::compute_shortest_path(int s, int t, vector<int> &p)
 
 bool graph_base::check_nested() 
 {
+	throw runtime_error("graph_base::check_nested is implemented incorrectly");
 	PEEI p = edges();
 	for(edge_iterator i = p.first; i != p.second; i++)
 	{
