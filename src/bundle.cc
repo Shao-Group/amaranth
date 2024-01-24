@@ -595,6 +595,7 @@ bool bundle::extend_start_boundaries()
 	{
 		PEB p = gr.edge(0, i);
 		if(p.second == true) continue;
+		if(gr.degree(i) == 0) continue;
 
 		double wv = gr.get_vertex_weight(i);
 		double we = 0;
@@ -625,6 +626,7 @@ bool bundle::extend_end_boundaries()
 	{
 		PEB p = gr.edge(i, gr.num_vertices() - 1);
 		if(p.second == true) continue;
+		if(gr.degree(i) == 0) continue;
 
 		double wv = gr.get_vertex_weight(i);
 		double we = 0;
@@ -730,7 +732,7 @@ VE bundle::compute_maximal_edges()
 		int s = e->source();
 		int t = e->target();
 		if(s == 0) continue;
-		if(t == gr.num_vertices()) continue;
+		if(t == gr.num_vertices() - 1) continue;
 		int c1 = vv[s];
 		int c2 = vv[t];
 		assert(c1 == c2);
@@ -931,7 +933,7 @@ bool bundle::remove_small_junctions()
 			int t = e->target();
 			if(t == gr.num_vertices() - 1) continue;
 			if(gr.get_vertex_info(t).lpos == p2) continue;
-			if(ws < 2.0 * w * w + 18.0) continue;
+			if(wt < 2.0 * w * w + 18.0) continue;
 			if(wi < 2.0 * w * w + 18.0) continue;
 
 			se.insert(e);
