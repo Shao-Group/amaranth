@@ -50,7 +50,7 @@ int aster::assemble()
 
 int aster::divide_conquer()
 {
-	if(verbose >= 3) gr.graphviz(gr.gid + ".dot", tp2v_to_string()); //CLEAN:
+	if(output_graphviz_files) gr.graphviz("asterviz." + gr.gid + ".dot", tp2v_to_string());
 	assert(gr.num_vertices() > 2);
 	assert(tp2v.size() == gr.num_vertices());
 	int s = 0;									// tp2v index
@@ -478,6 +478,7 @@ int aster::topological_sort_vertices()
 {
 	assert(gr.num_vertices() >= 2);
 	tp2v.clear();
+	v2tp.clear();
 
 	vector<bool> visited(gr.num_vertices(), false);
 	for(int i = 0; i < gr.num_vertices(); i++)	
@@ -802,29 +803,28 @@ int aster::make_stats()
 
 	if(intersecting) num_intersecting_graph ++;
 	if(!gr.check_nested()) num_intersecting_graph2 ++;
-
+	assert(num_intersecting_graph == num_intersecting_graph2);
 	if(verbose >= 3 && num_graph % 100 == 0)	print_stats();
 	return 0;
 }
 
 int aster::print_stats()
 {
-	cout << "aster print stats" << endl;
-	cout << "\t num graph " << num_graph  << endl; 
-	cout << "\t num_intersecting_graph " << num_intersecting_graph  << endl; 
-	cout << "\t num_intersecting_graph2 " << num_intersecting_graph2  << endl; 
-	cout << "\t num intron " << num_intron << endl;
-	cout << "\t num_exon " << num_exon  << endl; 
-	cout << "\t num_intersecting_intron_count " << num_intersecting_intron_count << endl;
-	cout << "\t num_intersecting_intron_pair " << num_intersecting_intron_pair << endl;
-	cout << "\t D&C counter: ";
+	cout << "Print aster stats ==============================================================" << endl;
+	cout << "\t num graphs = " << num_graph  << endl; 
+	cout << "\t num graphs w. intersecting edges = " << num_intersecting_graph  << endl; 
+	cout << "\t num exons = " << num_exon  << endl; 
+	cout << "\t num introns = " << num_intron << endl;
+	cout << "\t num intersecting introns = " << num_intersecting_intron_count << endl;
+	cout << "\t num intersecting intron pairs " << num_intersecting_intron_pair << endl;
+	cout << "\t D&C algorithm counter: ";
 	cout << "\t " << dnc_counter_single;
 	cout << "\t " << dnc_counter_unitig;
 	cout << "\t " << dnc_counter_abutting;
 	cout << "\t " << dnc_counter_nested;
 	cout << "\t " << dnc_counter_disjoint;
 	cout << endl;
-	cout << "aster printed stats" << endl;
+	cout << "Printed aster stats ============================================================" << endl;
 	return 0;
 }
 
