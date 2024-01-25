@@ -13,7 +13,6 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	: origr(g), gr(g), hs(h)
 {
 	mode = aster_mode::STAT_ONLY;
-	mode = aster_mode::MINI;
 
     topological_sort_vertices();
 	// topological_sort_index_edges();
@@ -130,15 +129,6 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	return -1;
 }
 
-/* resolve trivila intersections only 
-*  all four vertices should be directly connected but not recursively solvable
-*  1->2->3->4 and 1->3 and 2->4 forming a diomond shape
-*/
-bool aster::resolve_trivial_intersection(int source, int target, aster_result& res)
-{
-
-}
-
 /* remove abutting edge, then call divide_conquer(source, target, res) again */
 bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 {	
@@ -165,6 +155,9 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
 	char strand = gr.get_edge_info(e).strand;
+	// int eIdx = e2i.at(e);
+	// i2e[eIdx] = null_edge;
+	// e2i.erase(e);
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
 
@@ -186,6 +179,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	edge_descriptor e_new = gr.add_edge(s, t);
 	edge_info ei;
 	ei.weight = w;
+	ei.strand = strand;
 	gr.set_edge_info(e_new, ei);
 	gr.set_edge_weight(e_new, w);
 	// i2e[eIdx] = e_new;
@@ -251,9 +245,6 @@ bool aster::divide_conquer_disjoint_at_termini(int source, int target, aster_res
 		p.v.insert(p.v.begin(), s);
 		assert(origr.valid_path(p.v));
 	}
-	
-	//FIXME: remove path except termini
-
 
 	int shortestPathSize1 = find_shortest_path(res1);
 	int shortestPathSize2 = find_shortest_path(res2);
@@ -450,10 +441,6 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	else 	  w = pow(w, 1.0/c);
 	res.subpaths.push_back(path(unitig, w));
 	res.dist = 0;
-
-	remove_paths_internal_nodes(res);
-	assert(! gr.check_path(s, t));
-
 	return true;
 
 	/*
@@ -784,23 +771,6 @@ int aster::find_shortest_path(const aster_result& res)
 	return shortestPathIndex;
 }
 
-/* 
-*  Assume internal nodes must be "closed" in [s, t]
-*  i.e. for nodes reachable from s and reachable to t, they cannot reach any other nodes but themselves and s,t
-*  remove those internal nodes and replace them with one single edge from s to t
-*/
-int aster::replace_closed_nodes_w_one_edge(int s, int t, double w)
-{
-	
-	
-	// put edge
-	edge_descriptor e_new = gr.add_edge(s, t);
-	edge_info ei;
-	ei.weight = w;
-	gr.set_edge_info(e_new, ei);
-	gr.set_edge_weight(e_new, w);
-	return 0;
-}
 
 int aster::get_transcripts()
 {
@@ -818,8 +788,6 @@ int aster::get_transcripts()
 
 int aster::make_stats()
 {
-	if(verbose >= 3 && num_graph != 0 && num_graph % 100 == 0)	print_stats();
-
 	num_graph ++;
 	for(int i = 1; i < gr.num_vertices() - 1; i++)
 	{
@@ -836,6 +804,7 @@ int aster::make_stats()
 		num_intron++;
 	}	
 
+	if(verbose >= 3 && num_graph % 100 == 0)	print_stats();
 	return 0;
 }
 
@@ -854,7 +823,6 @@ int aster::print_stats()
 	cout << "\t " << dnc_counter_abutting;
 	cout << "\t " << dnc_counter_nested;
 	cout << "\t " << dnc_counter_disjoint;
-	cout << "\t " << counter_resolve_trivial_itsct;
 	cout << endl;
 	cout << "Printed aster stats ============================================================" << endl;
 	return 0;

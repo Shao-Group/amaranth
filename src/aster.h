@@ -52,8 +52,6 @@ private:
 	inline static int dnc_counter_disjoint = 0;
 	inline static int counter_resolve_trivial_itsct = 0;
 
-	
-
 	const splice_graph& origr;			// original splice graph
 	splice_graph gr;					// splice graph with modification
 	hyper_set hs;						// hyper edges
@@ -71,7 +69,7 @@ private:
 	int topological_sort_vertices();
 	int topological_sort_vertices_visit(int i, vector<bool>& visited);
 	int topological_sort_index_edges();
-//	bool aggressive_purge_intersecting_edges();
+	// bool aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
 
 	int divide_conquer();
@@ -83,9 +81,7 @@ private:
 	bool divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_find_pivot(int source, int target);
 	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
-	
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);
-	int  replace_closed_nodes_w_one_edge(int s, int t, double w);
 
 	int event_size_penalty(int eventSize);
 	int path_distance(const path& p1, const path& p2);
