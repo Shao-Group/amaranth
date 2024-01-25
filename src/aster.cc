@@ -13,6 +13,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	: origr(g), gr(g), hs(h)
 {
 	mode = aster_mode::STAT_ONLY;
+	mode = aster_mode::ASSEMBLER;
 	mode = aster_mode::MINI;
 
     topological_sort_vertices();
@@ -451,7 +452,8 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	res.subpaths.push_back(path(unitig, w));
 	res.dist = 0;
 
-	remove_paths_internal_nodes(res);
+	// remove_paths_internal_nodes(res);
+	replace_closed_nodes_w_one_edge(s, t, w);//FIXME: TODO:
 	assert(! gr.check_path(s, t));
 
 	return true;

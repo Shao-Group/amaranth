@@ -64,8 +64,7 @@ int32_t min_subregion_max = 3;
 double min_subregion_ave = 1.5;
 
 // for aster
-aster_mode asterMode = aster_mode::MIN_DIST;
-
+aster_mode asterMode = aster_mode::ASSEMBLER;
 
 // for revising/decomposing splice graph
 double min_guaranteed_edge_weight = 0.01;
