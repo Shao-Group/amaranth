@@ -69,7 +69,7 @@ public:
 
 private: 
 	int topological_sort_vertices();
-	int topological_sort_vertices_visit(int i, vector<bool>& visited);
+	int topological_sort_vertices_visit(int i, vector<bool>& visited, vector<int>& sorted);
 	int topological_sort_index_edges();
 //	bool aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
@@ -80,10 +80,12 @@ private:
 	bool divide_conquer_unitig(int source, int target, aster_result& res);
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
 	bool divide_conquer_cut_termini(int source, int target, aster_result& res);
+	int  divide_conquer_cut_termini_point(int source, int target);
 	bool divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st);
-	int  divide_conquer_find_pivot(int source, int target);
+	int  divide_conquer_find_articulation(int source, int target);
 	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
 	
+	int  greedy(int source, int target);
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);
 	int  replace_closed_nodes_w_one_edge(int source, int target, double w);
 
