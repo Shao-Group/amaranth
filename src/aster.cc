@@ -30,15 +30,13 @@ int aster::assemble()
 	if(mode == aster_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
+	assert(gr.num_vertices() > 2);
 	if(gr.num_vertices() > 1000) //FIXME:
 	{
 		cout << "graph too big to process with D&C " << gr.num_vertices() << endl; 
 		return 0;
-	}
-
-	assert(gr.num_vertices() > 2);
-	//CLEAN: balance?
-	if (true)
+	}	
+	if (true)	//CLEAN: balance?
 	{
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
@@ -77,9 +75,6 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 
-	// if(gr.degree(s) == 0 && s < t) divide_conquer(source + 1, target, res);
-	// if(gr.degree(t) == 0 && s < t) divide_conquer(target - 1, source, res);
-
 	comb_strat st = comb_strat::GREEDY_MIN; //TODO: which is better
 
 	if (divide_conquer_single_vertex(source, target, res))			
@@ -97,12 +92,12 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 		dnc_counter_abutting ++;
 		return 0;
 	}
-	if (divide_conquer_disjoint_at_termini(source, target, res)) 	
+	if (divide_conquer_cut_termini(source, target, res)) 	
 	{
 		dnc_counter_nested ++;
 		return 0;
 	}
-	if (divide_conquer_disjoint_at_pivot(source, target, res, st))		
+	if (divide_conquer_articulation_point(source, target, res, st))		
 	{
 		dnc_counter_disjoint ++;
 		return 0;
@@ -165,13 +160,12 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	edge_descriptor e = gr.edge(s, t).first;
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
-	char strand = gr.get_edge_info(e).strand;
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
 
 	divide_conquer(source, target, res);
 
-	// push back abutting subpath
+	// push_back abutting subpath
 	int shortestPathSize = res.subpaths.front().v.size();
 	for(const path& p: res.subpaths) 
 	{
@@ -183,19 +177,11 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	res.subpaths.push_back(p);
 	res.dist += event_size_penalty(eventSize);
 
-	// put back abutting edge
-	edge_descriptor e_new = gr.add_edge(s, t);
-	edge_info ei;
-	ei.weight = w;
-	gr.set_edge_info(e_new, ei);
-	gr.set_edge_weight(e_new, w);
-	// i2e[eIdx] = e_new;
-	// e2i.insert({e_new, eIdx});
-
+	replace_closed_nodes_w_one_edge(source, target, w);
 	return true;
 }	
 
-bool aster::divide_conquer_disjoint_at_termini(int source, int target, aster_result& res)
+bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
 	int s = tp2v[source];
@@ -252,9 +238,6 @@ bool aster::divide_conquer_disjoint_at_termini(int source, int target, aster_res
 		p.v.insert(p.v.begin(), s);
 		assert(origr.valid_path(p.v));
 	}
-	
-	//FIXME: remove path except termini
-
 
 	int shortestPathSize1 = find_shortest_path(res1);
 	int shortestPathSize2 = find_shortest_path(res2);
@@ -273,7 +256,7 @@ bool aster::divide_conquer_disjoint_at_termini(int source, int target, aster_res
 ** divide and conquer the problem to dnc[s, k], dnc [k, t]
 ** not disjoint: (s,t) edge exists, or multiple subgraphs can be found
 */
-bool aster::divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res, comb_strat st)
+bool aster::divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
 	int s = tp2v[source];
@@ -286,7 +269,7 @@ bool aster::divide_conquer_disjoint_at_pivot(int source, int target, aster_resul
 	
 	if(verbose >= 2)
 	{
-		string msg = "aster D&C with disjoint graphs at pivot, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster D&C with disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
@@ -806,6 +789,8 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 	for(int middle = source + 1; middle < target; middle ++)
 	{
 		int k = tp2v[middle];
+		assert(k > s);
+		assert(k < t);
 		vector<edge_descriptor> ve;
 		PEEI pi = gr.in_edges(k);
 		PEEI po = gr.out_edges(k);

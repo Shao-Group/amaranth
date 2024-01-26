@@ -79,8 +79,8 @@ private:
 	bool divide_conquer_single_vertex(int source, int target, aster_result& res);
 	bool divide_conquer_unitig(int source, int target, aster_result& res);
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
-	bool divide_conquer_disjoint_at_termini(int source, int target, aster_result& res);
-	bool divide_conquer_disjoint_at_pivot(int source, int target, aster_result& res, comb_strat st);
+	bool divide_conquer_cut_termini(int source, int target, aster_result& res);
+	bool divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_find_pivot(int source, int target);
 	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
 	
