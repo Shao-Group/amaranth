@@ -132,7 +132,45 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 */
 bool aster::resolve_trivial_intersection(int source, int target, aster_result& res)
 {
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+	assert(s < t - 1);
+	assert(source < target - 1);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
+	
+	if(gr.edge_exists(s, t)) return false;
+	if(source + 3 != target) return false;
+	int s  = tp2v[source];
+	int k1 = tp2v[source + 1];
+	int k2 = tp2v[source + 2];
+	int t  = tp2v[target];
+	if (gr.out_degree(s) != 2) return false;
+	if (gr.out_degree(k1)!= 2 || gr.in_degree(k1) != 1) return false;
+	if (gr.out_degree(k2)!= 1 || gr.out_degree(k2)!= 2) return false;
+	if (gr.in_degree(t)  != 2) return false;
+	if (!gr.edge_exists(s, k1)) return false;
+	if (!gr.edge_exists(s, k2)) return false;
+	if (!gr.edge_exists(k1, k2)) return false;
+	if (!gr.edge_exists(k1, t)) return false;
+	if (!gr.edge_exists(k2, t)) return false;
 
+	double wsk1  = gr.get_edge_weight(gr.edge(s, k1).first);
+	double wsk2  = gr.get_edge_weight(gr.edge(s, k2).first);
+	double wk1k2 = gr.get_edge_weight(gr.edge(k1, k2).first);
+	double wk1t  = gr.get_edge_weight(gr.edge(k1, t).first);
+	double wk2t  = gr.get_edge_weight(gr.edge(k2, t).first);
+
+	double abd1 = pow(wsk1 * wk1k2 * wk2t, 1.0/3.0);
+	double abd2 = pow(wsk1 * wk1t, 1.0/2.0);
+	double abd3 = pow(wsk2 * wk2t, 1.0/2.0);
+	res.subpaths.push_back({{s, k1, k2, t}, abd1});
+	res.subpaths.push_back({{s, k1, t}, abd2});
+	res.subpaths.push_back({{s, k2, t}, abd3});
+
+	replace_closed_nodes_w_one_edge(source, target, abd1 + abd2 + abd3);
+	return true;
 }
 
 /* remove abutting edge, then call divide_conquer(source, target, res) again */
