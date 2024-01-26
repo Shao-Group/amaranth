@@ -453,8 +453,7 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	res.dist = 0;
 
 	// remove_paths_internal_nodes(res);
-	replace_closed_nodes_w_one_edge(s, t, w);//FIXME: TODO:
-	assert(! gr.check_path(s, t));
+	replace_closed_nodes_w_one_edge(source, target, w);
 
 	return true;
 
@@ -791,9 +790,41 @@ int aster::find_shortest_path(const aster_result& res)
 *  i.e. for nodes reachable from s and reachable to t, they cannot reach any other nodes but themselves and s,t
 *  remove those internal nodes and replace them with one single edge from s to t
 */
-int aster::replace_closed_nodes_w_one_edge(int s, int t, double w)
+int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 {
-	
+	assert(source < target);
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+	assert(s < t);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);	
+
+	// under 'closed' assumption all edges in (s, t) open interval must have sources/targets in [s, t] closed interval
+	PEB peb = gr.edge(s, t);
+	if(peb.second == true) gr.remove_edge(peb.first);
+	for(int middle = source + 1; middle < target; middle ++)
+	{
+		int k = tp2v[middle];
+		vector<edge_descriptor> ve;
+		PEEI pi = gr.in_edges(k);
+		PEEI po = gr.out_edges(k);
+		for(edge_iterator it = pi.first; it != pi.second; it++)
+		{
+			ve.push_back(*it);
+		}
+		for(edge_iterator it = po.first; it != po.second; it++)
+		{
+			ve.push_back(*it);
+		}
+		for(edge_descriptor e: ve)
+		{
+			assert(e->source() >= s);
+			assert(e->target() <= t);
+			gr.remove_edge(e);
+		}
+	}
+	assert(! gr.check_path(s, t));
 	
 	// put edge
 	edge_descriptor e_new = gr.add_edge(s, t);

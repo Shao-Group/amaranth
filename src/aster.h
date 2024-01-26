@@ -85,7 +85,7 @@ private:
 	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
 	
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);
-	int  replace_closed_nodes_w_one_edge(int s, int t, double w);
+	int  replace_closed_nodes_w_one_edge(int source, int target, double w);
 
 	int event_size_penalty(int eventSize);
 	int path_distance(const path& p1, const path& p2);
