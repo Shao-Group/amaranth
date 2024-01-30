@@ -230,14 +230,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 	if(gr.edge_exists(s,t)) return false;
 	
 	// examine if disjoint subgraphs; as the graph is DFS topo-sorted
-	int disjointPoint = -1;
-	for(int i = source; i < target; i++)
-	{
-		int ss = tp2v[i];
-		int tt = tp2v[i + 1];
-		if(gr.edge_exists(ss, tt)) continue;
-		disjointPoint = i;
-	}
+	int disjointPoint = divide_conquer_cut_termini_point(source, target);
 	if(disjointPoint == -1) return false;
 
 	if(verbose >= 2) 
