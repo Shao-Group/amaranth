@@ -189,7 +189,6 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 
 	if(! gr.edge_exists(s,t)) return false;
 
-
 	if(verbose >= 2) 
 	{
 		string msg = "aster D&C with a direct abutting edge between vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
@@ -197,22 +196,19 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 		cout << msg << endl;
 	}
 
-	// remove abutting edge
+	// remove abutting edge & recusion
 	edge_descriptor e = gr.edge(s, t).first;
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
-
 	divide_conquer(source, target, res);
 
 	// push_back abutting subpath
-	int shortestPathSize = res.subpaths.front().v.size();
-	for(const path& p: res.subpaths) 
-	{
-		if(p.v.size() < shortestPathSize) shortestPathSize = p.v.size();
-	}
-	int eventSize = shortestPathSize - 2;
+	int shortestPathIndex = find_shortest_path(res);
+	assert(shortestPathIndex >= 0);
+	int shortestPathSize = res.subpaths[shortestPathIndex].v.size();
+	int eventSize        = shortestPathSize - 2;
 	assert(eventSize >= 1);
 	path p({s, t}, w);
 	res.subpaths.push_back(p);
