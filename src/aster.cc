@@ -301,6 +301,10 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	
+	int pivot = divide_conquer_find_articulation(source, target);
+	if (pivot < 0) return false;
+	assert(pivot > source && pivot < target);
+	
 	if(verbose >= 2)
 	{
 		string msg = "aster D&C with disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
@@ -308,19 +312,17 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 		cout << msg << endl;
 	}
 
-	int pivot = divide_conquer_find_articulation(source, target);
-	assert(pivot > source);
-	assert(pivot < target);
-
 	aster_result res1;
 	divide_conquer(source, pivot, res1);
 	assert(res1.subpaths.size() > 0);
 	aster_result res2;
 	divide_conquer(pivot, target, res2);
 	assert(res2.subpaths.size() > 0);
-
 	divide_conquer_combine(res1, res2, pivot, res, st);
-	
+
+	double w = 0;
+	for(const path& p: res.subpaths) w += p.abd;
+	replace_closed_nodes_w_one_edge(source, target, w);
 	return true;
 }
 
@@ -413,7 +415,7 @@ int aster::divide_conquer_find_articulation(int source, int target)
 	int pivot = v2tp.at(artVertex);
 	if(verbose >= 2) 
 	{
-		string msg = "\t inside ["+ to_string(s) + ", " + to_string(t) + "], " + " pivot = " + to_string(tp2v[pivot]);
+		string msg = "\t inside ["+ to_string(s) + ", " + to_string(t) + "], " + " articulation point = " + to_string(tp2v[pivot]);
 		msg += " (topoIndex = " + to_string(pivot) + ")";
 		cout << msg << endl;
 	}
@@ -426,7 +428,7 @@ int aster::divide_conquer_find_articulation(int source, int target)
 	splice_graph gr2(gr);
 	gr2.clear_vertex(artVertex);
 	assert(! gr2.check_path(s, t));
-	
+
 	return pivot;
 }
 
