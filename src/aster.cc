@@ -457,15 +457,21 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	while(true)
 	{
 		unitig.push_back(ss);
-		assert(s <= t);
+		assert(ss <= t);
+		assert(gr.out_degree(ss) >= 1);
 		if (ss == t) break;
 		if (gr.out_degree(ss) > 1) return false;
 		edge_descriptor e = (*gr.out_edges(ss).first);
-		if(_avg_) w += gr.get_edge_weight(e);
-		else w  *= gr.get_edge_weight(e);
+		if (_avg_)  w += gr.get_edge_weight(e);
+		else 		w *= gr.get_edge_weight(e);
 		c  += 1;
 		ss  = e->target();
 	}
+	if(_avg_) w = w / double(c);
+	else 	  w = pow(w, 1.0/c);
+	res.subpaths.push_back(path(unitig, w));
+	res.dist = 0;
+
 
 	if(verbose >= 2) 
 	{
@@ -476,29 +482,7 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 		printv(unitig);
 		cout << endl;
 	}
-
-	if(_avg_) w = w / double(c);
-	else 	  w = pow(w, 1.0/c);
-	res.subpaths.push_back(path(unitig, w));
-	res.dist = 0;
-
-	// remove_paths_internal_nodes(res);
 	replace_closed_nodes_w_one_edge(source, target, w);
-
-	return true;
-
-	/*
-	int n = gr.compute_num_paths(s, t, 2);
-	assert(n >= 1);
-	if(n > 1) return false;	
-	vector<edge_descriptor> edgePath;
-	double abd = gr.compute_maximum_st_path_w(edgePath, s, t);
-	assert(edgePath.size() > 0);
-	vector<int> vertexPath;
-	edge_path_to_vertex_path(edgePath, vertexPath);
-	res.subpaths.push_back(path(vertexPath, abd));
-	res.dist = 0;
-	*/
 	return true;
 }
 
