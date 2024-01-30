@@ -313,11 +313,9 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	}
 
 	aster_result res1;
-	divide_conquer(source, pivot, res1);
-	assert(res1.subpaths.size() > 0);
 	aster_result res2;
+	divide_conquer(source, pivot, res1);
 	divide_conquer(pivot, target, res2);
-	assert(res2.subpaths.size() > 0);
 	divide_conquer_combine(res1, res2, pivot, res, st);
 
 	double w = 0;
