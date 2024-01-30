@@ -77,6 +77,7 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 
 	comb_strat st = comb_strat::GREEDY_MIN; //TODO: which is better
 
+	// TODO: find all articulation points in linear time
 	if (divide_conquer_single_vertex(source, target, res))			
 	{
 		dnc_counter_single ++;
@@ -414,6 +415,8 @@ int aster::divide_conquer_find_articulation(int source, int target)
 	}
 	assert(k >= 0);
 
+	// FIXME: TODO: examine if pivot or k is what we want
+
 	int pivot = v2tp.at(k);
 	if(verbose >= 2) 
 	{
@@ -548,25 +551,25 @@ int aster::topological_sort_vertices()
 	v2tp.resize(tp2v.size());
 	for(int i = 0; i < tp2v.size(); i++) v2tp[tp2v[i]] = i;
 
-	// assertions topo sorted
+	/* // assertions topo sorted
 	for(int i = 0; i < gr.num_vertices(); i++)	
 	{
 		if(i >= 1) assert(gr.get_vertex_info(i - 1).rpos <= gr.get_vertex_info(i).lpos);
-		if (i < gr.num_vertices() - 1) 		// proceeding out edges
+		if (i < gr.num_vertices() - 1)  // proceeding out edges
 		{
-			PEEI ei = gr.out_edges(i);
-			edge_iterator it1 = ei.first; 
+			PEEI          ei  = gr.out_edges(i);
+			edge_iterator it1 = ei.first;
 			edge_iterator it2 = ei.second;
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).rpos <= gr.get_vertex_info((*it1)->target()).lpos);
 		}
-		if (i >= 1) 						// trailing in edges
+		if (i >= 1)  // trailing in edges
 		{
-			PEEI ei = gr.in_edges(i);
-			edge_iterator it1 = ei.first; 
+			PEEI          ei  = gr.in_edges(i);
+			edge_iterator it1 = ei.first;
 			edge_iterator it2 = ei.second;
 			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->source()).rpos);
 		}
-	}
+	} */
 
 	if(verbose >= 3)	cout << tp2v_to_string() << endl;
 	assert(tp2v.front() == 0);
