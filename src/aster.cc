@@ -335,7 +335,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 }
 
 /*  combines subpaths of left and right sides of pivot k */
-int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st)
+int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st) const
 {
 	int k = tp2v[pivot];
 	assert(res1.subpaths.size() > 0);
@@ -396,7 +396,7 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 }
 
 // find a pivot s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
-int aster::divide_conquer_find_articulation(int source, int target)
+int aster::divide_conquer_find_articulation(int source, int target) 
 {
 	assert(source < target - 1);
 	int s = tp2v[source];
@@ -745,7 +745,7 @@ int aster::balance_vertex(int vertexIndex)
 	return 0;
 }
 
-int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath)
+int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const
 {
 	if (edgePath.size() == 0) return 0;
 	vertexPath.clear();
@@ -766,7 +766,7 @@ int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath)
 }
 
 // return index of longest path in res.subpaths
-int aster::find_longest_path(const aster_result& res)
+int aster::find_longest_path(const aster_result& res) const
 {
 	int longestPathIndex = -1;
 	int longestPathSize = -1;
@@ -785,7 +785,7 @@ int aster::find_longest_path(const aster_result& res)
 }
 
 // return index of shortest path in res.subpaths
-int aster::find_shortest_path(const aster_result& res)
+int aster::find_shortest_path(const aster_result& res) const
 {
 	int shortestPathIndex = -1;
 	int shortestPathSize = -1;
@@ -913,7 +913,7 @@ int aster::print_stats()
 	return 0;
 }
 
-string aster::tp2v_to_string()
+string aster::tp2v_to_string() const
 {
 	string tp2vString = gr.gid + " DFS TopoSorted vertex index vector:";
 	for (int i = 0; i < tp2v.size(); i++)
@@ -926,7 +926,7 @@ string aster::tp2v_to_string()
 }
 
 // exponential penalty guarantees to violate triangle inequality
-int aster::event_size_penalty(int eventSize)
+int aster::event_size_penalty(int eventSize) const
 {
 	assert(eventSize >= 0);
 	return pow(2, eventSize) - 1;
@@ -937,7 +937,7 @@ int aster::event_size_penalty(int eventSize)
 *		positive int: number of edits
 *		assertion error: size not positive
 */
-int aster::path_distance(const path& p1, const path& p2)
+int aster::path_distance(const path& p1, const path& p2) const
 {
 	throw runtime_error("aster::path_distancen not implemented yet");
 	const vector<int>& v1 = p1.v; 

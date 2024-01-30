@@ -83,20 +83,20 @@ private:
 	int  divide_conquer_cut_termini_point(int source, int target);
 	bool divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_find_articulation(int source, int target);
-	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st);
+	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st) const;
 	
 	int  greedy(int source, int target);
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);
 	int  replace_closed_nodes_w_one_edge(int source, int target, double w);
 
-	int event_size_penalty(int eventSize);
-	int path_distance(const path& p1, const path& p2);
-	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath);
-	int find_longest_path(const aster_result& res);
-	int find_shortest_path(const aster_result& res);
+	int event_size_penalty(int eventSize) const;
+	int path_distance(const path& p1, const path& p2) const;
+	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const;
+	int find_longest_path(const aster_result& res) const;
+	int find_shortest_path(const aster_result& res) const;
 	int get_transcripts();
 	
-	string tp2v_to_string();
+	string tp2v_to_string() const;
 	int make_stats();
 };
 
