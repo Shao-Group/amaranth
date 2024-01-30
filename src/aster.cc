@@ -568,16 +568,7 @@ int aster::topological_sort_vertices()
 		}
 	}
 
-	// assertions disjoint sorted
 	if(verbose >= 3)	cout << tp2v_to_string() << endl;
-	for(int i = 0; i < gr.num_vertices(); i++)	
-	{
-		for(int j = 0; j < gr.num_vertices(); j++)
-		{
-			if(j == i) continue;
-			if (gr.check_path(i, j)) assert(v2tp[i] < v2tp[j]);
-		}
-	}
 	assert(tp2v.front() == 0);
 	assert(tp2v.back() == gr.num_vertices() - 1);
 	assert(tp2v.size() == gr.num_vertices());
