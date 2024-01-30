@@ -472,7 +472,6 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	res.subpaths.push_back(path(unitig, w));
 	res.dist = 0;
 
-
 	if(verbose >= 2) 
 	{
 		string msg = "aster D&C with unitig subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
