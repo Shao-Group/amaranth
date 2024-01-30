@@ -17,7 +17,6 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	mode = aster_mode::MINI;
 
     topological_sort_vertices();
-	// topological_sort_index_edges();
 	make_stats();
 
 	if(mode == aster_mode::STAT_ONLY) print_stats();
@@ -31,6 +30,7 @@ int aster::assemble()
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
 	assert(gr.num_vertices() > 2);
+
 	if(gr.num_vertices() > 1000) //FIXME:
 	{
 		cout << "graph too big to process with D&C " << gr.num_vertices() << endl; 
@@ -109,7 +109,7 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	}
 	if(mode != aster_mode::MINI)
 	{
-		//FIXME: TODO: heuristics 	
+		greedy(source, target);
 		return 0;
 	}
 
@@ -142,10 +142,12 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 	
 	if(gr.edge_exists(s, t)) return false;
 	if(source + 3 != target) return false;
-	int s  = tp2v[source];
+
 	int k1 = tp2v[source + 1];
 	int k2 = tp2v[source + 2];
-	int t  = tp2v[target];
+	assert(s > k1);
+	assert(k1 > k2);
+	assert(k2 > t);
 	if (gr.out_degree(s) != 2) return false;
 	if (gr.out_degree(k1)!= 2 || gr.in_degree(k1) != 1) return false;
 	if (gr.out_degree(k2)!= 1 || gr.out_degree(k2)!= 2) return false;
@@ -287,6 +289,10 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 	res.subpaths.clear();
 	res.subpaths.insert(res.subpaths.begin(), res1.subpaths.begin(), res1.subpaths.end());
 	res.subpaths.insert(res.subpaths.begin(), res2.subpaths.begin(), res2.subpaths.end());
+
+	double w = 0;
+	for(const path& p: res.subpaths) w += p.abd;
+	replace_closed_nodes_w_one_edge(source, target, w);
 	return true;
 }
 
@@ -312,7 +318,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 		cout << msg << endl;
 	}
 
-	int pivot = divide_conquer_find_pivot(source, target);
+	int pivot = divide_conquer_find_articulation(source, target);
 	assert(pivot > source);
 	assert(pivot < target);
 
@@ -390,7 +396,7 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 }
 
 // find a pivot s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
-int aster::divide_conquer_find_pivot(int source, int target)
+int aster::divide_conquer_find_articulation(int source, int target)
 {
 	assert(source < target - 1);
 	int s = tp2v[source];
@@ -536,7 +542,7 @@ int aster::topological_sort_vertices()
 	vector<bool> visited(gr.num_vertices(), false);
 	for(int i = 0; i < gr.num_vertices(); i++)	
 	{
-		topological_sort_vertices_visit(i, visited);
+		topological_sort_vertices_visit(i, visited, tp2v);
 	}
 	reverse(tp2v.begin(), tp2v.end());
 	v2tp.resize(tp2v.size());
@@ -579,15 +585,15 @@ int aster::topological_sort_vertices()
 	return 0;
 }
 
-/* visit a node i in DFS, push i to tp2v */
-int aster::topological_sort_vertices_visit(int i, vector<bool>& visited)
+/* visit a node i in DFS, push i to _tp2v */
+int aster::topological_sort_vertices_visit(int i, vector<bool>& visited, vector<int>& _tp2v)
 {
 	if(visited[i]) return 0;
 	visited[i] = true;
 
 	if(gr.out_degree(i) == 0)
 	{
-		tp2v.push_back(i);
+		_tp2v.push_back(i);
 		return 0;
 	}
 
@@ -596,9 +602,9 @@ int aster::topological_sort_vertices_visit(int i, vector<bool>& visited)
 	for(peei = gr.out_edges(i), it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 	{
 		int j = (*it1)->target();
-		topological_sort_vertices_visit(j , visited);
+		topological_sort_vertices_visit(j , visited, _tp2v);
 	}
-	tp2v.push_back(i);
+	_tp2v.push_back(i);
 	return 0;
 }
 
