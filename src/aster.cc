@@ -324,7 +324,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	return true;
 }
 
-/*  combines subpaths of left and right sides of pivot k */
+/*  combines subpaths of left and right sides of articulation point k */
 int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st) const
 {
 	int k = tp2v[pivot];
@@ -382,6 +382,41 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 	comb.subpaths.push_back(path(v, abd));
 
 	assert(comb.subpaths.size() >= res1.subpaths.size() + res2.subpaths.size() - 1);
+
+	if(verbose >= 3)
+	{
+		cout << "combining subpaths paths squeezing articulation point " << k << " (TopoIdx " << pivot << ")" << endl ;
+		cout << "paths on the left side of art-point: ";
+		for(const path& p: res1.subpaths)
+		{
+			cout << endl;
+			cout << "weight = " << p.abd << " ; path = [";
+			printv(p.v);
+			cout << "]";
+		}
+		cout << endl;
+		
+		cout << "paths on the right side of art-point: ";
+		for(const path& p: res2.subpaths)
+		{
+			cout << endl;
+			cout << "weight = " << p.abd << " ; path = [";
+			printv(p.v);
+			cout << "]";
+		}
+		cout << endl;
+		
+		cout << "combined paths ";
+		for(const path& p: comb.subpaths)
+		{
+			cout << endl;
+			cout << "weight = " << p.abd << " ; path = [";
+			printv(p.v);
+			cout << "]";
+		}
+		cout << endl;
+	}
+
 	return 0;
 }
 
