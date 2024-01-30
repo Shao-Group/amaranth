@@ -453,7 +453,6 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	int    ss    = s;
 	bool   _avg_ = false;        // average if true, geom mean if false
 	double w     = _avg_? 0: 1;
-	int    c     = 0;
 	while(true)
 	{
 		unitig.push_back(ss);
@@ -462,13 +461,13 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 		if (ss == t) break;
 		if (gr.out_degree(ss) > 1) return false;
 		edge_descriptor e = (*gr.out_edges(ss).first);
-		if (_avg_)  w += gr.get_edge_weight(e);
-		else 		w *= gr.get_edge_weight(e);
-		c  += 1;
+		double ew = gr.get_edge_weight(e);
+		w = _avg_? (w + ew): (w * ew);
 		ss  = e->target();
 	}
-	if(_avg_) w = w / double(c);
-	else 	  w = pow(w, 1.0/c);
+	assert(origr.valid_path(unitig));
+	double c = double(unitig.size());
+	w = _avg_? (w / c): pow(w, 1.0/ c);
 	res.subpaths.push_back(path(unitig, w));
 	res.dist = 0;
 
