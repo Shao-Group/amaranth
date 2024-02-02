@@ -127,6 +127,11 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	return -1;
 }
 
+int aster::greedy(int source, int target)
+{
+	throw runtime_error("not implemented yet");
+}
+
 /* resolve trivila intersections only 
 *  all four vertices should be directly connected but not recursively solvable
 *  1->2->3->4 and 1->3 and 2->4 forming a diomond shape
