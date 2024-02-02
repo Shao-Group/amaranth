@@ -286,6 +286,123 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 	return true;
 }
 
+/* return size of interval pairs 
+*  return -1 if not exists 
+*  if source/target is cut vertex, 
+* 		then all subgraph's sources must be source-vertex's out-edge targets
+* 		then all subgraph's targets must be target-vertex's in-edge  sources
+*/
+int aster::divide_conquer_cut_termini_point(int source, int target, vector<pair<int, int>>& intervals)
+{
+	assert(source < tp2v.size() && target < tp2v.size());
+	int s = tp2v[source];
+	int t = tp2v[target];
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+	assert(s < t - 1);
+	assert(source < target - 1);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
+	if(gr.edge_exists(s,t)) return -1;
+	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return -1;
+
+	
+	constexpr bool IS_SOURCE = true;
+	constexpr bool IS_TARGET = false;
+	map<int, bool> subgraphDisjoinPoints;
+	PEEI peei1 = gr.out_edges(s);
+	for(edge_iterator it1 = peei1.first, it2 = peei1.second; it1 != it2; it1++)
+	{
+		edge_descriptor e = *it1;
+		int subs = e->target();
+		assert(subs != t);
+		int subsource = v2tp.at(subs);
+		subgraphDisjoinPoints.insert({subsource, IS_SOURCE});
+	}
+	PEEI peei2 = gr.in_edges(t);
+	for(edge_iterator it1 = peei2.first, it2 = peei2.second; it1 != it2; it1++)
+	{
+		edge_descriptor e = *it1;
+		int subt = e->source();
+		assert(subt != s);
+		int subtarget = v2tp.at(subt);
+		subgraphDisjoinPoints.insert({subtarget, IS_TARGET});
+	}
+
+	// delete key if 1. IS_SOURCE and previous IS_SOURCE; 2. IS_TARGET and next IS_TARGET
+	assert(subgraphDisjoinPoints.begin()->second == IS_SOURCE);
+	assert(prev(subgraphDisjoinPoints.end())->second == IS_TARGET);
+    for (auto it = next(subgraphDisjoinPoints.begin()); it != prev(subgraphDisjoinPoints.end()); /*increment separately handled*/ ) 
+	{
+		bool label = it->second;
+		bool prevLable = prev(it)->second;
+		bool nextLabel = next(it)->second;
+        if (label == IS_SOURCE && prevLable == IS_SOURCE) 
+		{
+			it = subgraphDisjoinPoints.erase(it);
+			continue;            
+        } 
+		else if(label == IS_TARGET && nextLabel == IS_TARGET)
+		{
+			it = subgraphDisjoinPoints.erase(it);
+			continue;
+		}
+		else 
+		{
+			assert(!(label == IS_TARGET && prevLable == IS_TARGET));
+            ++it;
+        }
+    }
+
+	// pupulate `intervals`
+	intervals.clear();
+	assert(subgraphDisjoinPoints.size() % 2 == 0);
+	for (auto it = subgraphDisjoinPoints.begin(); it != prev(subgraphDisjoinPoints.end()); next(it, 2)) 
+	{
+		int subsource = it->first;
+		int subtarget = next(it)->first;
+		assert(it->second == IS_SOURCE && next(it)->second == IS_TARGET);
+		assert(subsource <= subtarget);
+		assert(subsource > source);
+		assert(subtarget < target);
+		intervals.push_back({subsource, subtarget});
+		cout << "divide_conquer_cut_termini_point::intervals"  << subsource << "\t" << subtarget << endl; //CLEAN:
+    }
+
+
+	// assertions and validations
+	for(const auto& pp: intervals)
+	{
+		int subsource = pp.first;
+		int subtarget = pp.second;
+		int ss = tp2v[subsource];
+		int tt = tp2v[subtarget];
+		for(int i = subsource; i < subtarget; i++)
+		{
+			int vidx = tp2v.at(i);
+			PEEI peei = gr.out_edges(vidx);
+			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
+			{
+				if((*it1)->target() <= tt) continue;
+				intervals.clear();
+				return -1;
+			}
+		}
+		for(int i = subtarget; i > subsource; i--)
+		{
+			int vidx = tp2v.at(i);
+			PEEI peei = gr.in_edges(vidx);
+			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
+			{
+				if((*it1)->source() >= ss) continue;
+				intervals.clear();
+				return -1;
+			}
+		}
+	}
+
+	if(intervals.size() == 0) return -1;
+	return intervals.size();
+}
+
 /* check if the graph can be divided to two disjoint graphs at a pivot k
 ** divide and conquer the problem to dnc[s, k], dnc [k, t]
 ** not disjoint: (s,t) edge exists, or multiple subgraphs can be found

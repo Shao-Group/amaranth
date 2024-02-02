@@ -80,7 +80,7 @@ private:
 	bool divide_conquer_unitig(int source, int target, aster_result& res);
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
 	bool divide_conquer_cut_termini(int source, int target, aster_result& res);
-	int  divide_conquer_cut_termini_point(int source, int target);
+	int  divide_conquer_cut_termini_point(int source, int target, vector<pair<int, int>>& intervals);
 	bool divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_find_articulation(int source, int target);
 	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st) const;
