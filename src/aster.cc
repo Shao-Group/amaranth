@@ -292,7 +292,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 * 		then all subgraph's sources must be source-vertex's out-edge targets
 * 		then all subgraph's targets must be target-vertex's in-edge  sources
 */
-int aster::divide_conquer_cut_termini_point(int source, int target, vector<pair<int, int>>& intervals)
+int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<int, int>>& intervals)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
 	int s = tp2v[source];
@@ -364,7 +364,7 @@ int aster::divide_conquer_cut_termini_point(int source, int target, vector<pair<
 		assert(subsource > source);
 		assert(subtarget < target);
 		intervals.push_back({subsource, subtarget});
-		cout << "divide_conquer_cut_termini_point::intervals"  << subsource << "\t" << subtarget << endl; //CLEAN:
+		cout << "divide_conquer_cut_termini_find::intervals"  << subsource << "\t" << subtarget << endl; //CLEAN:
     }
 
 
@@ -418,7 +418,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	
-	int pivot = divide_conquer_find_articulation(source, target);
+	int pivot = divide_conquer_articulation_find(source, target);
 	if (pivot < 0) return false;
 	assert(pivot > source && pivot < target);
 	
@@ -539,7 +539,7 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 
 // find a pivot s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
 // return -1 if cannot fine artivulation point
-int aster::divide_conquer_find_articulation(int source, int target) 
+int aster::divide_conquer_articulation_find(int source, int target) 
 {
 	assert(source < target - 1);
 	int s = tp2v[source];
