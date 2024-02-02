@@ -228,10 +228,39 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 	assert(source < target - 1);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
-	
+	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return false;
+
 	// examine if disjoint subgraphs; as the graph is DFS topo-sorted
-	int disjointPoint = divide_conquer_cut_termini_point(source, target);
-	if(disjointPoint == -1) return false;
+	vector<pair<int, int>> subgraph_intervals;
+	int subgraphNum = divide_conquer_cut_termini_find(source, target, subgraph_intervals);
+	if(subgraphNum <= 0) return false;
+	if(subgraph_intervals.size() == 0) return false;
+	// assertions 
+	for(const auto& pp: subgraph_intervals)	
+	{
+		int subsource = pp.first;
+		int subtarget = pp.second;
+		int ss = tp2v[subsource];
+		int tt = tp2v[subtarget];
+		for(int i = subsource; i < subtarget; i++)
+		{
+			int vidx = tp2v.at(i);
+			PEEI peei = gr.out_edges(vidx);
+			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
+			{
+				assert((*it1)->target() <= tt);
+			}
+		}
+		for(int i = subtarget; i > subsource; i--)
+		{
+			int vidx = tp2v.at(i);
+			PEEI peei = gr.in_edges(vidx);
+			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
+			{
+				assert((*it1)->source() >= ss);
+			}
+		}
+	}
 
 	if(verbose >= 2) 
 	{
@@ -240,45 +269,40 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 		cout << msg << endl;
 	}
 
-	for(int i = source + 1; i <= disjointPoint; i++)
+	// get paths for subgraphs
+	vector<aster_result> resOfSubgraphs(subgraph_intervals.size());
+	for(int i = 0; i < subgraph_intervals.size(); i++)
 	{
-		for(int j = disjointPoint + 1; j <= target - 1; j++)
+		aster_result& res1 = resOfSubgraphs[i];
+		int subsource = subgraph_intervals[i].first;
+		int subtarget = subgraph_intervals[i].second;
+		divide_conquer(subsource, subtarget, res1);
+		assert(res1.subpaths.size() > 0);
+		for(path& p: res1.subpaths)
 		{
-			bool b = gr.check_path(tp2v[i], tp2v[j]);
-			if (b) cerr << gr.gid << " disjoint_at_termini subgraph wrong " << i << " " << tp2v[i] << " " << j << " " << tp2v[j]  << endl;
-			assert(!b);
+			assert(p.v.front() != s);
+			assert(p.v.back() != t);
+			p.v.insert(p.v.begin(), s);
+			p.v.push_back(t);
+			assert(origr.valid_path(p.v));
 		}
 	}
 
-	aster_result res1;
-	divide_conquer(source, disjointPoint, res1);
-	assert(res1.subpaths.size() > 0);
-	for(path& p: res1.subpaths)
-	{
-		assert(p.v.back() != t);
-		p.v.push_back(t);
-		assert(origr.valid_path(p.v));
-	}
-	aster_result res2;
-	divide_conquer(disjointPoint + 1, target, res2);
-	assert(res2.subpaths.size() > 0);
-	for(path& p: res2.subpaths)
-	{
-		assert(p.v.front() != s);
-		p.v.insert(p.v.begin(), s);
-		assert(origr.valid_path(p.v));
-	}
-
-	int shortestPathSize1 = find_shortest_path(res1);
-	int shortestPathSize2 = find_shortest_path(res2);
-	assert(shortestPathSize1 - 2 >= 1);
-	assert(shortestPathSize2 - 2 >= 1);
-	int eventSize = shortestPathSize1 - 2 + shortestPathSize2 - 2;
-	assert(eventSize >= 1);
-	res.dist = event_size_penalty(eventSize) + res1.dist + res2.dist;
+	// get penalty 
+	int numEvents = 0;
+	int sumPenalty = 0;
 	res.subpaths.clear();
-	res.subpaths.insert(res.subpaths.begin(), res1.subpaths.begin(), res1.subpaths.end());
-	res.subpaths.insert(res.subpaths.begin(), res2.subpaths.begin(), res2.subpaths.end());
+	for(int i = 0; i < subgraph_intervals.size(); i++)
+	{
+		aster_result& res1 = resOfSubgraphs[i];
+		int shortestPathSize1 = find_shortest_path(res1);
+		assert(shortestPathSize1 - 2 >= 1);
+		numEvents += shortestPathSize1 - 2;
+		sumPenalty += res1.dist;
+		res.subpaths.insert(res.subpaths.begin(), res1.subpaths.begin(), res1.subpaths.end());
+	}
+	assert(numEvents >= 1);
+	res.dist = event_size_penalty(numEvents) + sumPenalty;
 
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
