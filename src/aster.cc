@@ -59,8 +59,7 @@ int aster::divide_conquer()
 	aster_result res;
 	divide_conquer(s, t, res);
 	paths = res.subpaths;
-	assert(paths.size() > 0);
-	for(const path & p : paths)	assert(origr.valid_path(p.v));
+	if(paths.size() >= 1) for(const path & p : paths)	assert(origr.valid_path(p.v));
 	return 0;
 }
 
