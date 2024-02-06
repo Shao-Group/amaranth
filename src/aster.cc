@@ -153,8 +153,8 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 	int s = tp2v[source];
 	int t = tp2v[target];
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
-	assert(s < t - 1);
-	assert(source < target - 1);
+	assert(s < t - 2);
+	assert(source < target - 2);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	
 	if(gr.edge_exists(s, t)) return false;
@@ -162,9 +162,9 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 
 	int k1 = tp2v[source + 1];
 	int k2 = tp2v[source + 2];
-	assert(s > k1);
-	assert(k1 > k2);
-	assert(k2 > t);
+	assert(s < k1);
+	assert(k1 < k2);
+	assert(k2 < t);
 	if (gr.out_degree(s) != 2) return false;
 	if (gr.out_degree(k1)!= 2 || gr.in_degree(k1) != 1) return false;
 	if (gr.out_degree(k2)!= 1 || gr.out_degree(k2)!= 2) return false;
