@@ -475,17 +475,17 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	
-	int pivot = divide_conquer_articulation_find(source, target);
-	if (pivot < 0) return false;
-	assert(pivot > source && pivot < target);
-	
 	if(verbose >= 2)
 	{
-		string msg = "aster processed disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processing disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
 
+	int pivot = divide_conquer_articulation_find(source, target);
+	if (pivot < 0) return false;
+	assert(pivot > source && pivot < target);
+	
 	aster_result res1;
 	aster_result res2;
 	divide_conquer(source, pivot, res1);
@@ -495,6 +495,16 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
 	replace_closed_nodes_w_one_edge(source, target, w);
+
+	if(verbose >= 2)
+	{
+		string msg = "aster processed disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		msg += ", articulation point = " + to_string(tp2v[pivot]);
+		msg += " (topoIndex = " + to_string(pivot) + ")";
+		cout << msg << endl;
+	}
+
 	return true;
 }
 
