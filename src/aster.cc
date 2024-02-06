@@ -227,6 +227,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	return true;
 }	
 
+//FIXME: use connected-component to do a more comprehensive work. Now works.
 bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
@@ -610,7 +611,8 @@ int aster::divide_conquer_articulation_find(int source, int target)
 	//assertion
 	splice_graph gr2(gr);
 	gr2.clear_vertex(artVertex);
-	assert(! gr2.check_path(s, t));
+	// assert(! gr2.check_path(s, t)); //FIXME:
+	if(gr2.check_path(s, t)) return -1;
 
 	return pivot;
 }
