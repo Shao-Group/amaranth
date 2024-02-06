@@ -348,7 +348,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 	
 	constexpr int IS_SOURCE = 1;
 	constexpr int IS_TARGET = 2;
-	map<int, int> subgraphDisjoinPoints;
+	vector<pair <int, int>> subgraphDisjoinPoints;
 	PEEI peei1 = gr.out_edges(s);
 	for(edge_iterator it1 = peei1.first, it2 = peei1.second; it1 != it2; it1++)
 	{
@@ -356,15 +356,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 		int subs = e->target();
 		assert(subs != t);
 		int subsource = v2tp.at(subs);
-		auto findIt = subgraphDisjoinPoints.find(subsource);
-		if(findIt == subgraphDisjoinPoints.end())
-		{
-			subgraphDisjoinPoints.insert({subsource, IS_SOURCE});
-		}
-		else
-		{
-			findIt->second += IS_SOURCE;
-		}
+		subgraphDisjoinPoints.push_back({subsource, IS_SOURCE});
 	}
 	PEEI peei2 = gr.in_edges(t);
 	for(edge_iterator it1 = peei2.first, it2 = peei2.second; it1 != it2; it1++)
@@ -373,25 +365,20 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 		int subt = e->source();
 		assert(subt != s);
 		int subtarget = v2tp.at(subt);
-		auto findIt = subgraphDisjoinPoints.find(subtarget);
-		if(findIt == subgraphDisjoinPoints.end())
-		{
-			subgraphDisjoinPoints.insert({subtarget, IS_TARGET});
-		}
-		else
-		{
-			findIt->second += IS_TARGET;
-		}
+		subgraphDisjoinPoints.push_back({subtarget, IS_TARGET});
 	}
+	sort(subgraphDisjoinPoints.begin(), subgraphDisjoinPoints.end());
 
 	// delete key if 1. IS_SOURCE and previous IS_SOURCE; 2. IS_TARGET and next IS_TARGET
 	assert((subgraphDisjoinPoints.begin()->second & IS_SOURCE) >= 1);
 	assert((prev(subgraphDisjoinPoints.end())->second & IS_TARGET) >= 1);
     for (auto it = next(subgraphDisjoinPoints.begin()); it != prev(subgraphDisjoinPoints.end()); /*increment separately handled*/ ) 
 	{
-		bool label = it->second;
-		bool prevLable = prev(it)->second;
-		bool nextLabel = next(it)->second;
+		if(it->first == next(it)->first) assert((it->second & IS_SOURCE) && (next(it)->second & IS_TARGET));
+		int label = it->second;
+		assert(label == IS_SOURCE || label == IS_TARGET);
+		int prevLable = prev(it)->second;
+		int nextLabel = next(it)->second;
         if ((label & IS_SOURCE) && (prevLable & IS_SOURCE)) 
 		{
 			it->second -= IS_SOURCE;
@@ -411,17 +398,30 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
     }
 
 	// pupulate `intervals`
+	// use a vector and sort vector
 	intervals.clear();
 	for (auto it = subgraphDisjoinPoints.begin(); it != subgraphDisjoinPoints.end(); it++) 
 	{
-		int subsource = it->first;
-		int subtarget = next(it)->first;
-		if(((it->second & IS_SOURCE) <= 0) || ((next(it)->second & IS_TARGET) <= 0)) continue;
-		assert(subsource <= subtarget);
-		assert(subsource > source);
-		assert(subtarget < target);
-		intervals.push_back({subsource, subtarget});
-		cout << "divide_conquer_cut_termini_find::intervals from-to: "  << subsource << " - " << subtarget << endl; //CLEAN:
+		// multi vertex interval
+		int label = it->second;
+		assert(label == IS_SOURCE || label == IS_TARGET);
+		if(it->second & IS_SOURCE)
+		{
+			assert(next(it)->second & IS_TARGET);
+			int subsource = it->first;
+			int subtarget = next(it)->first;
+			
+			assert(subsource <= subtarget);
+			assert(subsource > source);
+			assert(subtarget < target);
+			intervals.push_back({subsource, subtarget});
+			cout << "divide_conquer_cut_termini_find::interval found: "  << subsource << " - " << subtarget << endl; //CLEAN:
+		}
+		else 
+		{
+			assert(it->second & IS_TARGET);
+			assert(next(it) == subgraphDisjoinPoints.end() || next(it)->second & IS_SOURCE);
+		}
     }
 
 
