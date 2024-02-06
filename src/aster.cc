@@ -388,7 +388,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 	// pupulate `intervals`
 	intervals.clear();
 	assert(subgraphDisjoinPoints.size() % 2 == 0);
-	for (auto it = subgraphDisjoinPoints.begin(); it != prev(subgraphDisjoinPoints.end()); next(it, 2)) 
+	for (auto it = subgraphDisjoinPoints.begin(); it != prev(subgraphDisjoinPoints.end()); it = next(it, 2)) 
 	{
 		int subsource = it->first;
 		int subtarget = next(it)->first;
