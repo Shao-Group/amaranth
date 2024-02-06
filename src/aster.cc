@@ -318,11 +318,13 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 		assert(res1.subpaths.size() > 0);
 		for(path& p: res1.subpaths)
 		{
+			assert(p.v.size() >= 1);
 			assert(p.v.front() != s);
 			assert(p.v.back() != t);
 			p.v.insert(p.v.begin(), s);
 			p.v.push_back(t);
 			assert(origr.valid_path(p.v));
+			assert(p.v.size() >= 3);
 		}
 	}
 
@@ -333,7 +335,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 	for(int i = 0; i < subgraph_intervals.size(); i++)
 	{
 		aster_result& res1 = resOfSubgraphs[i];
-		int shortestPathSize1 = find_shortest_path(res1);
+		int shortestPathSize1 = res1.subpaths.at(find_shortest_path(res1)).v.size();
 		assert(shortestPathSize1 - 2 >= 1);
 		numEvents += shortestPathSize1 - 2;
 		sumPenalty += res1.dist;
