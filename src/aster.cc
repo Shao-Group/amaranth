@@ -408,7 +408,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 	{
 		int subsource = it->first;
 		int subtarget = next(it)->first;
-		if((it->second & IS_SOURCE <= 0) || (next(it)->second & IS_TARGET <= 0)) continue;
+		if(((it->second & IS_SOURCE) <= 0) || ((next(it)->second & IS_TARGET) <= 0)) continue;
 		assert(subsource <= subtarget);
 		assert(subsource > source);
 		assert(subtarget < target);
