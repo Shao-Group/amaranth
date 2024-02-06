@@ -126,6 +126,8 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 
 	res.subpaths.clear();
 	res.dist = -1;
+	print_stats();
+	
 	return -1;
 }
 
