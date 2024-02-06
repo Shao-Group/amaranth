@@ -127,7 +127,7 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	res.subpaths.clear();
 	res.dist = -1;
 	print_stats();
-	
+
 	return -1;
 }
 
@@ -637,8 +637,8 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	{
 		unitig.push_back(ss);
 		assert(ss <= t);
-		assert(gr.out_degree(ss) >= 1);
 		if (ss == t) break;
+		assert(gr.out_degree(ss) >= 1);
 		if (gr.out_degree(ss) > 1) return false;
 		edge_descriptor e = (*gr.out_edges(ss).first);
 		double ew = gr.get_edge_weight(e);
