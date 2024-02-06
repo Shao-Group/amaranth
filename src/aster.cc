@@ -6,6 +6,7 @@ See LICENSE for licensing.
 
 #include <algorithm>
 #include <cmath>
+#include "util.h"
 #include "aster.h"
 #include "basic_algo.h"
 
@@ -189,6 +190,15 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 	res.subpaths.push_back({{s, k2, t}, abd3});
 
 	replace_closed_nodes_w_one_edge(source, target, abd1 + abd2 + abd3);
+
+	if(verbose >= 2) 
+	{
+		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "a trivial intersecting graph"; 
+		cout << msg << endl;
+	}
+
 	return true;
 }
 
@@ -207,8 +217,9 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed a direct abutting edge between vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "removing the direct edge between them."; 
 		cout << msg << endl;
 	}
 
@@ -231,6 +242,15 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	res.dist += event_size_penalty(eventSize);
 
 	replace_closed_nodes_w_one_edge(source, target, w);
+
+	if(verbose >= 2) 
+	{
+		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "with a direct edge between them."; 
+		cout << msg << endl;
+	}
+
 	return true;
 }	
 
@@ -281,8 +301,9 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed disjoint graphs at termini, vertex [" + to_string(s) + "," + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "splitting disjoint graphs at termini"; 
 		cout << msg << endl;
 	}
 
@@ -324,6 +345,14 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
 	replace_closed_nodes_w_one_edge(source, target, w);
+
+	if(verbose >= 2) 
+	{
+		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "with " + to_string(subgraph_intervals.size()) +" disjoint graphs at termini"; 
+	}
+
 	return true;
 }
 
@@ -477,8 +506,9 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	
 	if(verbose >= 2)
 	{
-		string msg = "aster processing disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "splitting subgraphs at articulation point"; 
 		cout << msg << endl;
 	}
 
@@ -498,9 +528,9 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 
 	if(verbose >= 2)
 	{
-		string msg = "aster processed disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
-		msg += ", articulation point = " + to_string(tp2v[pivot]);
+		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "with subgraphs at articulation point " + to_string(tp2v[pivot]);
 		msg += " (topoIndex = " + to_string(pivot) + ")";
 		cout << msg << endl;
 	}
@@ -689,10 +719,10 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed unitig subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
-		cout << msg << endl;
-		cout << "\t unitig path is: ";
+		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "\twith a unitig path: "; 
+		cout << msg;
 		printv(unitig);
 		cout << endl;
 	}
@@ -715,7 +745,9 @@ bool aster::divide_conquer_single_vertex(int source, int target, aster_result& r
 	
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed single-vertex subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "with a single-vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
