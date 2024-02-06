@@ -498,6 +498,52 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	return true;
 }
 
+// find a pivot s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
+// return -1 if cannot fine artivulation point
+int aster::divide_conquer_articulation_find(int source, int target) 
+{
+	assert(source < target - 1);
+	int s = tp2v[source];
+	int t = tp2v[target];
+	int artVertex = -1;
+	int spannedVertex = -1;
+
+	for(int i = source + 1; i < target; i++)
+	{
+		int iVertex = tp2v[i];
+		if (iVertex == artVertex) break;
+		if (iVertex < spannedVertex) continue;
+		PEEI peei = gr.out_edges(iVertex);
+		for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
+		{
+			edge_descriptor e = *it1;
+			spannedVertex = max(spannedVertex,  e->target());
+		}
+		artVertex = max(artVertex, spannedVertex);
+		if (artVertex >= t) return -1;
+	}
+
+	int pivot = v2tp.at(artVertex);
+	if(verbose >= 2) 
+	{
+		string msg = "\t inside ["+ to_string(s) + ", " + to_string(t) + "], " + " articulation point = " + to_string(tp2v[pivot]);
+		msg += " (topoIndex = " + to_string(pivot) + ")";
+		cout << msg << endl;
+	}
+	assert(s < artVertex);
+	assert(t > artVertex);
+	assert(pivot > source);
+	assert(pivot < target);
+
+	//assertion
+	splice_graph gr2(gr);
+	gr2.clear_vertex(artVertex);
+	// assert(! gr2.check_path(s, t)); //FIXME:
+	if(gr2.check_path(s, t)) return -1;
+
+	return pivot;
+}
+
 /*  combines subpaths of left and right sides of articulation point k */
 int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st) const
 {
@@ -594,51 +640,6 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 	return 0;
 }
 
-// find a pivot s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
-// return -1 if cannot fine artivulation point
-int aster::divide_conquer_articulation_find(int source, int target) 
-{
-	assert(source < target - 1);
-	int s = tp2v[source];
-	int t = tp2v[target];
-	int artVertex = -1;
-	int spannedVertex = -1;
-
-	for(int i = source + 1; i < target; i++)
-	{
-		int iVertex = tp2v[i];
-		if (iVertex == artVertex) break;
-		if (iVertex < spannedVertex) continue;
-		PEEI peei = gr.out_edges(iVertex);
-		for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
-		{
-			edge_descriptor e = *it1;
-			spannedVertex = max(spannedVertex,  e->target());
-		}
-		artVertex = max(artVertex, spannedVertex);
-		if (artVertex >= t) return -1;
-	}
-
-	int pivot = v2tp.at(artVertex);
-	if(verbose >= 2) 
-	{
-		string msg = "\t inside ["+ to_string(s) + ", " + to_string(t) + "], " + " articulation point = " + to_string(tp2v[pivot]);
-		msg += " (topoIndex = " + to_string(pivot) + ")";
-		cout << msg << endl;
-	}
-	assert(s < artVertex);
-	assert(t > artVertex);
-	assert(pivot > source);
-	assert(pivot < target);
-
-	//assertion
-	splice_graph gr2(gr);
-	gr2.clear_vertex(artVertex);
-	// assert(! gr2.check_path(s, t)); //FIXME:
-	if(gr2.check_path(s, t)) return -1;
-
-	return pivot;
-}
 
 /* examine if dnc unitig between source to target; if true, populate res */
 bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
