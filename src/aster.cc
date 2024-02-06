@@ -338,9 +338,9 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return -1;
 
 	
-	constexpr bool IS_SOURCE = true;
-	constexpr bool IS_TARGET = false;
-	map<int, bool> subgraphDisjoinPoints;
+	constexpr int IS_SOURCE = 1;
+	constexpr int IS_TARGET = 2;
+	map<int, int> subgraphDisjoinPoints;
 	PEEI peei1 = gr.out_edges(s);
 	for(edge_iterator it1 = peei1.first, it2 = peei1.second; it1 != it2; it1++)
 	{
@@ -348,7 +348,15 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 		int subs = e->target();
 		assert(subs != t);
 		int subsource = v2tp.at(subs);
-		subgraphDisjoinPoints.insert({subsource, IS_SOURCE});
+		auto findIt = subgraphDisjoinPoints.find(subsource);
+		if(findIt == subgraphDisjoinPoints.end())
+		{
+			subgraphDisjoinPoints.insert({subsource, IS_SOURCE});
+		}
+		else
+		{
+			findIt->second += IS_SOURCE;
+		}
 	}
 	PEEI peei2 = gr.in_edges(t);
 	for(edge_iterator it1 = peei2.first, it2 = peei2.second; it1 != it2; it1++)
@@ -357,30 +365,39 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 		int subt = e->source();
 		assert(subt != s);
 		int subtarget = v2tp.at(subt);
-		subgraphDisjoinPoints.insert({subtarget, IS_TARGET});
+		auto findIt = subgraphDisjoinPoints.find(subtarget);
+		if(findIt == subgraphDisjoinPoints.end())
+		{
+			subgraphDisjoinPoints.insert({subtarget, IS_TARGET});
+		}
+		else
+		{
+			findIt->second += IS_TARGET;
+		}
 	}
 
 	// delete key if 1. IS_SOURCE and previous IS_SOURCE; 2. IS_TARGET and next IS_TARGET
-	assert(subgraphDisjoinPoints.begin()->second == IS_SOURCE);
-	assert(prev(subgraphDisjoinPoints.end())->second == IS_TARGET);
+	assert((subgraphDisjoinPoints.begin()->second & IS_SOURCE) >= 1);
+	assert((prev(subgraphDisjoinPoints.end())->second & IS_TARGET) >= 1);
     for (auto it = next(subgraphDisjoinPoints.begin()); it != prev(subgraphDisjoinPoints.end()); /*increment separately handled*/ ) 
 	{
 		bool label = it->second;
 		bool prevLable = prev(it)->second;
 		bool nextLabel = next(it)->second;
-        if (label == IS_SOURCE && prevLable == IS_SOURCE) 
+        if ((label & IS_SOURCE) && (prevLable & IS_SOURCE)) 
 		{
-			it = subgraphDisjoinPoints.erase(it);
+			it->second -= IS_SOURCE;
+			if(it->second <= 0) it = subgraphDisjoinPoints.erase(it);
 			continue;            
         } 
-		else if(label == IS_TARGET && nextLabel == IS_TARGET)
+		else if((label & IS_TARGET) && (nextLabel & IS_TARGET))
 		{
-			it = subgraphDisjoinPoints.erase(it);
+			it->second -= IS_TARGET;
+			if(it->second <= 0) it = subgraphDisjoinPoints.erase(it);
 			continue;
 		}
 		else 
 		{
-			assert(!(label == IS_TARGET && prevLable == IS_TARGET));
             ++it;
         }
     }
