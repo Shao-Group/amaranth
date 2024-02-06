@@ -67,6 +67,14 @@ int aster::divide_conquer()
 // i, j are tp2v indices
 int aster::divide_conquer(int source, int target, aster_result& res)
 {
+	if(verbose >= 2)
+	{
+		int s = tp2v.at(source), t = tp2v.at(target);
+		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		cout << msg << endl;
+	}
+
 	assert(res.subpaths.size() == 0);
 	assert(res.dist == -1);
 	assert(source <= target);
@@ -199,7 +207,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster D&C with a direct abutting edge between vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processed a direct abutting edge between vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
@@ -273,7 +281,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster D&C with disjoint graphs at termini, vertex [" + to_string(s) + "," + to_string(t) + "]"; 
+		string msg = "aster processed disjoint graphs at termini, vertex [" + to_string(s) + "," + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
@@ -413,7 +421,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 		assert(subsource > source);
 		assert(subtarget < target);
 		intervals.push_back({subsource, subtarget});
-		cout << "divide_conquer_cut_termini_find::intervals"  << subsource << "\t" << subtarget << endl; //CLEAN:
+		cout << "divide_conquer_cut_termini_find::intervals from-to: "  << subsource << " - " << subtarget << endl; //CLEAN:
     }
 
 
@@ -473,7 +481,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	
 	if(verbose >= 2)
 	{
-		string msg = "aster D&C with disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processed disjoint graphs at articulation point, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
@@ -670,7 +678,7 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster D&C with unitig subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processed unitig subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 		cout << "\t unitig path is: ";
@@ -696,7 +704,7 @@ bool aster::divide_conquer_single_vertex(int source, int target, aster_result& r
 	
 	if(verbose >= 2) 
 	{
-		string msg = "aster D&C with single-vertex subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processed single-vertex subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
