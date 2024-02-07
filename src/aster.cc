@@ -522,7 +522,8 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	aster_result res2;
 	divide_conquer(source, pivot, res1);
 	divide_conquer(pivot, target, res2);
-	divide_conquer_combine(res1, res2, pivot, res, st);
+	bool combineSuccess = divide_conquer_combine(res1, res2, pivot, res, st);
+	if (! combineSuccess) return false;
 
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
@@ -586,12 +587,25 @@ int aster::divide_conquer_articulation_find(int source, int target)
 	return pivot;
 }
 
-/*  combines subpaths of left and right sides of articulation point k */
-int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st) const
+/*  combines subpaths of left and right sides of articulation point k
+*	res1, res2 could be empty
+*/
+bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st) const
 {
 	int k = tp2v[pivot];
-	assert(res1.subpaths.size() > 0);
-	assert(res2.subpaths.size() > 0);
+
+	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
+	if(res1.subpaths.size() == 0) 
+	{
+		comb = res2;
+		return true;
+	}
+	if(res2.subpaths.size() == 0) 
+	{
+		comb = res1;
+		return true;
+	}
+
 	for(const path& p: res1.subpaths)	
 	{
 		assert(p.v.size() >= 1); 
@@ -679,7 +693,7 @@ int aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int p
 		cout << endl;
 	}
 
-	return 0;
+	return true;
 }
 
 

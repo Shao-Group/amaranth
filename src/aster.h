@@ -83,7 +83,7 @@ private:
 	int  divide_conquer_cut_termini_find(int source, int target, vector<pair<int, int>>& intervals);
 	bool divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st);
 	int  divide_conquer_articulation_find(int source, int target);
-	int  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st) const;
+	bool  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st) const;
 	
 	int  greedy(int source, int target);
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);
