@@ -128,9 +128,8 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 		counter_resolve_trivial_itsct ++;
 		return 0;
 	}
-	if(mode != aster_mode::MINI)
+	if(mode != aster_mode::MINI && greedy(source, target))
 	{
-		greedy(source, target);
 		return 0;
 	}
 
@@ -313,6 +312,13 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "splitting disjoint graphs at termini"; 
+		msg += "\n\tsplitted intervals:";
+		for(const auto& iv: subgraph_intervals)
+		{
+			msg += "\n\t";
+			msg += "[" + to_string(tp2v.at(iv.first)) + "-" + to_string(tp2v.at(iv.second)) + "] ";
+			msg += "(Topo[" + to_string(iv.first) + "-" + to_string(iv.second) + "]); ";
+		}
 		cout << msg << endl;
 	}
 
@@ -1123,7 +1129,6 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 		}
 	}
 	assert(! gr.check_path(s, t));
-	assert(!gr.refine_splice_graph());
 
 	// put edge
 	edge_descriptor e_new = gr.add_edge(s, t);
@@ -1131,6 +1136,8 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 	ei.weight = w;
 	gr.set_edge_info(e_new, ei);
 	gr.set_edge_weight(e_new, w);
+
+	assert(!gr.refine_splice_graph());
 	return 0;
 }
 
