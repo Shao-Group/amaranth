@@ -295,7 +295,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 			PEEI peei = gr.out_edges(vidx);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				assert((*it1)->target() <= tt);
+				assert(v2tp.at((*it1)->target()) <= subtarget);
 			}
 		}
 		for(int i = subtarget; i > subsource; i--)
@@ -304,7 +304,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 			PEEI peei = gr.in_edges(vidx);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				assert((*it1)->source() >= ss);
+				assert(v2tp.at((*it1)->source()) >= subsource);
 			}
 		}
 	}
@@ -479,7 +479,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 			PEEI peei = gr.out_edges(vidx);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				if((*it1)->target() <= tt) continue;
+				if(v2tp.at((*it1)->target()) <= subtarget) continue;
 				intervals.clear();
 				return -1;
 			}
@@ -490,7 +490,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 			PEEI peei = gr.in_edges(vidx);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				if((*it1)->source() >= ss) continue;
+				if(v2tp.at((*it1)->source()) >= subsource) continue;
 				intervals.clear();
 				return -1;
 			}
@@ -778,8 +778,7 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	return true;
 }
 
-/* WON'T USE. CASE TAKEN BY divide_conquer_unitig
-* examine if dnc single vertex; if true, populate res 
+/* examine if dnc single vertex; if true, populate res 
 */
 bool aster::divide_conquer_single_vertex(int source, int target, aster_result& res)
 {
@@ -1086,8 +1085,9 @@ int aster::find_shortest_path(const aster_result& res) const
 
 /* 
 *  Assume internal nodes must be "closed" in [s, t]
+*  only remove edges in [s,t] (toposorted). 
+*  Maybe not necessarily removes all edges from/to vertices in [s,t] if it is not closed
 *  i.e. for nodes reachable from s and reachable to t, they cannot reach any other nodes but themselves and s,t
-*  remove those internal nodes and replace them with one single edge from s to t
 */
 int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 {
@@ -1100,13 +1100,11 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);	
 
 	// under 'closed' assumption all edges in (s, t) open interval must have sources/targets in [s, t] closed interval
-	PEB peb = gr.edge(s, t);
-	if(peb.second == true) gr.remove_edge(peb.first);
-	for(int middle = source + 1; middle < target; middle ++)
+	for(int middle = source; middle <= target; middle ++)
 	{
 		int k = tp2v[middle];
-		assert(k > s);
-		assert(k < t);
+		assert(k >= s);
+		assert(k <= t);
 		vector<edge_descriptor> ve;
 		PEEI pi = gr.in_edges(k);
 		PEEI po = gr.out_edges(k);
@@ -1120,13 +1118,14 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 		}
 		for(edge_descriptor e: ve)
 		{
-			assert(e->source() >= s);
-			assert(e->target() <= t);
+			if(v2tp.at(e->source()) > target) continue;;
+			if(v2tp.at(e->target()) < source) continue;
 			gr.remove_edge(e);
 		}
 	}
 	assert(! gr.check_path(s, t));
-	
+	assert(!gr.refine_splice_graph());
+
 	// put edge
 	edge_descriptor e_new = gr.add_edge(s, t);
 	edge_info ei;
