@@ -241,7 +241,6 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	assert(gr.check_path(s, t));
 	divide_conquer(source, target, res);
 
-	// push_back abutting subpath
 	int shortestPathIndex = find_shortest_path(res);
 	assert(shortestPathIndex >= 0);
 	int shortestPathSize = res.subpaths[shortestPathIndex].v.size();
@@ -363,6 +362,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with " + to_string(subgraph_intervals.size()) +" disjoint graphs at termini"; 
+		cout << msg << endl;
 	}
 
 	return true;
@@ -456,7 +456,6 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 			assert(subsource > source);
 			assert(subtarget < target);
 			intervals.push_back({subsource, subtarget});
-			// cout << "divide_conquer_cut_termini_find::interval found: "  << subsource << " - " << subtarget << endl; //CLEAN:
 		}
 		else 
 		{
