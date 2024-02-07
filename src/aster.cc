@@ -1161,12 +1161,11 @@ int aster::print_stats()
 {
 	cout << "aster stats ================================================================" << endl;
 	cout << "\t num graphs = " << num_graph  << endl; 
-	cout << "\t num graphs w. intersecting edges = " << num_intersecting_graph  << endl; 
+	cout << "\t num intersecting graphs " << num_intersecting_graph << endl;
 	cout << "\t num exons = " << num_exon  << endl; 
 	cout << "\t num introns = " << num_intron << endl;
 	cout << "\t num intersecting introns = " << num_intersecting_intron_count << endl;
 	cout << "\t num intersecting intron pairs " << num_intersecting_intron_pair << endl;
-	cout << "\t num intersecting graphs " << num_intersecting_graph << endl;
 	cout << "\t D&C algorithm counter: ";
 	cout << "\t " << dnc_counter_single;
 	cout << "\t " << dnc_counter_unitig;
