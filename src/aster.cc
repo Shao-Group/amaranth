@@ -21,8 +21,11 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	make_stats();
 
 	if(mode == aster_mode::STAT_ONLY) print_stats();
+
+	if(verbose >= 1) cout << "aster assembling " << gr.gid << endl;
 	assemble();
 	get_transcripts();	
+	if(verbose >= 1) cout << "aster assembled " << gr.gid << endl;
 }
 
 int aster::assemble()
@@ -126,8 +129,8 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 
 	num_intersecting_graph ++;
 
-	string msg = "aster-mini D&C failed on graph " + gr.gid;
-	msg += " [" + gr.chrm + to_string(gr.get_vertex_info(0).lpos) + ":" + to_string(gr.get_vertex_info(0).rpos) + "]";
+	string msg = "aster-mini failed on graph " + gr.gid;
+	msg += " [" + gr.chrm + ":" + to_string(gr.get_vertex_info(0).lpos) + "-" + to_string(gr.get_vertex_info(0).rpos) + "]";
 	msg += "in subgraph vertexIndex [" + to_string(s) + ", " + to_string(t) + "]";
 	msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])\n";
 	cout << msg << endl;
@@ -446,7 +449,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 			assert(subsource > source);
 			assert(subtarget < target);
 			intervals.push_back({subsource, subtarget});
-			cout << "divide_conquer_cut_termini_find::interval found: "  << subsource << " - " << subtarget << endl; //CLEAN:
+			// cout << "divide_conquer_cut_termini_find::interval found: "  << subsource << " - " << subtarget << endl; //CLEAN:
 		}
 		else 
 		{
@@ -831,7 +834,7 @@ int aster::topological_sort_vertices()
 		}
 	} */
 
-	if(verbose >= 3)	cout << tp2v_to_string() << endl;
+	if(verbose >= 3)	cout << "aster sorted " << tp2v_to_string() << endl;
 	assert(tp2v.front() == 0);
 	assert(tp2v.back() == gr.num_vertices() - 1);
 	assert(tp2v.size() == gr.num_vertices());
@@ -1127,7 +1130,6 @@ int aster::get_transcripts()
 	trsts.clear();	
 	non_full_trsts.clear();
 	origr.output_transcripts1(trsts, non_full_trsts, paths);
-	if (verbose >= 2) cout << "Aster assembled bundle " << gr.gid.c_str() << endl;
 	return 0;
 }
 
@@ -1157,13 +1159,14 @@ int aster::make_stats()
 
 int aster::print_stats()
 {
-	cout << "Print aster stats ==============================================================" << endl;
+	cout << "aster stats ================================================================" << endl;
 	cout << "\t num graphs = " << num_graph  << endl; 
 	cout << "\t num graphs w. intersecting edges = " << num_intersecting_graph  << endl; 
 	cout << "\t num exons = " << num_exon  << endl; 
 	cout << "\t num introns = " << num_intron << endl;
 	cout << "\t num intersecting introns = " << num_intersecting_intron_count << endl;
 	cout << "\t num intersecting intron pairs " << num_intersecting_intron_pair << endl;
+	cout << "\t num intersecting graphs " << num_intersecting_graph << endl;
 	cout << "\t D&C algorithm counter: ";
 	cout << "\t " << dnc_counter_single;
 	cout << "\t " << dnc_counter_unitig;
@@ -1172,7 +1175,7 @@ int aster::print_stats()
 	cout << "\t " << dnc_counter_disjoint;
 	cout << "\t " << counter_resolve_trivial_itsct;
 	cout << endl;
-	cout << "Printed aster stats ============================================================" << endl;
+	cout << "============================================================================" << endl;
 	return 0;
 }
 
