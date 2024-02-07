@@ -13,6 +13,11 @@ See LICENSE for licensing.
 aster::aster(const splice_graph &g, const hyper_set &h)
 	: origr(g), gr(g), hs(h)
 {
+	paths.clear();					// predicted paths, original v index, inclusive
+    trsts.clear();			// predicted transcripts, original v index
+	non_full_trsts.clear();		// predicted non full length transcripts
+
+
 	mode = aster_mode::STAT_ONLY;
 	mode = aster_mode::ASSEMBLER;
 	mode = aster_mode::MINI;
@@ -25,7 +30,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	if(verbose >= 1) cout << "aster assembling " << gr.gid << endl;
 	assemble();
 	get_transcripts();	
-	if(verbose >= 1) cout << "aster assembled " << gr.gid << endl;
+	if(verbose >= 1) cout << "aster assembled " << gr.gid << ", #path = " << paths.size() << endl;
 }
 
 int aster::assemble()
@@ -535,17 +540,17 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	
-	if(verbose >= 2)
-	{
-		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
-		msg += "splitting subgraphs at articulation point"; 
-		cout << msg << endl;
-	}
-
 	int pivot = divide_conquer_articulation_find(source, target);
 	if (pivot < 0) return false;
 	assert(pivot > source && pivot < target);
+
+	// if(verbose >= 2)
+	// {
+	// 	string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+	// 	msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+	// 	msg += "splitting subgraphs at articulation point"; 
+	// 	cout << msg << endl;
+	// }
 	
 	aster_result res1;
 	aster_result res2;
@@ -598,7 +603,7 @@ int aster::divide_conquer_articulation_find(int source, int target)
 	int pivot = v2tp.at(artVertex);
 	if(verbose >= 2) 
 	{
-		string msg = "\t articulation point = " + to_string(tp2v[pivot]);
+		string msg = "\t found articulation point = " + to_string(tp2v[pivot]);
 		msg += " (topoIndex = " + to_string(pivot) + ")";
 		cout << msg << endl;
 	}
