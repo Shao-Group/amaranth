@@ -1137,8 +1137,10 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 		}
 		for(edge_descriptor e: ve)
 		{
-			if(v2tp.at(e->source()) > target) continue;;
-			if(v2tp.at(e->target()) < source) continue;
+			if(v2tp.at(e->source()) < source) continue;;
+			if(v2tp.at(e->target()) > target) continue;
+			if(v2tp.at(e->source()) >= target ) continue;;
+			if(v2tp.at(e->target()) <= source) continue;
 			gr.remove_edge(e);
 		}
 	}
