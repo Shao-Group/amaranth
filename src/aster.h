@@ -7,6 +7,7 @@ See LICENSE for licensing.
 #ifndef __ASTER_H__
 #define __ASTER_H__
 
+#include <stdexcept>
 #include "splice_graph.h"
 #include "hyper_set.h"
 #include "equation.h"
@@ -98,6 +99,11 @@ private:
 	
 	string tp2v_to_string() const;
 	int make_stats();
+};
+
+class aster_error : public runtime_error {
+public:
+    aster_error(const char* message) : runtime_error(message) {}
 };
 
 #endif

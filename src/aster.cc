@@ -47,7 +47,23 @@ int aster::assemble()
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	}
-	divide_conquer();
+
+	try
+	{
+		divide_conquer();
+	}
+	catch(const aster_error& e)
+	{
+		cerr << e.what() << '\n';
+		print_stats();
+		string gene_start_end = gr.chrm + ":"
+							  + to_string(gr.get_vertex_info(0).lpos) + "-"
+							  + to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
+							  + "\n";
+		gr.graphviz("asterviz_err." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
+		paths.clear();
+		// throw e;// CLEAN:? what to do?
+	}	
 
 	if (verbose >= 2)  for(int i = 0; i < paths.size(); i++) paths[i].print(i);
 	return 0;
@@ -135,16 +151,14 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 
 	num_intersecting_graph ++;
 
-	string msg = "aster-mini failed on graph " + gr.gid;
-	msg += " [" + gr.chrm + ":" + to_string(gr.get_vertex_info(0).lpos) + "-" + to_string(gr.get_vertex_info(0).rpos) + "]";
-	msg += "in subgraph vertexIndex [" + to_string(s) + ", " + to_string(t) + "]";
-	msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])\n";
-	cout << msg << endl;
-
 	res.subpaths.clear();
 	res.dist = -1;
-	print_stats();
 
+	string msg = "aster-mini failed on graph " + gr.gid;
+	msg += " [" + gr.chrm + ":" + to_string(gr.get_vertex_info(0).lpos) + "-" + to_string(gr.get_vertex_info(0).rpos) + "]";
+	msg += " in subgraph vertexIndex [" + to_string(s) + ", " + to_string(t) + "]";
+	msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])\n";
+	throw aster_error(msg.c_str());
 	return -1;
 }
 
