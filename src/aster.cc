@@ -811,7 +811,7 @@ bool aster::divide_conquer_single_vertex(int source, int target, aster_result& r
 	
 	if(verbose >= 2) 
 	{
-		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with a single-vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
