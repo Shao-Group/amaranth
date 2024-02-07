@@ -707,29 +707,43 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
-	int n = gr.compute_num_paths(s, t, 2);
-	assert(n >= 1);
-	if(n > 1) return false;	
-
 	vector<int> unitig;
-	int    ss    = s;
-	bool   _avg_ = false;        // average if true, geom mean if false
+	bool   _avg_ = false;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
-	while(true)
+	if(source == target - 1 || s == t - 1)					// only two vertices
 	{
-		unitig.push_back(ss);
-		assert(ss <= t);
-		if (ss == t) break;
-		assert(gr.out_degree(ss) >= 1);
-		if (gr.out_degree(ss) > 1) return false;
-		edge_descriptor e = (*gr.out_edges(ss).first);
+		assert(gr.edge_exists(s, t));
+		assert(gr.out_degree(s) == 1);
+		assert(gr.in_degree(t)  == 1);
+		edge_descriptor e = (*gr.out_edges(s).first);
+		unitig.push_back(s);
+		unitig.push_back(t);
 		double ew = gr.get_edge_weight(e);
-		w = _avg_? (w + ew): (w * ew);
-		ss  = e->target();
+		w = ew;
 	}
-	assert(origr.valid_path(unitig));
-	double c = double(unitig.size());
-	w = _avg_? (w / c): pow(w, 1.0/ c);
+	else													// longer unitig
+	{
+		int n = gr.compute_num_paths(s, t, 2);
+		assert(n >= 1);
+		if(n > 1) return false;	
+		
+		int ss = s;
+		while(true)
+		{
+			unitig.push_back(ss);
+			assert(ss <= t);
+			if (ss == t) break;
+			assert(gr.out_degree(ss) >= 1);
+			if (gr.out_degree(ss) > 1) return false;
+			edge_descriptor e = (*gr.out_edges(ss).first);
+			double ew = gr.get_edge_weight(e);
+			w = _avg_? (w + ew): (w * ew);
+			ss  = e->target();
+		}
+		assert(origr.valid_path(unitig));
+		double c = double(unitig.size());
+		w = _avg_? (w / c): pow(w, 1.0/ c);
+	}
 	res.subpaths.push_back(path(unitig, w));
 	res.dist = 0;
 
@@ -737,7 +751,7 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
-		msg += "\twith a unitig path: "; 
+		msg += "with a unitig path: "; 
 		cout << msg;
 		printv(unitig);
 		cout << endl;
