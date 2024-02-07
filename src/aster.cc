@@ -55,7 +55,14 @@ int aster::assemble()
 
 int aster::divide_conquer()
 {
-	if(output_graphviz_files) gr.graphviz("asterviz." + gr.gid + ".dot", tp2v_to_string());
+	if(output_graphviz_files) 
+	{
+		string gene_start_end = gr.chrm + ":"
+							  + to_string(gr.get_vertex_info(0).lpos) + "-"
+							  + to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
+							  + "\n";
+		gr.graphviz("asterviz." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
+	}
 	assert(gr.num_vertices() > 2);
 	assert(tp2v.size() == gr.num_vertices());
 	int s = 0;									// tp2v index
@@ -572,7 +579,7 @@ int aster::divide_conquer_articulation_find(int source, int target)
 	int pivot = v2tp.at(artVertex);
 	if(verbose >= 2) 
 	{
-		string msg = "\t inside ["+ to_string(s) + ", " + to_string(t) + "], " + " articulation point = " + to_string(tp2v[pivot]);
+		string msg = "\t articulation point = " + to_string(tp2v[pivot]);
 		msg += " (topoIndex = " + to_string(pivot) + ")";
 		cout << msg << endl;
 	}
@@ -709,6 +716,14 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
+
+	if(verbose >= 3)  //CLEAN:
+	{
+		string msg = "aster checking unitig in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		cout << msg;
+		cout << endl;
+	}
 
 	vector<int> unitig;
 	bool   _avg_ = false;       							// average if true, geom mean if false
@@ -1180,7 +1195,7 @@ int aster::print_stats()
 
 string aster::tp2v_to_string() const
 {
-	string tp2vString = gr.gid + " DFS TopoSorted vertex index vector:";
+	string tp2vString = gr.gid + "\n\tDFS TopoSorted vertex index vector:";
 	for (int i = 0; i < tp2v.size(); i++)
 	{
 		if (i % 10 == 0)  tp2vString += "\n\t[" + to_string(i) + "]:";
