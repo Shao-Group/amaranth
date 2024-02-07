@@ -231,6 +231,7 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 
 			//TODO: modiciation starts
 			aster asterInstance(gr, hs);
+			if(asterInstance.trsts.size() == 0) continue;
 
 			if(verbose >= 2)
 			{
