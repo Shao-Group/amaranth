@@ -30,6 +30,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	if(verbose >= 1) cout << "aster assembling " << gr.gid << endl;
 	assemble();
 	get_transcripts();	
+	assert(paths.size() == trsts.size() + non_full_trsts.size());
 	if(verbose >= 1) cout << "aster assembled " << gr.gid << ", #path = " << paths.size() << endl;
 }
 
