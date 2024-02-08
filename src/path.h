@@ -20,7 +20,7 @@ class path
 {
 public:
 	path();
-	path(vector<int> v, double _abd = 0);
+	path(vector<int> v, double _abd = 0, int _nf = 0);
 	~path();
 
 public:

@@ -25,7 +25,7 @@ path::path()
 	ex2 = 0;
 }
 
-path::path(vector<int> _v, double _abd)
+path::path(vector<int> _v, double _abd, int _nf)
 {
 	v.clear();
 	v = _v;
@@ -37,6 +37,7 @@ path::path(vector<int> _v, double _abd)
 	fcindex = -1;
 	ex1 = 0;
 	ex2 = 0;
+	nf = _nf;
 }
 
 path::~path()
