@@ -1268,13 +1268,14 @@ int splice_graph::output_transcripts1(vector<transcript> &v, vector<transcript> 
 int splice_graph::output_transcript(transcript &trst, const path &p, const string &tid) const
 {
 	trst.seqname = chrm;
-	trst.source = "scallop2";
+	trst.source = "aster";
 	trst.gene_id = gid;
 	trst.transcript_id = tid;
 	trst.coverage = p.abd;
 	trst.strand = strand;
 
 	const vector<int> &v = p.v;
+	assert(valid_path(v));
 	join_interval_map jmap;
 	for(int k = 1; k < v.size() - 1; k++)
 	{
