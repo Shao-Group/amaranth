@@ -23,7 +23,6 @@ typedef map<PEE, int> MPEEI;
 typedef pair<int, int> PI;
 typedef map<int, int> MI;
 typedef vector<int> VI;
-enum class comb_strat {GREEDY_MIN, GREEDY_MAX};
 
 struct aster_result
 {
@@ -49,9 +48,9 @@ private:
 	inline static int dnc_counter_single = 0;
 	inline static int dnc_counter_unitig = 0;
 	inline static int dnc_counter_abutting = 0;
-	inline static int dnc_counter_nested = 0;
-	inline static int dnc_counter_disjoint = 0;
-	inline static int counter_resolve_trivial_itsct = 0;
+	inline static int dnc_counter_cut_vertex = 0;
+	inline static int dnc_counter_articulation_point_disjoint = 0;
+	inline static int counter_resolve_trivial_intersection = 0;
 
 	
 
@@ -82,9 +81,9 @@ private:
 	bool divide_conquer_abutting(int source, int target, aster_result& res);
 	bool divide_conquer_cut_termini(int source, int target, aster_result& res);
 	int  divide_conquer_cut_termini_find(int source, int target, vector<pair<int, int>>& intervals);
-	bool divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st);
+	bool divide_conquer_articulation_point(int source, int target, aster_result& res);
 	int  divide_conquer_articulation_find(int source, int target);
-	bool  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb, comb_strat st) const;
+	bool  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
 	
 	int  greedy(int source, int target);
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);

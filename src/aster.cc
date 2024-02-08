@@ -91,6 +91,7 @@ int aster::divide_conquer()
 	int t = gr.num_vertices() - 1;				// tp2v index
 	aster_result res;
 	divide_conquer(s, t, res);
+	paths.clear();
 	paths = res.subpaths;
 	if(paths.size() >= 1) for(const path & p : paths)	assert(origr.valid_path(p.v));
 	return 0;
@@ -117,8 +118,6 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 
-	comb_strat st = comb_strat::GREEDY_MIN; //TODO: which is better
-
 	// TODO: find all articulation points in linear time
 	if (divide_conquer_single_vertex(source, target, res))			
 	{
@@ -137,17 +136,17 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	}
 	if (divide_conquer_cut_termini(source, target, res)) 	
 	{
-		dnc_counter_nested ++;
+		dnc_counter_cut_vertex ++;
 		return 0;
 	}
-	if (divide_conquer_articulation_point(source, target, res, st))		
+	if (divide_conquer_articulation_point(source, target, res))		
 	{
-		dnc_counter_disjoint ++;
+		dnc_counter_articulation_point_disjoint ++;
 		return 0;
 	}
 	if (resolve_trivial_intersection(source, target, res))		
 	{
-		counter_resolve_trivial_itsct ++;
+		counter_resolve_trivial_intersection ++;
 		return 0;
 	}
 	if(mode != aster_mode::MINI && greedy(source, target))
@@ -256,13 +255,14 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	edge_descriptor e = gr.edge(s, t).first;
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
+	assert(gr.edge(e));
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
 	divide_conquer(source, target, res);
 
 	int shortestPathIndex = find_shortest_path(res);
 	assert(shortestPathIndex >= 0);
-	int shortestPathSize = res.subpaths[shortestPathIndex].v.size();
+	int shortestPathSize = res.subpaths.at(shortestPathIndex).v.size();
 	int eventSize        = shortestPathSize - 2;
 	assert(eventSize >= 1);
 	path p({s, t}, w);
@@ -530,7 +530,7 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 ** divide and conquer the problem to dnc[s, k], dnc [k, t]
 ** not disjoint: (s,t) edge exists, or multiple subgraphs can be found
 */
-bool aster::divide_conquer_articulation_point(int source, int target, aster_result& res, comb_strat st)
+bool aster::divide_conquer_articulation_point(int source, int target, aster_result& res)
 {
 	assert(source < tp2v.size() && target < tp2v.size());
 	int s = tp2v[source];
@@ -555,10 +555,20 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	
 	aster_result res1;
 	aster_result res2;
-	divide_conquer(source, pivot, res1);
-	divide_conquer(pivot, target, res2);
-	bool combineSuccess = divide_conquer_combine(res1, res2, pivot, res, st);
+	divide_conquer(source, pivot, res1); 	
+	assert(gr.edge(s, tp2v.at(pivot)).first);
+	assert(gr.compute_num_paths(s, tp2v.at(pivot), 2) == 1);
+
+	divide_conquer(pivot, target, res2);	
+	assert(gr.edge(tp2v.at(pivot), t).first);	
+	assert(gr.compute_num_paths(s, t) == 1);
+	assert(gr.compute_num_paths(tp2v.at(pivot), t, 2) == 1);
+
+	bool combineSuccess = divide_conquer_combine(res1, res2, pivot, res);
 	if (! combineSuccess) return false;
+	assert(gr.compute_num_paths(source, target, 2) == 1);
+	assert(gr.edge(source, pivot).first);
+	assert(gr.edge(pivot, target).first);
 
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
@@ -576,7 +586,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	return true;
 }
 
-// find a pivot s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
+// find a pivot-TopoIndex s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
 // return -1 if cannot fine artivulation point
 int aster::divide_conquer_articulation_find(int source, int target) 
 {
@@ -584,22 +594,16 @@ int aster::divide_conquer_articulation_find(int source, int target)
 	int s = tp2v[source];
 	int t = tp2v[target];
 	int artVertex = -1;
-	int spannedVertex = -1;
-
+	
 	for(int i = source + 1; i < target; i++)
 	{
-		int iVertex = tp2v[i];
-		if (iVertex == artVertex) break;
-		if (iVertex < spannedVertex) continue;
-		PEEI peei = gr.out_edges(iVertex);
-		for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
-		{
-			edge_descriptor e = *it1;
-			spannedVertex = max(spannedVertex,  e->target());
-		}
-		artVertex = max(artVertex, spannedVertex);
-		if (artVertex >= t) return -1;
+		int idx = tp2v.at(i);
+		splice_graph gr2(gr);
+		gr2.clear_vertex(idx);
+		if(gr2.check_path(s, t)) continue;
+		artVertex = idx;
 	}
+	if (artVertex >= t || artVertex <= s || artVertex == -1) return -1;
 
 	int pivot = v2tp.at(artVertex);
 	if(verbose >= 2) 
@@ -616,27 +620,27 @@ int aster::divide_conquer_articulation_find(int source, int target)
 	//assertion
 	splice_graph gr2(gr);
 	gr2.clear_vertex(artVertex);
-	// assert(! gr2.check_path(s, t)); //FIXME:
-	if(gr2.check_path(s, t)) return -1;
-
+	assert(! gr2.check_path(s, t)); 
 	return pivot;
 }
 
 /*  combines subpaths of left and right sides of articulation point k
 *	res1, res2 could be empty
 */
-bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb, comb_strat st) const
+bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb) const
 {
-	int k = tp2v[pivot];
+	int k = tp2v.at(pivot);
 
 	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
 	if(res1.subpaths.size() == 0) 
 	{
+		assert(res2.subpaths.size() > 0);
 		comb = res2;
 		return true;
 	}
 	if(res2.subpaths.size() == 0) 
 	{
+		assert(res1.subpaths.size() > 0);
 		comb = res1;
 		return true;
 	}
@@ -665,7 +669,7 @@ bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int 
 	for(int i = 0; i < res1.subpaths.size(); i++)	
 	{
 		if(i == index1) continue;
-		const path& p = res1.subpaths[i];
+		const path& p = res1.subpaths.at(i);
 		double abd = p.abd < rAnchor.abd? p.abd: rAnchor.abd;
 		vector<int> v;
 		v.insert(v.end(), p.v.begin(), p.v.end());
@@ -673,11 +677,11 @@ bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int 
 		assert(origr.valid_path(v));
 		comb.subpaths.push_back(path(v, abd));
 	}
-	const path& lAnchor = res1.subpaths[index1];
+	const path& lAnchor = res1.subpaths.at(index1);
 	for(int i = 0; i < res2.subpaths.size(); i++)	
 	{
 		if(i == index2) continue;
-		const path& p = res2.subpaths[i];
+		const path& p = res2.subpaths.at(i);
 		double abd = p.abd < lAnchor.abd? p.abd: lAnchor.abd;
 		vector<int> v;
 		v.insert(v.end(), lAnchor.v.begin(), lAnchor.v.end());
@@ -758,7 +762,8 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 		assert(gr.edge_exists(s, t));
 		assert(gr.out_degree(s) == 1);
 		assert(gr.in_degree(t)  == 1);
-		edge_descriptor e = (*gr.out_edges(s).first);
+		edge_descriptor e = (*(gr.out_edges(s).first));
+		assert(e != null_edge);
 		unitig.push_back(s);
 		unitig.push_back(t);
 		double ew = gr.get_edge_weight(e);
@@ -778,7 +783,7 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 			if (ss == t) break;
 			assert(gr.out_degree(ss) >= 1);
 			if (gr.out_degree(ss) > 1) return false;
-			edge_descriptor e = (*gr.out_edges(ss).first);
+			edge_descriptor e = (*(gr.out_edges(ss).first));
 			double ew = gr.get_edge_weight(e);
 			w = _avg_? (w + ew): (w * ew);
 			ss  = e->target();
@@ -1081,7 +1086,7 @@ int aster::find_longest_path(const aster_result& res) const
 	longestPathSize = res.subpaths.front().v.size();
 	for(int i = 0; i < res.subpaths.size(); i++) 
 	{
-		const path& p = res.subpaths[i];
+		const path& p = res.subpaths.at(i);
 		if(p.v.size() <= longestPathSize) continue;
 		longestPathSize = p.v.size();
 		longestPathIndex = i;
@@ -1118,8 +1123,8 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 {
 	assert(source < target);
 	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
+	int s = tp2v.at(source);
+	int t = tp2v.at(target);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);	
@@ -1130,19 +1135,20 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 		int k = tp2v[middle];
 		assert(k >= s);
 		assert(k <= t);
-		vector<edge_descriptor> ve;
+		set<edge_descriptor> setEdge;
 		PEEI pi = gr.in_edges(k);
-		PEEI po = gr.out_edges(k);
 		for(edge_iterator it = pi.first; it != pi.second; it++)
 		{
-			ve.push_back(*it);
+			setEdge.insert(*it);
 		}
+		PEEI po = gr.out_edges(k);
 		for(edge_iterator it = po.first; it != po.second; it++)
 		{
-			ve.push_back(*it);
+			setEdge.insert(*it);
 		}
-		for(edge_descriptor e: ve)
+		for(edge_descriptor e: setEdge)
 		{
+			assert(gr.edge(e));
 			if(v2tp.at(e->source()) < source) continue;;
 			if(v2tp.at(e->target()) > target) continue;
 			if(v2tp.at(e->source()) >= target ) continue;;
@@ -1158,6 +1164,9 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 	ei.weight = w;
 	gr.set_edge_info(e_new, ei);
 	gr.set_edge_weight(e_new, w);
+	assert(e_new != NULL);
+	assert(gr.ewrt.find(e_new) != gr.ewrt.end());
+	assert(gr.einf.find(e_new) != gr.einf.end());
 
 	assert(!gr.refine_splice_graph());
 	return 0;
@@ -1212,9 +1221,9 @@ int aster::print_stats()
 	cout << "\t " << dnc_counter_single;
 	cout << "\t " << dnc_counter_unitig;
 	cout << "\t " << dnc_counter_abutting;
-	cout << "\t " << dnc_counter_nested;
-	cout << "\t " << dnc_counter_disjoint;
-	cout << "\t " << counter_resolve_trivial_itsct;
+	cout << "\t " << dnc_counter_cut_vertex;
+	cout << "\t " << dnc_counter_articulation_point_disjoint;
+	cout << "\t " << counter_resolve_trivial_intersection;
 	cout << endl;
 	cout << "============================================================================" << endl;
 	return 0;
