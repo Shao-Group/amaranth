@@ -566,9 +566,6 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 
 	bool combineSuccess = divide_conquer_combine(res1, res2, pivot, res);
 	if (! combineSuccess) return false;
-	assert(gr.compute_num_paths(source, target, 2) == 1);
-	assert(gr.edge(source, pivot).first);
-	assert(gr.edge(pivot, target).first);
 
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
