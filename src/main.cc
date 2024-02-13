@@ -49,5 +49,7 @@ int main(int argc, const char **argv)
 	assembler asmb;
 	asmb.assemble();
 
+	cout << "Aster completed the task. Thank you for using!" << endl;
+
 	return 0;
 }
