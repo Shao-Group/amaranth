@@ -229,7 +229,7 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			string gid = "gene." + tostring(index) + "." + tostring(k) + "." + tostring(r);
 			gr.gid = gid;
 
-			//TODO: modiciation starts
+			//CLEAN: new assembly algo starts
 			aster asterInstance(gr, hs);
 			if(asterInstance.trsts.size() == 0) continue;
 
@@ -247,7 +247,7 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			{
 				ts2.add(asterInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
-			//TODO:
+			//CLEAN: new assembly algo ends
 
 			/*
 			filter ft(sc.trsts);
