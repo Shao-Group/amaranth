@@ -1190,6 +1190,15 @@ int aster::get_transcripts()
 		p.nf = empty? 1:0;
 	}
 
+	//validate s-t path
+	for(path& p : paths)
+	{
+		vector<int>& v = p.v;
+		assert(v.front() == 0);
+		assert(v.back() == origr.num_vertices() - 1);
+		assert(origr.valid_path(v));
+	}
+
 	trsts.clear();	
 	non_full_trsts.clear();
 	origr.output_transcripts1(trsts, non_full_trsts, paths);
