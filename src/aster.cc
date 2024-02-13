@@ -1166,12 +1166,30 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 	return 0;
 }
 
+// assign path.nf, populate trsts and non_full_trsts
 int aster::get_transcripts()
 {
 	if(mode == aster_mode::STAT_ONLY) return 0;
-	if(gr.num_edges() == 0) return 0;
-	if(gr.num_vertices() == 2) return 0;
+	if(origr.num_edges() == 0) return 0;
+	if(origr.num_vertices() == 2) return 0;
 	if(paths.size() == 0) return 0;
+
+	//assign nf
+	for(path& p : paths)
+	{
+		vector<int>& v = p.v;
+		bool empty = false;
+		for(int i = 0; i < v.size(); i++)
+		{
+			if(gr.get_vertex_info(v[i]).type == EMPTY_VERTEX) 
+			{
+				empty = true;
+				break;
+			}
+		}
+		p.nf = empty? 1:0;
+	}
+
 	trsts.clear();	
 	non_full_trsts.clear();
 	origr.output_transcripts1(trsts, non_full_trsts, paths);
