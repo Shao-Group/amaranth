@@ -138,7 +138,7 @@ PEEI graph_base::edges() const
 	return PEEI(se.begin(), se.end());
 }
 
-bool graph_base::valid_path(vector<int> path) const
+bool graph_base::valid_path(const vector<int>& path) const
 {
 	for(int i = 0; i < path.size(); i++) assert(path[i] >= 0);
 	for(int i = 0; i < path.size(); i++) assert(path[i] < num_vertices());
