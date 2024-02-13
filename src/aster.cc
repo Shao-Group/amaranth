@@ -1191,9 +1191,9 @@ int aster::get_transcripts()
 	}
 
 	//validate s-t path
-	for(path& p : paths)
+	for(const path& p : paths)
 	{
-		vector<int>& v = p.v;
+		const vector<int>& v = p.v;
 		assert(v.front() == 0);
 		assert(v.back() == origr.num_vertices() - 1);
 		assert(origr.valid_path(v));
