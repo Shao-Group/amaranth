@@ -86,3 +86,5 @@ DevLog.md
 src/aster
 aster
 test2/
+test*
+test*/
