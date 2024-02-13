@@ -156,8 +156,7 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 
 	num_intersecting_graph ++;
 
-	res.subpaths.clear();
-	res.dist = -1;
+	res.clear();
 
 	string msg = "aster-mini failed on graph " + gr.gid;
 	msg += " [" + gr.chrm + ":" + to_string(gr.get_vertex_info(0).lpos) + "-" + to_string(gr.get_vertex_info(0).rpos) + "]";
@@ -364,9 +363,9 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 	}
 
 	// get penalty 
+	res.clear();
 	int numEvents = 0;
 	int sumPenalty = 0;
-	res.subpaths.clear();
 	for(int i = 0; i < subgraph_intervals.size(); i++)
 	{
 		aster_result& res1 = resOfSubgraphs[i];
@@ -660,8 +659,7 @@ bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int 
 	assert(index1 < res1.subpaths.size());
 	assert(index2 < res2.subpaths.size());
 	
-	comb.subpaths.clear();
-	comb.dist = -1;	
+	comb.clear();
 	const path& rAnchor = res2.subpaths[index2];
 	for(int i = 0; i < res1.subpaths.size(); i++)	
 	{
@@ -826,8 +824,7 @@ bool aster::divide_conquer_single_vertex(int source, int target, aster_result& r
 		cout << msg << endl;
 	}
 
-	res.subpaths.clear();
-	res.dist = -1;
+	res.clear();
 	if(gr.degree(s) == 0)  return true;
 	double abd = gr.get_vertex_weight(s);
 	res.subpaths.push_back(path({s}, abd)); 
