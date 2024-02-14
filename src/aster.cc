@@ -148,7 +148,7 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	}
 	if (resolve_trivial_intersection(source, target, res))		
 	{
-		counter_resolve_trivial_intersection ++;
+		dnc_counter_resolve_trivial_intersection ++;
 		return 0;
 	}
 	if(mode != aster_mode::MINI && greedy(source, target))
@@ -1341,7 +1341,7 @@ int aster::print_stats()
 	cout << "\t " << dnc_counter_abutting;
 	cout << "\t " << dnc_counter_cut_vertex;
 	cout << "\t " << dnc_counter_articulation_point_disjoint;
-	cout << "\t " << counter_resolve_trivial_intersection;
+	cout << "\t " << dnc_counter_resolve_trivial_intersection;
 	cout << endl;
 	cout << "============================================================================" << endl;
 	return 0;

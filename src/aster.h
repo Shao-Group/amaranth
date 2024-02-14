@@ -51,7 +51,7 @@ private:
 	inline static int dnc_counter_abutting = 0;
 	inline static int dnc_counter_cut_vertex = 0;
 	inline static int dnc_counter_articulation_point_disjoint = 0;
-	inline static int counter_resolve_trivial_intersection = 0;
+	inline static int dnc_counter_resolve_trivial_intersection = 0;
 
 	
 
@@ -85,7 +85,7 @@ private:
 	int  divide_conquer_cut_termini_find(int source, int target, vector<pair<int, int>>& intervals);
 	bool divide_conquer_articulation_point(int source, int target, aster_result& res);
 	int  divide_conquer_articulation_find(int source, int target);
-	bool  divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
+	bool divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
 	
 	int  greedy(int source, int target);
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);
