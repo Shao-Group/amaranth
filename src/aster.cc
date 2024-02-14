@@ -43,7 +43,7 @@ int aster::assemble()
 
 	if(gr.num_vertices() > 1000) //FIXME:
 	{
-		cout << "graph too big to process with D&C " << gr.num_vertices() << endl; 
+		cerr << gr.gid <<" too big to process with D&C " << gr.num_vertices() << endl; 
 		return 0;
 	}	
 	if (true)	//CLEAN: balance?
