@@ -176,6 +176,7 @@ int aster::greedy(int source, int target)
 /* resolve trivila intersections only 
 *  all four vertices should be directly connected but not recursively solvable
 *  1->2->3->4 and 1->3 and 2->4 forming a diomond shape
+*  s-> k1 and k2, k1 -> k2 and t, k2 -> t
 */
 bool aster::resolve_trivial_intersection(int source, int target, aster_result& res)
 {
@@ -197,7 +198,7 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 	assert(k2 < t);
 	if (gr.out_degree(s) != 2) return false;
 	if (gr.out_degree(k1)!= 2 || gr.in_degree(k1) != 1) return false;
-	if (gr.out_degree(k2)!= 1 || gr.out_degree(k2)!= 2) return false;
+	if (gr.out_degree(k2)!= 1 || gr.in_degree(k2) != 2) return false;
 	if (gr.in_degree(t)  != 2) return false;
 	if (!gr.edge_exists(s, k1)) return false;
 	if (!gr.edge_exists(s, k2)) return false;
@@ -210,10 +211,11 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 	double wk1k2 = gr.get_edge_weight(gr.edge(k1, k2).first);
 	double wk1t  = gr.get_edge_weight(gr.edge(k1, t).first);
 	double wk2t  = gr.get_edge_weight(gr.edge(k2, t).first);
-
-	double abd1 = pow(wsk1 * wk1k2 * wk2t, 1.0/3.0);
-	double abd2 = pow(wsk1 * wk1t, 1.0/2.0);
-	double abd3 = pow(wsk2 * wk2t, 1.0/2.0);
+	// average if true, geom mean if false
+	bool   _avg_ = false;	
+	double abd1 = _avg_? (wsk1 + wk1k2 + wk2t / 3.0) : pow(wsk1 * wk1k2 * wk2t, 1.0/3.0);
+	double abd2 = _avg_? (wsk1 + wk1t / 2.0) : pow(wsk1 * wk1t, 1.0/2.0);
+	double abd3 = _avg_? (wsk2 + wk2t / 2.0) : pow(wsk2 * wk2t, 1.0/2.0);
 	res.subpaths.push_back({{s, k1, k2, t}, abd1});
 	res.subpaths.push_back({{s, k1, t}, abd2});
 	res.subpaths.push_back({{s, k2, t}, abd3});
@@ -226,6 +228,15 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "a trivial intersecting graph"; 
 		cout << msg << endl;
+	}
+
+	if(true) // CLEAN: debug trivial
+	{
+		string gene_start_end = gr.chrm + ":"
+								+ to_string(gr.get_vertex_info(0).lpos) + "-"
+								+ to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
+								+ "\n";
+		gr.graphviz("asterviz_trivial." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
 	}
 
 	return true;
