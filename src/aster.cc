@@ -52,6 +52,8 @@ int aster::assemble()
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
+		remove_small_junctions();
+		gr.refine_splice_graph();
 	}
 
 	try
@@ -1047,6 +1049,90 @@ int aster::balance_vertex(int vertexIndex)
 	}
 
 	return 0;
+}
+
+int aster::remove_small_junctions()
+{
+	SE se;
+	for(int i = 1; i < gr.num_vertices() - 1; i++)
+	{
+		if(gr.degree(i) <= 0) continue;
+
+		bool b = true;
+		edge_iterator it1, it2;
+		PEEI pei;
+		int32_t p1 = gr.get_vertex_info(i).lpos;
+		int32_t p2 = gr.get_vertex_info(i).rpos;
+		double wi = gr.get_vertex_weight(i);
+
+		// compute max in-adjacent edge
+		double ws = 0;
+		for(pei = gr.in_edges(i), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+		{
+			edge_descriptor e = (*it1);
+			int s = e->source();
+			double w = gr.get_vertex_weight(s);
+			if(s == 0) continue;
+			if(gr.get_vertex_info(s).rpos != p1) continue;
+			if(w < ws) continue;
+			ws = w;
+		}
+
+		// remove small in-junction
+		for(pei = gr.in_edges(i), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+		{
+			edge_descriptor e = (*it1);
+			int s = e->source();
+			double w = gr.get_edge_weight(e);
+			if(s == 0) continue;
+			if(gr.get_vertex_info(s).rpos == p1) continue;
+			if(ws < 2.0 * w * w + 18.0) continue;
+			if(wi < 2.0 * w * w + 18.0) continue;
+
+			se.insert(e);
+		}
+
+		// compute max out-adjacent edge
+		double wt = 0;
+		for(pei = gr.out_edges(i), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+		{
+			edge_descriptor e = (*it1);
+			int t = e->target();
+			double w = gr.get_vertex_weight(t);
+			if(t == gr.num_vertices() - 1) continue;
+			if(gr.get_vertex_info(t).lpos != p2) continue;
+			if(w < wt) continue;
+			wt = w;
+		}
+
+		// remove small in-junction
+		for(pei = gr.out_edges(i), it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+		{
+			edge_descriptor e = (*it1);
+			double w = gr.get_edge_weight(e);
+			int t = e->target();
+			if(t == gr.num_vertices() - 1) continue;
+			if(gr.get_vertex_info(t).lpos == p2) continue;
+			if(wt < 2.0 * w * w + 18.0) continue;
+			if(wi < 2.0 * w * w + 18.0) continue;
+
+			se.insert(e);
+		}
+
+	}
+
+	if(se.size() <= 0) return false;
+
+	for(SE::iterator it = se.begin(); it != se.end(); it++)
+	{
+		edge_descriptor e = (*it);
+		vertex_info v1 = gr.get_vertex_info(e->source());
+		vertex_info v2 = gr.get_vertex_info(e->target());
+		if(verbose >= 2) printf("remove small junction: length = %d, pos = %d-%d\n", v2.lpos - v1.rpos, v2.lpos, v1.rpos);
+		gr.remove_edge(e);
+	}
+
+	return true;
 }
 
 int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const

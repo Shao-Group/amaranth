@@ -74,6 +74,7 @@ private:
 	int topological_sort_index_edges();
 //	bool aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
+	int remove_small_junctions();
 
 	int divide_conquer();
 	int divide_conquer(int source, int target, aster_result& res);
