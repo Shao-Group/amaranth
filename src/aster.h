@@ -52,6 +52,8 @@ private:
 	inline static int dnc_counter_cut_vertex = 0;
 	inline static int dnc_counter_articulation_point_disjoint = 0;
 	inline static int dnc_counter_resolve_trivial_intersection = 0;
+	inline static int dnc_counter_resolve_trivial_paths = 0;
+	inline static int dnc_counter_resolve_intersection_edge = 0;
 
 	
 
@@ -86,6 +88,8 @@ private:
 	bool divide_conquer_articulation_point(int source, int target, aster_result& res);
 	int  divide_conquer_articulation_find(int source, int target);
 	bool divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
+	bool resolve_intersection_edge(int source, int target, aster_result& res);
+	bool resolve_trivial_paths(int source, int target, aster_result& res);
 	
 	int  greedy(int source, int target);
 	bool resolve_trivial_intersection(int source, int target, aster_result& res);

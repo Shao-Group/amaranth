@@ -120,7 +120,6 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 
-	// TODO: find all articulation points in linear time
 	if (divide_conquer_single_vertex(source, target, res))			
 	{
 		dnc_counter_single ++;
@@ -151,6 +150,16 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 		dnc_counter_resolve_trivial_intersection ++;
 		return 0;
 	}
+	if (resolve_trivial_paths(source, target, res))		
+	{
+		dnc_counter_resolve_trivial_paths ++;
+		return 0;
+	}
+	if (resolve_intersection_edge(source, target, res))
+	{
+		dnc_counter_resolve_intersection_edge ++;
+		return 0;
+	}
 	if(mode != aster_mode::MINI && greedy(source, target))
 	{
 		return 0;
@@ -171,6 +180,21 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 int aster::greedy(int source, int target)
 {
 	throw runtime_error("not implemented yet");
+}
+
+bool aster::resolve_intersection_edge(int source, int target, aster_result& res)
+{
+	return false;
+	
+	res.clear();
+	divide_conquer(source, target, res);
+	return true;
+
+}
+
+bool aster::resolve_trivial_paths(int source, int target, aster_result& res)
+{
+	return false;
 }
 
 /* resolve trivila intersections only 
