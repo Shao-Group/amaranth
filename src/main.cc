@@ -16,6 +16,7 @@ See LICENSE for licensing.
 #include "config.h"
 #include "previewer.h"
 #include "assembler.h"
+#include "analyzer.h"
 
 using namespace std;
 
@@ -46,10 +47,18 @@ int main(int argc, const char **argv)
 
 	if(preview_only == true) return 0;
 
-	assembler asmb;
-	asmb.assemble();
-
-	cout << "Aster completed the task. Thank you for using!" << endl;
+	if(asterMode == aster_mode::REF)
+	{
+		analyzer alyz;
+		alyz.analyze();
+		cout << "Aster completed analyzing the reference transcriptome. Thank you for using!" << endl;
+	}
+	else
+	{
+		assembler asmb;
+		asmb.assemble();
+		cout << "Aster completed assembling the transcripts. Thank you for using!" << endl;
+	}
 
 	return 0;
 }
