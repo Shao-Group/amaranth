@@ -95,7 +95,7 @@ extern int32_t min_subregion_max;
 extern double min_subregion_ave;
 
 // for aster
-enum class aster_mode {STAT_ONLY, MINI, ASSEMBLER};
+enum class aster_mode {REF, STAT_ONLY, MINI, ASSEMBLER};
 extern aster_mode asterMode;
 
 // for subsetsum and router

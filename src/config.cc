@@ -330,8 +330,12 @@ int parse_arguments(int argc, const char ** argv)
 		}
 		else if(string(argv[i]) == "--asterMode")
 		{
-			//FIXME:
-			throw runtime_error("asterMode config not done yet");
+			string s(argv[i + 1]);
+			if(s == "ref") asterMode = aster_mode::REF;
+			else if(s == "stat") asterMode = aster_mode::STAT_ONLY;
+			else if(s == "mini") asterMode = aster_mode::MINI;
+			else if(s == "assembly") asterMode = aster_mode::ASSEMBLER;
+			else throw runtime_error("received unknown --asterMode input.");
 			i++;
 		}
 		else if(string(argv[i]) == "--library_type")

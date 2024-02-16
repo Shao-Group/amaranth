@@ -16,11 +16,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	paths.clear();					// predicted paths, original v index, inclusive
     trsts.clear();			// predicted transcripts, original v index
 	non_full_trsts.clear();		// predicted non full length transcripts
-
-
-	mode = aster_mode::STAT_ONLY;
-	mode = aster_mode::ASSEMBLER;
-	mode = aster_mode::MINI;
+	mode = asterMode;
 
     topological_sort_vertices();
 	make_stats();
@@ -179,7 +175,9 @@ int aster::divide_conquer(int source, int target, aster_result& res)
 
 int aster::greedy(int source, int target)
 {
-	throw runtime_error("not implemented yet");
+	//TODO:
+	return false;	
+	throw runtime_error("not implemented yet"); 
 }
 
 bool aster::resolve_intersection_edge(int source, int target, aster_result& res)
