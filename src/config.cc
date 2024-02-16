@@ -95,8 +95,6 @@ int simulation_max_edge_weight = 0;
 string algo = "aster";
 string input_file;
 string ref_file;
-string ref_file1;
-string ref_file2;
 string output_file;
 string output_file1;
 
@@ -141,21 +139,6 @@ int parse_arguments(int argc, const char ** argv)
 		}
 
 		// internal use
-		else if(string(argv[i]) == "-a")
-		{
-			algo = string(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "-r1")
-		{
-			ref_file1 = string(argv[i + 1]);
-			i++;
-		}
-		else if(string(argv[i]) == "-r2")
-		{
-			ref_file2 = string(argv[i + 1]);
-			i++;
-		}
 		else if(string(argv[i]) == "-g")
 		{
 			fixed_gene_name = string(argv[i + 1]);
@@ -331,11 +314,11 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--asterMode")
 		{
 			string s(argv[i + 1]);
-			if(s == "ref") asterMode = aster_mode::REF;
-			else if(s == "stat") asterMode = aster_mode::STAT_ONLY;
-			else if(s == "mini") asterMode = aster_mode::MINI;
-			else if(s == "assembly") asterMode = aster_mode::ASSEMBLER;
-			else throw runtime_error("received unknown --asterMode input.");
+			if(s == "REF") asterMode = aster_mode::REF;
+			else if(s == "STAT") asterMode = aster_mode::STAT_ONLY;
+			else if(s == "MINI") asterMode = aster_mode::MINI;
+			else if(s == "ASSEMBLY") asterMode = aster_mode::ASSEMBLER;
+			else throw runtime_error("received unknown --asterMode MDOE.");
 			i++;
 		}
 		else if(string(argv[i]) == "--library_type")
@@ -434,17 +417,26 @@ int parse_arguments(int argc, const char ** argv)
 	}
 
 	// verify arguments
-	if(input_file == "")
+	if(asterMode != aster_mode::REF)
 	{
-		printf("error: input-file is missing.\n");
-		exit(0);
+		if(input_file == "")  
+		{
+			throw runtime_error("error: input-file is missing.");
+		}	
+		if(output_file == "" && preview_only == false)  
+		{
+			throw runtime_error("error: output-file is missing.");
+		}
+		
+	}
+	if(asterMode == aster_mode::REF)
+	{
+		if(ref_file == "") 
+		{
+			throw runtime_error("error: asterMode is ref, but reference-file is missing.");
+		}
 	}
 
-	if(output_file == "" && preview_only == false)
-	{
-		printf("error: output-file is missing.\n");
-		exit(0);
-	}
 
 	return 0;
 }
@@ -499,8 +491,6 @@ int print_parameters()
 	printf("algo = %s\n", algo.c_str());
 	printf("input_file = %s\n", input_file.c_str());
 	printf("ref_file = %s\n", ref_file.c_str());
-	printf("ref_file1 = %s\n", ref_file1.c_str());
-	printf("ref_file2 = %s\n", ref_file2.c_str());
 	printf("output_file = %s\n", output_file.c_str());
 	printf("output_file1 = %s\n", output_file1.c_str());
 
