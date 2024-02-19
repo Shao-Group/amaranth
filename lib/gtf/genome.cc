@@ -51,6 +51,8 @@ int genome::read(const string &file)
 	while(fin.getline(line, 102400, '\n'))
 	{
 		item ge(line);
+		if(ge.feature != "transcript" && ge.feature != "exon") continue;
+
 		if(g2i.find(ge.gene_id) == g2i.end())
 		{
 			gene gg;
