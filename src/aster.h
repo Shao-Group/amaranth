@@ -64,11 +64,11 @@ private:
 	VI v2tp;							// vertex index to DFS-based topologically sorted index. This guarantees all disjoint subgraphs are gathered together
 	aster_mode mode;
 
-
 public:
-	vector<path> paths;					// predicted paths, original v index, inclusive
-    vector<transcript> trsts;			// predicted transcripts, original v index
-	vector<transcript> non_full_trsts;		// predicted non full length transcripts
+	vector<path> paths;							// predicted paths, original v index, inclusive
+    vector<transcript> trsts;					// predicted transcripts, original v index
+	vector<transcript> non_full_trsts;			// predicted non full length transcripts
+	bool successStatus = false;					// whether splice graph is decomposed successfully
 
 private: 
 	int topological_sort_vertices();

@@ -27,7 +27,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	assemble();
 	get_transcripts();	
 	assert(paths.size() == trsts.size() + non_full_trsts.size());
-	if(verbose >= 1) cout << "aster assembled " << gr.gid << ", #path = " << paths.size() << endl;
+	if(verbose >= 1 && successStatus) cout << "aster assembled " << gr.gid << ", #path = " << paths.size() << endl;
 }
 
 int aster::assemble()
@@ -40,6 +40,7 @@ int aster::assemble()
 	if(gr.num_vertices() > 1000) //FIXME:
 	{
 		cerr << gr.gid <<" too big to process with D&C " << gr.num_vertices() << endl; 
+		successStatus = false;
 		return 0;
 	}	
 	if (true)	//CLEAN: balance?
@@ -55,6 +56,7 @@ int aster::assemble()
 	try
 	{
 		divide_conquer();
+		successStatus = true;
 	}
 	catch(const aster_error& e)
 	{
@@ -66,9 +68,9 @@ int aster::assemble()
 							  + "\n";
 		gr.graphviz("asterviz_err." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
 		paths.clear();
-		// throw e;// CLEAN:? what to do?
+		successStatus = false;
 	}	
-
+	
 	if (verbose >= 2)  for(int i = 0; i < paths.size(); i++) paths[i].print(i);
 	return 0;
 }
@@ -1288,6 +1290,7 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 // assign path.nf, populate trsts and non_full_trsts
 int aster::get_transcripts()
 {
+	if(successStatus == false) return 0;
 	if(mode == aster_mode::STAT_ONLY) return 0;
 	if(origr.num_edges() == 0) return 0;
 	if(origr.num_vertices() == 2) return 0;
