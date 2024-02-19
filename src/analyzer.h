@@ -7,14 +7,16 @@ See LICENSE for licensing.
 #ifndef __ANALYZER_H__
 #define __ANALYZER_H__
 
-#include <stdexcept>
+#include <string>
 #include "splice_graph.h"
 #include "hyper_set.h"
 #include "equation.h"
 #include "router.h"
 #include "path.h"
 #include "config.h"
+#include "genome.h"
 #include "gtf.h"
+#include "aster.h"
 
 typedef map< edge_descriptor, vector<int> > MEV;
 typedef pair< edge_descriptor, vector<int> > PEV;
@@ -28,7 +30,11 @@ typedef vector<int> VI;
 class analyzer
 {
 public:
-    analyzer();
+    analyzer(string);
+    int print();
+
+private:
+    genome gn;
     int analyze();
 
 };
