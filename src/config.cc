@@ -311,7 +311,7 @@ int parse_arguments(int argc, const char ** argv)
 			min_router_count = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--asterMode")
+		else if(string(argv[i]) == "--asterMode" || string(argv[i]) == "-m")
 		{
 			string s(argv[i + 1]);
 			if(s == "REF") asterMode = aster_mode::REF;
