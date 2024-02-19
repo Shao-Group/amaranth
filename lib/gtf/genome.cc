@@ -54,6 +54,8 @@ int genome::read(const string &file)
 		if(g2i.find(ge.gene_id) == g2i.end())
 		{
 			gene gg;
+			gg.strand = ge.strand;
+			gg.chrm = ge.seqname;
 			if(ge.feature == "transcript") gg.add_transcript(ge);
 			else if(ge.feature == "exon") gg.add_exon(ge);
 			g2i.insert(pair<string, int>(ge.gene_id, genes.size()));
@@ -62,6 +64,7 @@ int genome::read(const string &file)
 		else
 		{
 			int k = g2i[ge.gene_id];
+			assert(genes[k].strand == ge.strand);
 			if(ge.feature == "transcript") genes[k].add_transcript(ge);
 			else if(ge.feature == "exon") genes[k].add_exon(ge);
 		}

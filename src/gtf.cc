@@ -15,6 +15,9 @@ gtf::gtf(const gene &g)
 
 int gtf::build_splice_graph(splice_graph &gr)
 {
+	gr.clear();
+	gr.strand = strand;
+	gr.chrm = chrm;
 	build_split_interval_map();
 	add_vertices(gr);
 	add_edges(gr);

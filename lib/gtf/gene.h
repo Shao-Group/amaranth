@@ -22,6 +22,8 @@ class gene
 public:
 	vector<transcript> transcripts;			
 	map<string, int> t2i;
+	char strand;
+	string chrm;
 
 public:
 	// build
