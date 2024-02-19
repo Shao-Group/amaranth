@@ -49,7 +49,7 @@ int main(int argc, const char **argv)
 
 	if(asterMode == aster_mode::REF)
 	{
-		analyzer alyz;
+		analyzer alyz(ref_file);
 		alyz.analyze();
 		cout << "Aster completed analyzing the reference transcriptome. Thank you for using!" << endl;
 	}
