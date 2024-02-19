@@ -31,10 +31,13 @@ class analyzer
 {
 public:
     analyzer(string);
+    int write();
     int print();
 
 private:
     genome gn;
+    vector<transcript> trsts;
+    vector<transcript> non_full_trsts;
     int analyze();
 
 };

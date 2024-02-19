@@ -15,7 +15,7 @@ See LICENSE for licensing.
 */
 analyzer::analyzer(string _ref_file)
 {
-    genome g(_ref_file);
+    gn = genome(_ref_file);
     analyze();
 }
 
@@ -25,12 +25,24 @@ int analyzer::analyze()
     {
         throw runtime_error("error: gtf file is empty or corrupted!");
     }
+
+    trsts.clear();
+    non_full_trsts.clear();
+    
     for(int i = 0; i < gn.genes.size(); i++)
     {
-        gtf gg(gn.genes[i]);
+        gene& gene0 = gn.genes[i];
+        if(gene0.transcripts.size() <= 0) continue;
+        
+        gtf gtf0(gene0);
         splice_graph gr;
-        gg.build_splice_graph(gr);
+        gr.gid = gene0.transcripts[0].gene_id;
+
+        gtf0.build_splice_graph(gr);
         aster asterInstance(gr, {});
+
+        trsts.insert(trsts.end(), asterInstance.trsts.begin(), asterInstance.trsts.end());
+        non_full_trsts.insert(non_full_trsts.end(), asterInstance.non_full_trsts.begin(), asterInstance.non_full_trsts.end());
     }
 
     return 0;
@@ -40,4 +52,28 @@ int analyzer::print()
 {
     aster::print_stats();
     return 0;
+}
+
+int analyzer::write()
+{
+    ofstream fout(output_file.c_str());
+	if(fout.fail()) return 0;
+
+	for(int i = 0; i < trsts.size(); i++)
+	{
+		transcript &t = trsts[i];
+		t.write(fout);
+	}
+	fout.close();
+
+    ofstream fout1(output_file1.c_str());
+    if(fout1.fail()) return 0;
+    for(int i = 0; i < non_full_trsts.size(); i++)
+    {
+            transcript &t = non_full_trsts[i];
+            t.write(fout1);
+    }
+    fout1.close();
+
+	return 0;
 }

@@ -1248,6 +1248,7 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 	for(int middle = source; middle <= target; middle ++)
 	{
 		int k = tp2v[middle];
+		if(gr.degree(k) <= 0) continue;
 		assert(k >= s);
 		assert(k <= t);
 		set<edge_descriptor> setEdge;

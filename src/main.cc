@@ -42,23 +42,22 @@ int main(int argc, const char **argv)
 		printf("\n");
 	}
 
-	previewer pv;
-	pv.preview();
-
-	if(preview_only == true) return 0;
-
 	if(asterMode == aster_mode::REF)
 	{
 		analyzer alyz(ref_file);
 		alyz.print();
 		cout << "Aster completed analyzing the reference transcriptome. Thank you for using!" << endl;
+		return 0;
 	}
-	else
-	{
-		assembler asmb;
-		asmb.assemble();
-		cout << "Aster completed assembling the transcripts. Thank you for using!" << endl;
-	}
+
+	previewer pv;
+	pv.preview();
+
+	if(preview_only == true) return 0;
+
+	assembler asmb;
+	asmb.assemble();
+	cout << "Aster completed assembling the transcripts. Thank you for using!" << endl;
 
 	return 0;
 }
