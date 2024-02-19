@@ -17,6 +17,7 @@ analyzer::analyzer(string _ref_file)
 {
     gn = genome(_ref_file);
     analyze();
+    write();
 }
 
 int analyzer::analyze()
