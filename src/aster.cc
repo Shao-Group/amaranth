@@ -166,7 +166,7 @@ int aster::divide_conquer(aster_index ai)
 	return -1;
 }
 
-int aster::greedy(aster_index ai)
+bool aster::greedy(aster_index ai)
 {
 	//TODO:
 	return false;	
