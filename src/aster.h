@@ -31,15 +31,16 @@ private:
 public:
 	inline aster_index(vector<int> v): indices(v) {};
 	inline const vector<int>& get_index() const {return indices;}
-	inline int get_source() const {return indices.front();}
-	inline int get_target() const {return indices.back();}
+	inline int s() const {return indices.front();}
+	inline int t() const {return indices.back();}
+	inline bool find_index(int i) const {return indices.find(i) == indices.end()? false: true;}
 };
 
 struct aster_result
 {
 	vector<path> subpaths;	// predicted paths, original v index, inclusive
 	int dist = -1;
-	inline aster_result(const vector<int>& v, double w) {subpaths.push_back(path(v, w));};
+	inline aster_result(const vector<int>& v, double w): dist(0) {subpaths.push_back(path(v, w));};
 	inline void clear() {subpaths.clear(); dist = -1;}
 };
 
@@ -100,28 +101,12 @@ private:
 	bool divide_conquer_articulation_point(aster_index ai);
 	int  divide_conquer_articulation_find(aster_index ai);
 	bool divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
+	bool resolve_trivial_intersection(aster_index ai);
 	bool resolve_intersection_edge(aster_index ai);
 	bool resolve_trivial_paths(aster_index ai);
-	// int divide_conquer();
-	int divide_conquer(int source, int target, aster_result& res);
-	bool divide_conquer_single_vertex(int source, int target, aster_result& res);
-	bool divide_conquer_unitig(int source, int target, aster_result& res);
-	bool divide_conquer_abutting(int source, int target, aster_result& res);
-	bool divide_conquer_cut_termini(int source, int target, aster_result& res);
-	int  divide_conquer_cut_termini_find(int source, int target, vector<pair<int, int>>& intervals);
-	bool divide_conquer_articulation_point(int source, int target, aster_result& res);
-	int  divide_conquer_articulation_find(int source, int target);
-	// bool divide_conquer_combine(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
-	bool resolve_intersection_edge(int source, int target, aster_result& res);
-	bool resolve_trivial_paths(int source, int target, aster_result& res);
+	bool greedy(aster_index ai);
 
-	int  greedy(aster_index ai);
-	bool resolve_trivial_intersection(aster_index ai);
-	int  replace_closed_nodes_w_one_edge(aster_index ai, double w);
-	int  greedy(int source, int target);
-	bool resolve_trivial_intersection(int source, int target, aster_result& res);
-	int  replace_closed_nodes_w_one_edge(int source, int target, double w);
-
+	edge_descriptor replace_closed_nodes_w_one_edge(aster_index ai, double w, aster_result res);
 	int event_size_penalty(int eventSize) const;
 	int path_distance(const path& p1, const path& p2) const;
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const;
