@@ -588,7 +588,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 	assert(gr.compute_num_paths(s, t) == 1);
 	assert(gr.compute_num_paths(tp2v.at(pivot), t, 2) == 1);
 
-	bool combineSuccess = divide_conquer_combine(res1, res2, pivot, res);
+	bool combineSuccess = res_combine_consecutive(res1, res2, pivot, res);
 	if (! combineSuccess) return false;
 
 	double w = 0;
@@ -648,7 +648,7 @@ int aster::divide_conquer_articulation_find(int source, int target)
 /*  combines subpaths of left and right sides of articulation point k
 *	res1, res2 could be empty
 */
-bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb) const
+bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb) const
 {
 	int k = tp2v.at(pivot);
 
@@ -755,6 +755,48 @@ bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int 
 	return true;
 }
 
+bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb) const
+{	
+	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
+	if(res1.subpaths.size() == 0) 
+	{
+		comb = res2;
+		return true;
+	}
+	if(res2.subpaths.size() == 0) 
+	{
+		comb = res1;
+		return true;
+	}
+	assert(res1.subpaths.size() > 0);
+	assert(res1.subpaths[0].v.size() > 0);
+	assert(res2.subpaths.size() > 0);
+	assert(res2.subpaths[0].v.size() > 0);
+
+	int s = res1.subpaths[0].v.front();
+	int t = res1.subpaths[0].v.back();
+
+	for(const path& p: res1.subpaths)	
+	{
+		assert(p.v.size() >= 1); 
+		assert(p.v.front() == s);
+		assert(p.v.back() == t);
+	}
+	for(const path& p: res2.subpaths)	
+	{
+		assert(p.v.size() >= 1); 
+		assert(p.v.front() == s);
+		assert(p.v.back() == t);
+	}
+
+	comb.clear();
+	comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
+	comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
+	assert(comb.subpaths.size() == res1.subpaths.size() + res2.subpaths.size());
+
+	//TODO: calculate dist
+	return true;
+}
 
 /* examine if dnc unitig between source to target; if true, populate res */
 bool aster::divide_conquer_unitig(aster_index ai)
