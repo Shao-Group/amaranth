@@ -39,8 +39,7 @@ public:
 	int assemble();
 	static int print_stats();
 
-// static stats
-private:
+private:		   // static stats
 	inline static int num_graph = 0;
 	inline static int num_intersecting_graph = 0;
 	inline static int num_intron = 0;
@@ -56,13 +55,13 @@ private:
 	inline static int dnc_counter_resolve_trivial_paths = 0;
 	inline static int dnc_counter_resolve_intersection_edge = 0;
 
-	
-
+private:
 	const splice_graph& origr;			// original splice graph
 	splice_graph gr;					// splice graph with modification
 	hyper_set hs;						// hyper edges
-	VI tp2v;							// DFS-based topologically sorted index to vertex index. This guarantees all disjoint subgraphs are gathered together
-	VI v2tp;							// vertex index to DFS-based topologically sorted index. This guarantees all disjoint subgraphs are gathered together
+	VI tp2v;							// DFS-based topologically sorted index to vertex index.
+	VI v2tp;							// vertex index to DFS-based topologically sorted index.
+	map<edge_descriptor, aster_result> edgeres;
 	aster_mode mode;
 
 public:
