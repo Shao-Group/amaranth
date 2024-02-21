@@ -28,6 +28,7 @@ struct aster_result
 {
 	vector<path> subpaths;	// predicted paths, original v index, inclusive
 	int dist = -1;
+	inline aster_result(const vector<int>& v, double w) {subpaths.push_back(path(v, w));};
 	inline void clear() {subpaths.clear(); dist = -1;}
 };
 
