@@ -757,11 +757,11 @@ bool aster::divide_conquer_combine(aster_result& res1,  aster_result& res2, int 
 
 
 /* examine if dnc unitig between source to target; if true, populate res */
-bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
+bool aster::divide_conquer_unitig(aster_index ai)
 {
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
+
+	int s = ai.s();
+	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
@@ -812,8 +812,6 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 		double c = double(unitig.size());
 		w = _avg_? (w / c): pow(w, 1.0/ c);
 	}
-	res.subpaths.push_back(path(unitig, w));
-	res.dist = 0;
 
 	if(verbose >= 2) 
 	{
@@ -824,7 +822,8 @@ bool aster::divide_conquer_unitig(int source, int target, aster_result& res)
 		printv(unitig);
 		cout << endl;
 	}
-	replace_closed_nodes_w_one_edge(source, target, w);
+
+	replace_closed_nodes_w_one_edge(ai, w, aster_result(unitig, w));
 	return true;
 }
 
