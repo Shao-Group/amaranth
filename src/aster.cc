@@ -1234,20 +1234,19 @@ int aster::find_shortest_path(const aster_result& res) const
 *  Maybe not necessarily removes all edges from/to vertices in [s,t] if it is not closed
 *  i.e. for nodes reachable from s and reachable to t, they cannot reach any other nodes but themselves and s,t
 */
-int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
+edge_descriptor aster::replace_closed_nodes_w_one_edge(aster_index ai, double w, aster_result res)
 {
-	assert(source < target);
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v.at(source);
-	int t = tp2v.at(target);
+	int s = ai.s();
+	int t = ai.t();
+	int source = v2tp.at(s);
+	int target = v2tp.at(t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);	
 
 	// under 'closed' assumption all edges in (s, t) open interval must have sources/targets in [s, t] closed interval
-	for(int middle = source; middle <= target; middle ++)
+	for(int k: ai.get_index())
 	{
-		int k = tp2v[middle];
 		if(gr.degree(k) <= 0) continue;
 		assert(k >= s);
 		assert(k <= t);
@@ -1265,16 +1264,15 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 		for(edge_descriptor e: setEdge)
 		{
 			assert(gr.edge(e));
-			if(v2tp.at(e->source()) < source) continue;;
-			if(v2tp.at(e->target()) > target) continue;
-			if(v2tp.at(e->source()) >= target ) continue;;
-			if(v2tp.at(e->target()) <= source) continue;
+			if(! find_index(e->source())) continue;;
+			if(! find_index(e->target())) continue;
 			gr.remove_edge(e);
+			edgeres.erase(e);
 		}
 	}
 	assert(! gr.check_path(s, t));
 
-	// put edge
+	// put edge & res
 	edge_descriptor e_new = gr.add_edge(s, t);
 	edge_info ei;
 	ei.weight = w;
@@ -1283,6 +1281,7 @@ int aster::replace_closed_nodes_w_one_edge(int source, int target, double w)
 	assert(e_new != NULL);
 	assert(gr.ewrt.find(e_new) != gr.ewrt.end());
 	assert(gr.einf.find(e_new) != gr.einf.end());
+	edgeres.insert({e_new, res});
 
 	assert(!gr.refine_splice_graph());
 	return 0;
