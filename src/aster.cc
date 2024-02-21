@@ -20,6 +20,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 
     topological_sort_vertices();
 	make_stats();
+	init_edgeres();
 
 	if(mode == aster_mode::STAT_ONLY) print_stats();
 
@@ -867,6 +868,19 @@ bool aster::divide_conquer_single_vertex(int source, int target, aster_result& r
 	res.subpaths.push_back(path({s}, abd)); 
 	res.dist = 0;
 	return true;
+}
+
+int aster::init_edgeres()
+{
+	edgeres.clear();
+	PEEI pei = gr.edges();
+	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+	{
+		edge_descriptor e = *it1;
+		double w = gr.get_edge_weight(e);
+		edgeres.insert({e, aster_result(vector<int>{e->source(), e->target()}, w)});
+	}
+	return 0;
 }
 
 /*
