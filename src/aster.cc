@@ -166,24 +166,22 @@ int aster::divide_conquer(aster_index ai)
 	return -1;
 }
 
-int aster::greedy(int source, int target)
+int aster::greedy(aster_index ai)
 {
 	//TODO:
 	return false;	
 	throw runtime_error("not implemented yet"); 
 }
 
-bool aster::resolve_intersection_edge(int source, int target, aster_result& res)
+bool aster::resolve_intersection_edge(aster_index ai)
 {
 	return false;
-	
-	res.clear();
-	divide_conquer(source, target, res);
+	divide_conquer(ai);
 	return true;
 
 }
 
-bool aster::resolve_trivial_paths(int source, int target, aster_result& res)
+bool aster::resolve_trivial_paths(aster_index ai)
 {
 	return false;
 }
