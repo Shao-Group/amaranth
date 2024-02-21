@@ -88,10 +88,7 @@ int aster::divide_conquer()
 	}
 	assert(gr.num_vertices() > 2);
 	assert(tp2v.size() == gr.num_vertices());
-	int s = 0;									// tp2v index
-	int t = gr.num_vertices() - 1;				// tp2v index
-	aster_result res;
-	divide_conquer(s, t, res);
+	divide_conquer({tp2v});
 	paths.clear();
 	paths = res.subpaths;
 	if(paths.size() >= 1) for(const path & p : paths)	assert(origr.valid_path(p.v));
@@ -100,78 +97,71 @@ int aster::divide_conquer()
 
 // divide_conquer(i ,j) solves a subproblem between 
 // i, j are tp2v indices
-int aster::divide_conquer(int source, int target, aster_result& res)
+int aster::divide_conquer(aster_index ai)
 {
+	int s = ai.get_source();
+	int t = ai.get_target();
+
 	if(verbose >= 2)
 	{
-		int s = tp2v.at(source), t = tp2v.at(target);
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
 
-	assert(res.subpaths.size() == 0);
-	assert(res.dist == -1);
-	assert(source <= target);
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 
-	if (divide_conquer_single_vertex(source, target, res))			
+	if (divide_conquer_single_vertex(ai))			
 	{
 		dnc_counter_single ++;
 		return 0;
 	} 
-	if (divide_conquer_unitig(source, target, res))					
+	if (divide_conquer_unitig(ai))					
 	{
 		dnc_counter_unitig ++;
 		return 0;
 	}
-	if (divide_conquer_abutting(source, target, res))				
+	if (divide_conquer_abutting(ai))				
 	{
 		dnc_counter_abutting ++;
 		return 0;
 	}
-	if (divide_conquer_cut_termini(source, target, res)) 	
+	if (divide_conquer_cut_termini(ai)) 	
 	{
 		dnc_counter_cut_vertex ++;
 		return 0;
 	}
-	if (divide_conquer_articulation_point(source, target, res))		
+	if (divide_conquer_articulation_point(ai))		
 	{
 		dnc_counter_articulation_point_disjoint ++;
 		return 0;
 	}
-	if (resolve_trivial_intersection(source, target, res))		
+	if (resolve_trivial_intersection(ai))		
 	{
 		dnc_counter_resolve_trivial_intersection ++;
 		return 0;
 	}
-	if (resolve_trivial_paths(source, target, res))		
+	if (resolve_trivial_paths(ai))		
 	{
 		dnc_counter_resolve_trivial_paths ++;
 		return 0;
 	}
-	if (resolve_intersection_edge(source, target, res))
+	if (resolve_intersection_edge(ai))
 	{
 		dnc_counter_resolve_intersection_edge ++;
 		return 0;
 	}
-	if(mode != aster_mode::MINI && greedy(source, target))
+	if(mode != aster_mode::MINI && greedy(ai))
 	{
 		return 0;
 	}
 
 	num_intersecting_graph ++;
 
-	res.clear();
-
 	string msg = "aster-mini failed on graph " + gr.gid;
 	msg += " [" + gr.chrm + ":" + to_string(gr.get_vertex_info(0).lpos) + "-" + to_string(gr.get_vertex_info(0).rpos) + "]";
 	msg += " in subgraph vertexIndex [" + to_string(s) + ", " + to_string(t) + "]";
-	msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])\n";
 	throw aster_error(msg.c_str());
 	return -1;
 }
