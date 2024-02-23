@@ -33,14 +33,15 @@ public:
 	inline const vector<int>& get_index() const {return indices;}
 	inline int s() const {return indices.front();}
 	inline int t() const {return indices.back();}
-	inline bool find_index(int i) const {return indices.find(i) == indices.end()? false: true;}
+	inline bool find_index(int i) const {return find(indices.begin(), indices.end(), i) != indices.end();}
 };
 
 struct aster_result
 {
 	vector<path> subpaths;	// predicted paths, original v index, inclusive
 	int dist = -1;
-	inline aster_result(const vector<int>& v, double w): dist(0) {subpaths.push_back(path(v, w));};
+	inline aster_result() {};
+	inline aster_result(const vector<int>& v, double w): subpaths({path(v, w)}), dist(0) {};
 	inline void clear() {subpaths.clear(); dist = -1;}
 };
 
