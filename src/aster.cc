@@ -648,23 +648,26 @@ int aster::divide_conquer_articulation_find(int source, int target)
 /*  combines subpaths of left and right sides of articulation point k
 *	res1, res2 could be empty
 */
-bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb) const
+bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, aster_result& comb) const
 {
-	int k = tp2v.at(pivot);
-
 	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
 	if(res1.subpaths.size() == 0) 
 	{
-		assert(res2.subpaths.size() > 0);
 		comb = res2;
 		return true;
 	}
 	if(res2.subpaths.size() == 0) 
 	{
-		assert(res1.subpaths.size() > 0);
 		comb = res1;
 		return true;
 	}
+
+	assert(res1.subpaths.size() > 0);
+	assert(res1.subpaths[0].v.size() > 0);
+	assert(res2.subpaths.size() > 0);
+	assert(res2.subpaths[0].v.size() > 0);
+
+	int k = res1.subpaths[0].v.back();
 
 	for(const path& p: res1.subpaths)	
 	{
@@ -720,7 +723,7 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, int
 
 	if(verbose >= 3)
 	{
-		cout << "combining subpaths paths squeezing articulation point " << k << " (TopoIdx " << pivot << ")" << endl ;
+		cout << "combining subpaths paths squeezing articulation point " << k << endl ;
 		cout << "paths on the left side of art-point: ";
 		for(const path& p: res1.subpaths)
 		{
@@ -755,7 +758,7 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, int
 	return true;
 }
 
-bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, int pivot, aster_result& comb) const
+bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_result& comb) const
 {	
 	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
 	if(res1.subpaths.size() == 0) 

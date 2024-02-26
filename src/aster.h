@@ -106,8 +106,8 @@ private:
 	bool resolve_trivial_paths(aster_index ai);
 	bool greedy(aster_index ai);
 
-	bool res_combine_consecutive(aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
-	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, int pivot, aster_result& comb) const;
+	bool res_combine_consecutive(aster_result& r1,  aster_result& r2, aster_result& comb) const;
+	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, aster_result& comb) const;
 
 	edge_descriptor replace_closed_nodes_w_one_edge(aster_index ai, double w, aster_result res);
 	int event_size_penalty(int eventSize) const;
