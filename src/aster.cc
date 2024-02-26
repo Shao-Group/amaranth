@@ -871,31 +871,29 @@ bool aster::divide_conquer_unitig(aster_index ai)
 
 /* examine if dnc single vertex; if true, populate res 
 */
-bool aster::divide_conquer_single_vertex(int source, int target, aster_result& res)
+bool aster::divide_conquer_single_vertex(aster_index ai)
 {
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
+	int s = ai.s();
+	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s <= t);
 	if(s != t) return false;
-	assert(source == target);
 	
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with a single-vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
 	}
 
-	res.clear();
 	if(gr.degree(s) == 0)  return true;
+
+	aster_result res;
 	double abd = gr.get_vertex_weight(s);
-	res.subpaths.push_back(path({s}, abd)); 
-	res.dist = 0;
-	return true;
+
+	throw runtime_error("single vertex should not be called");
+	return false;
 }
 
 int aster::init_edgeres()
