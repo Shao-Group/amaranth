@@ -180,7 +180,7 @@ bool aster::resolve_intersection_edge(aster_index ai)
 	return true;
 }
 
-bool aster::resolve_trivial_paths(aster_index ai)
+bool aster::resolve_trivial_node(aster_index ai)
 {
 	return false;
 }

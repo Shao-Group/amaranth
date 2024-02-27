@@ -65,7 +65,7 @@ private:		   // static stats
 	inline static int dnc_counter_cut_vertex = 0;
 	inline static int dnc_counter_articulation_point_disjoint = 0;
 	inline static int dnc_counter_resolve_trivial_intersection = 0;
-	inline static int dnc_counter_resolve_trivial_paths = 0;
+	inline static int dnc_counter_resolve_trivial_node = 0;
 	inline static int dnc_counter_resolve_intersection_edge = 0;
 
 private:
@@ -103,7 +103,7 @@ private:
 	int  divide_conquer_articulation_find(aster_index ai);
 	bool resolve_trivial_intersection(aster_index ai);
 	bool resolve_intersection_edge(aster_index ai);
-	bool resolve_trivial_paths(aster_index ai);
+	bool resolve_trivial_node(aster_index ai);
 	bool greedy(aster_index ai);
 
 	bool res_combine_consecutive(aster_result& r1,  aster_result& r2, aster_result& comb) const;
