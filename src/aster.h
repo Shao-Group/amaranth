@@ -110,6 +110,8 @@ private:
 	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, aster_result& comb) const;
 
 	edge_descriptor replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res);
+	bool valid_paths(aster_result res) const;
+	bool valid_paths(vector<path> paths) const;
 	int event_size_penalty(int eventSize) const;
 	int path_distance(const path& p1, const path& p2) const;
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const;

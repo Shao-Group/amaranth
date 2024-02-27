@@ -847,7 +847,7 @@ bool aster::divide_conquer_unitig(aster_index ai)
 		unitigRes = __res__;
 		c += 1.0;
 	}
-	assert(origr.valid_paths(unitigRes.subpaths));
+	assert(valid_paths(unitigRes));
 	w = _avg_? (w / c): pow(w, 1.0/ c);
 
 	aster_result __res__;
@@ -1323,6 +1323,20 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 
 	assert(!gr.refine_splice_graph());
 	return 0;
+}
+
+bool aster::valid_paths(aster_result res) const
+{
+	return valid_paths(res.subpaths);
+}
+
+bool aster::valid_paths(vector<path> paths) const
+{
+	for(const path& p : paths)
+	{
+		if (!origr.valid_path(p.v)) return false;
+	}
+	return true;
 }
 
 // assign path.nf, populate trsts and non_full_trsts
