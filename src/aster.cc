@@ -190,7 +190,8 @@ bool aster::resolve_trivial_node(aster_index ai)
 *  1->2->3->4 and 1->3 and 2->4 forming a diomond shape
 *  s-> k1 and k2, k1 -> k2 and t, k2 -> t
 */
-bool aster::resolve_trivial_intersection(int source, int target, aster_result& res)
+/* 
+bool aster::resolve_trivial_intersection(int source, int target, aster_result& res) 
 {
 	assert(source < tp2v.size() && target < tp2v.size());
 	int s = tp2v[source];
@@ -253,6 +254,7 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 
 	return true;
 }
+*/
 
 /* remove abutting edge, then call divide_conquer(source, target, res) again */
 bool aster::divide_conquer_abutting(int source, int target, aster_result& res)

@@ -88,7 +88,7 @@ private:
 	int topological_sort_vertices();
 	int topological_sort_vertices_visit(int i, vector<bool>& visited, vector<int>& sorted);
 	int topological_sort_index_edges();
-//	bool aggressive_purge_intersecting_edges();
+	//	bool aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
 	int remove_small_junctions();
 
@@ -101,7 +101,7 @@ private:
 	int  divide_conquer_cut_termini_find(aster_index ai, vector<pair<int, int>>& intervals);
 	bool divide_conquer_articulation_point(aster_index ai);
 	int  divide_conquer_articulation_find(aster_index ai);
-	bool resolve_trivial_intersection(aster_index ai);
+	// bool resolve_trivial_intersection(aster_index ai);
 	bool resolve_intersection_edge(aster_index ai);
 	bool resolve_trivial_node(aster_index ai);
 	bool greedy(aster_index ai);
