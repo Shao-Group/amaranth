@@ -58,6 +58,7 @@ public:
 	virtual PEB edge(int s, int t);
 	virtual bool edge(edge_descriptor e);
 	virtual PEEI edges() const;
+	virtual bool valid_paths(const vector<vector<int> >& paths) const;
 	virtual bool valid_path(const vector<int>& path) const;
 	virtual vector<edge_descriptor> edges(int x, int y);
 	virtual set<int> adjacent_vertices(int v);
