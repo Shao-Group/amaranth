@@ -233,7 +233,7 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 	res.subpaths.push_back({{s, k1, t}, abd2});
 	res.subpaths.push_back({{s, k2, t}, abd3});
 
-	replace_closed_nodes_w_one_edge(source, target, abd1 + abd2 + abd3);
+	replace_aster_index_to_one_edge(source, target, abd1 + abd2 + abd3);
 
 	if(verbose >= 2) 
 	{
@@ -295,7 +295,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	res.subpaths.push_back(p);
 	res.dist += event_size_penalty(eventSize);
 
-	replace_closed_nodes_w_one_edge(source, target, w);
+	replace_aster_index_to_one_edge(source, target, w);
 
 	if(verbose >= 2) 
 	{
@@ -407,7 +407,7 @@ bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res
 
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
-	replace_closed_nodes_w_one_edge(source, target, w);
+	replace_aster_index_to_one_edge(source, target, w);
 
 	if(verbose >= 2) 
 	{
@@ -595,7 +595,7 @@ bool aster::divide_conquer_articulation_point(int source, int target, aster_resu
 
 	double w = 0;
 	for(const path& p: res.subpaths) w += p.abd;
-	replace_closed_nodes_w_one_edge(source, target, w);
+	replace_aster_index_to_one_edge(source, target, w);
 
 	if(verbose >= 2)
 	{
@@ -863,7 +863,7 @@ bool aster::divide_conquer_unitig(aster_index ai)
 		cout << endl;
 	}
 
-	replace_closed_nodes_w_one_edge(ai, w, unitigRes);
+	replace_aster_index_to_one_edge(ai, w, unitigRes);
 	return true;
 }
 
@@ -1272,7 +1272,7 @@ int aster::find_shortest_path(const aster_result& res) const
 *  Maybe not necessarily removes all edges from/to vertices in [s,t] if it is not closed
 *  i.e. for nodes reachable from s and reachable to t, they cannot reach any other nodes but themselves and s,t
 */
-edge_descriptor aster::replace_closed_nodes_w_one_edge(aster_index ai, double w, aster_result res)
+edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res)
 {
 	int s = ai.s();
 	int t = ai.t();

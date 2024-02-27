@@ -109,7 +109,7 @@ private:
 	bool res_combine_consecutive(aster_result& r1,  aster_result& r2, aster_result& comb) const;
 	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, aster_result& comb) const;
 
-	edge_descriptor replace_closed_nodes_w_one_edge(aster_index ai, double w, aster_result res);
+	edge_descriptor replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res);
 	int event_size_penalty(int eventSize) const;
 	int path_distance(const path& p1, const path& p2) const;
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const;
