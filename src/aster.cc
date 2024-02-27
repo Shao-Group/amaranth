@@ -99,8 +99,8 @@ int aster::divide_conquer()
 // i, j are tp2v indices
 int aster::divide_conquer(aster_index ai)
 {
-	int s = ai.get_source();
-	int t = ai.get_target();
+	int s = ai.s();
+	int t = ai.t();
 
 	if(verbose >= 2)
 	{
@@ -804,7 +804,6 @@ bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_
 /* examine if dnc unitig between source to target; if true, populate res */
 bool aster::divide_conquer_unitig(aster_index ai)
 {
-
 	int s = ai.s();
 	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
@@ -814,61 +813,55 @@ bool aster::divide_conquer_unitig(aster_index ai)
 	if(verbose >= 3)  //CLEAN:
 	{
 		string msg = "aster checking unitig in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		cout << msg;
 		cout << endl;
 	}
 
-	vector<int> unitig;
+	aster_result unitigRes;
 	bool   _avg_ = false;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
-	if(source == target - 1 || s == t - 1)					// only two vertices
+
+	int n = gr.compute_num_paths(s, t, 2);
+	if(s == t - 1)  assert(n == 1); // only two vertices
+	assert(n >= 1);
+	if(n > 1) return false;	
+
+	// populate unitig
+	double c = 0.0;
+	int ss = s;
+	while(true)
 	{
-		assert(gr.edge_exists(s, t));
-		assert(gr.out_degree(s) == 1);
-		assert(gr.in_degree(t)  == 1);
-		edge_descriptor e = (*(gr.out_edges(s).first));
-		assert(e != null_edge);
-		unitig.push_back(s);
-		unitig.push_back(t);
+		assert(ss <= t);
+		if (ss == t) break;
+		assert(gr.out_degree(ss) >= 1);
+		if (gr.out_degree(ss) > 1) return false;
+		edge_descriptor e = (*(gr.out_edges(ss).first));
 		double ew = gr.get_edge_weight(e);
-		w = ew;
+		w = _avg_? (w + ew): (w * ew);
+		ss  = e->target();
+
+		aster_result __res__;
+		res_combine_consecutive(unitigRes, edgeres.at(e), __res__);
+		unitigRes = __res__;
+		c += 1.0;
 	}
-	else													// longer unitig
-	{
-		int n = gr.compute_num_paths(s, t, 2);
-		assert(n >= 1);
-		if(n > 1) return false;	
-		
-		int ss = s;
-		while(true)
-		{
-			unitig.push_back(ss);
-			assert(ss <= t);
-			if (ss == t) break;
-			assert(gr.out_degree(ss) >= 1);
-			if (gr.out_degree(ss) > 1) return false;
-			edge_descriptor e = (*(gr.out_edges(ss).first));
-			double ew = gr.get_edge_weight(e);
-			w = _avg_? (w + ew): (w * ew);
-			ss  = e->target();
-		}
-		assert(origr.valid_path(unitig));
-		double c = double(unitig.size());
-		w = _avg_? (w / c): pow(w, 1.0/ c);
-	}
+	assert(origr.valid_paths(unitigRes.subpaths));
+	w = _avg_? (w / c): pow(w, 1.0/ c);
+
+	aster_result __res__;
+	res_combine_consecutive(unitigRes, edgeres.at(e), __res__);
+	unitigRes = std::move(__res__);		//FIXME:TODO: is this correct?	
 
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with a unitig path: "; 
 		cout << msg;
-		printv(unitig);
 		cout << endl;
 	}
 
-	replace_closed_nodes_w_one_edge(ai, w, aster_result(unitig, w));
+	replace_closed_nodes_w_one_edge(ai, w, unitigRes);
 	return true;
 }
 
