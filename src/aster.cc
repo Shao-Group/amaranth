@@ -1302,8 +1302,8 @@ edge_descriptor aster::replace_closed_nodes_w_one_edge(aster_index ai, double w,
 		for(edge_descriptor e: setEdge)
 		{
 			assert(gr.edge(e));
-			if(! find_index(e->source())) continue;;
-			if(! find_index(e->target())) continue;
+			if(! ai.find_index(e->source())) continue;;
+			if(! ai.find_index(e->target())) continue;
 			gr.remove_edge(e);
 			edgeres.erase(e);
 		}
