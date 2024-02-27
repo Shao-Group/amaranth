@@ -112,6 +112,11 @@ int aster::divide_conquer(aster_index ai)
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 
+	if (resolve_trivial_node(ai))		
+	{
+		dnc_counter_resolve_trivial_node ++;
+		return 0;
+	}
 	if (divide_conquer_single_vertex(ai))			
 	{
 		dnc_counter_single ++;
@@ -140,11 +145,6 @@ int aster::divide_conquer(aster_index ai)
 	if (resolve_trivial_intersection(ai))		
 	{
 		dnc_counter_resolve_trivial_intersection ++;
-		return 0;
-	}
-	if (resolve_trivial_paths(ai))		
-	{
-		dnc_counter_resolve_trivial_paths ++;
 		return 0;
 	}
 	if (resolve_intersection_edge(ai))
