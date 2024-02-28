@@ -282,14 +282,12 @@ bool aster::resolve_trivial_intersection(int source, int target, aster_result& r
 */
 
 /* remove abutting edge, then call divide_conquer(source, target, res) again */
-bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
+bool aster::divide_conquer_abutting(aster_index ai)
 {	
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
+	int s = ai.s();
+	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t - 1);
-	assert(source < target - 1);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
 	if(! gr.edge_exists(s,t)) return false;
@@ -297,7 +295,7 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	if(verbose >= 2) 
 	{
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "removing the direct edge between them."; 
 		cout << msg << endl;
 	}
@@ -309,23 +307,33 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	assert(gr.edge(e));
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
-	divide_conquer(source, target, res);
+	divide_conquer(ai);
 
-	int shortestPathIndex = find_shortest_path(res);
+	// combine results
+	PEB peb = gr.edge(s, t);
+	assert(peb.second == true);
+	edge_descriptor e1 = peb.first;
+	double w1 = gr.get_edge_weight(e1);
+	aster_result& res1 = edgeres.at(e1);
+	aster_result res2(vector<int>{s, t}, w);
+	aster_result rescomb;
+	res_combine_parallel(res1, res2, rescomb);
+	
+	/* int shortestPathIndex = find_shortest_path(res);
 	assert(shortestPathIndex >= 0);
 	int shortestPathSize = res.subpaths.at(shortestPathIndex).v.size();
 	int eventSize        = shortestPathSize - 2;
 	assert(eventSize >= 1);
 	path p({s, t}, w);
 	res.subpaths.push_back(p);
-	res.dist += event_size_penalty(eventSize);
+	res.dist += event_size_penalty(eventSize); */
 
-	replace_aster_index_to_one_edge(source, target, w);
+	replace_aster_index_to_one_edge(ai, w + w1, rescomb);
 
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with a direct edge between them."; 
 		cout << msg << endl;
 	}
