@@ -556,51 +556,47 @@ int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<i
 ** divide and conquer the problem to dnc[s, k], dnc [k, t]
 ** not disjoint: (s,t) edge exists, or multiple subgraphs can be found
 */
-bool aster::divide_conquer_articulation_point(int source, int target, aster_result& res)
+bool aster::divide_conquer_articulation_point(aster_index ai)
 {
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
+	int s = ai.s();
+	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t - 1);
-	assert(source < target - 1);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	
-	int pivot = divide_conquer_articulation_find(source, target);
+	aster_index aileft, airight;
+	int pivot = divide_conquer_articulation_find(ai, aileft, airight);
 	if (pivot < 0) return false;
-	assert(pivot > source && pivot < target);
+	assert(pivot > s && pivot < t);
 
-	// if(verbose >= 2)
-	// {
-	// 	string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-	// 	msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
-	// 	msg += "splitting subgraphs at articulation point"; 
-	// 	cout << msg << endl;
-	// }
-	
-	aster_result res1;
-	aster_result res2;
-	divide_conquer(source, pivot, res1); 	
-	assert(gr.edge(s, tp2v.at(pivot)).first);
-	assert(gr.compute_num_paths(s, tp2v.at(pivot), 2) == 1);
+	divide_conquer(aileft); 	
+	PEB peb1 = gr.edge(s, pivot);
+	edge_descriptor e1 = peb1.first;
+	assert(peb1.second);
+	assert(gr.compute_num_paths(s, pivot) == 1);
 
-	divide_conquer(pivot, target, res2);	
-	assert(gr.edge(tp2v.at(pivot), t).first);	
+	divide_conquer(airight);
+	PEB peb2 = gr.edge(pivot, t);
+	edge_descriptor e2 = peb2.first;
+	assert(peb2.second);	
+	assert(gr.compute_num_paths(pivot, t) == 1);
 	assert(gr.compute_num_paths(s, t) == 1);
-	assert(gr.compute_num_paths(tp2v.at(pivot), t, 2) == 1);
 
-	bool combineSuccess = res_combine_consecutive(res1, res2, pivot, res);
-	if (! combineSuccess) return false;
+	aster_result & res1 = edgeres.at(e1);
+	aster_result & res2 = edgeres.at(e2);
+	aster_result comb;
+	bool combineSuccess = res_combine_consecutive(res1, res2, comb);
+	if (!combineSuccess) return false;
 
 	double w = 0;
-	for(const path& p: res.subpaths) w += p.abd;
-	replace_aster_index_to_one_edge(source, target, w);
+	for(const path& p: comb.subpaths) w += p.abd;
+	replace_aster_index_to_one_edge(ai, w, comb);
 
 	if(verbose >= 2)
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with subgraphs at articulation point " + to_string(tp2v[pivot]);
 		msg += " (topoIndex = " + to_string(pivot) + ")";
 		cout << msg << endl;
