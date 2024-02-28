@@ -34,6 +34,18 @@ public:
 	inline const vector<int>& get_index() const {return indices;}
 	inline int s() const {return indices.front();}
 	inline int t() const {return indices.back();}
+	inline int at(int i) const {return indices.at(i);}
+	inline int size() const {return indices.size();}
+	inline void split(int i, aster_index left, aster_index right) const
+	{
+		left = aster_index(vector<int>(indices.begin(), indices.begin() + i + 1));
+		right = aster_index(vector<int>(indices.begin() + i, indices.end()));
+		assert(size() >= 3);
+		assert(left.size() >= 2);
+		assert(right.size() >= 2);
+		assert(left.t() == right.s());
+		assert(left.size() + right.size() == size() - 1);
+	}
 	inline bool find_index(int i) const {return find(indices.begin(), indices.end(), i) != indices.end();}
 };
 
