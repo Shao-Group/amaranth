@@ -1322,7 +1322,7 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 	edgeres.insert({e_new, res});
 
 	assert(!gr.refine_splice_graph());
-	return 0;
+	return e_new;
 }
 
 bool aster::valid_paths(aster_result res) const
