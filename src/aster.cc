@@ -142,11 +142,11 @@ int aster::divide_conquer(aster_index ai)
 		dnc_counter_articulation_point_disjoint ++;
 		return 0;
 	}
-	if (resolve_trivial_intersection(ai))		
-	{
-		dnc_counter_resolve_trivial_intersection ++;
-		return 0;
-	}
+	// if (resolve_trivial_intersection(ai))		
+	// {
+	// 	dnc_counter_resolve_trivial_intersection ++;
+	// 	return 0;
+	// }
 	if (resolve_intersection_edge(ai))
 	{
 		dnc_counter_resolve_intersection_edge ++;
