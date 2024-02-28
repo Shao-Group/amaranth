@@ -607,39 +607,43 @@ bool aster::divide_conquer_articulation_point(aster_index ai)
 
 // find a pivot-TopoIndex s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
 // return -1 if cannot fine artivulation point
-int aster::divide_conquer_articulation_find(int source, int target) 
+int aster::divide_conquer_articulation_find(aster_index ai, aster_index left, aster_index right) 
 {
-	assert(source < target - 1);
-	int s = tp2v[source];
-	int t = tp2v[target];
-	int artVertex = -1;
-	
-	for(int i = source + 1; i < target; i++)
-	{
-		int idx = tp2v.at(i);
-		splice_graph gr2(gr);
-		gr2.clear_vertex(idx);
-		if(gr2.check_path(s, t)) continue;
-		artVertex = idx;
-	}
-	if (artVertex >= t || artVertex <= s || artVertex == -1) return -1;
+	int s = ai.s();
+	int t = ai.t();
+	if(ai.size() <= 2) return false;
+	if(! gr.check_path(s, t)) return false;
 
-	int pivot = v2tp.at(artVertex);
+	int pivot = -1;
+	int index = -1;
+	for(int i = 1; i < ai.size() - 1; i++)
+	{
+		int v = ai.at(i);
+		splice_graph gr2(gr);
+		gr2.clear_vertex(v);
+		if(gr2.check_path(s, t)) continue;
+		pivot = v;
+		index = i;
+		break;
+	}
+	if (pivot >= t || pivot <= s || pivot <= 0) return -1;
+
 	if(verbose >= 2) 
 	{
-		string msg = "\t found articulation point = " + to_string(tp2v[pivot]);
-		msg += " (topoIndex = " + to_string(pivot) + ")";
+		string msg = "\t found articulation point = " + to_string(pivot) + ")";
 		cout << msg << endl;
 	}
-	assert(s < artVertex);
-	assert(t > artVertex);
-	assert(pivot > source);
-	assert(pivot < target);
+
+	// split ai
+	ai.split(index, left, right);
+	assert(left.t() == pivot);
+	assert(right.s() == pivot);
 
 	//assertion
 	splice_graph gr2(gr);
-	gr2.clear_vertex(artVertex);
+	gr2.clear_vertex(pivot);
 	assert(! gr2.check_path(s, t)); 
+
 	return pivot;
 }
 

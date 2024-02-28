@@ -113,7 +113,7 @@ private:
 	bool divide_conquer_cut_termini(aster_index ai);
 	int  divide_conquer_cut_termini_find(aster_index ai, vector<pair<int, int>>& intervals);
 	bool divide_conquer_articulation_point(aster_index ai);
-	int  divide_conquer_articulation_find(aster_index ai);
+	int  divide_conquer_articulation_find(aster_index ai, aster_index left, aster_index right);
 	// bool resolve_trivial_intersection(aster_index ai);
 	bool resolve_intersection_edge(aster_index ai);
 	bool resolve_trivial_node(aster_index ai);
