@@ -40,6 +40,7 @@ aster_SOURCES = splice_graph.h splice_graph.cc \
 				   assembler.h assembler.cc \
 				   transcript_set.h transcript_set.cc \
 				   filter.h filter.cc \
+				   aster_aux.hpp \
 				   aster.h aster.cc \
 				   analyzer.h analyzer.cc \
 				   basic_algo.h basic_algo.cc \
