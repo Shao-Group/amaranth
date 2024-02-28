@@ -211,6 +211,93 @@ bool aster::resolve_trivial_node(aster_index ai)
 	return false;
 }
 
+/* 	consecutively combine edges, and replace original edges with newly combined ones
+	1. combine their res and push_back to edgeres
+	2. remove those edges' edgeres
+	2. remove those edges
+*/
+int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
+{
+	set<edge_descriptor> originalEdges;
+	//combine
+	for(edge_iterator it1 = inEdges.first, it2 = inEdges.second; it1 != it2; it1++)
+	{
+		edge_descriptor in = *it1;
+		originalEdges.insert(in);
+		for(edge_iterator ot1 = outEdges.first, ot2 = outEdges.second; ot1 != ot2; ot1++)
+		{
+			edge_descriptor out = *ot1;
+			originalEdges.insert(out);	
+			assert(in->target() == out->source());
+			edge_combine_consecutive(in, out);
+		}
+	}
+	// remove
+	for(edge_descriptor e: originalEdges)
+	{
+		edgeres.erase(e);
+		gr.remove_edge(e);
+	}
+	return 0;
+}
+
+/* 	consecutively combine 2 edges, WITHOUT replacement
+	i.e.	combine their res and push_back to edgeres
+*/
+//FIXME:TODO: hyperset?
+int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
+{
+	assert(in->target() == out->source());
+	int source = in->source();
+	int target = out->target();
+
+	// new weight
+	double w1 = gr.get_edge_weight(in);
+	double w2 = gr.get_edge_weight(out);
+	bool   _avg_ = false;	
+	double w = _avg_? (w1 + w2 / 2.0) : pow(w1 * w2, 1.0/2.0);
+
+	// new res
+	aster_result& res1 = edgeres.at(in);
+	aster_result& res2 = edgeres.at(out);
+	aster_result comb; 
+	bool resCombineSuccess = res_combine_consecutive(res1, res2, comb);
+	assert(resCombineSuccess);
+
+	// put edge & res
+	if(PEB peb = gr.edge(source, target); peb.second)
+	{
+		edge_descriptor e = peb.first;
+		edge_info ei =  gr.get_edge_info(e) ;
+		double weight = ei.weight + w;
+		ei.weight = weight;
+		gr.set_edge_info(e, ei);
+		gr.set_edge_weight(e, weight);
+		assert(gr.ewrt.find(e) != gr.ewrt.end());
+		assert(gr.einf.find(e) != gr.einf.end());
+		aster_result res;
+		res_combine_parallel(comb, edgeres.at(e), res);
+		edgeres[e] = res;
+	}
+	else
+	{
+		edge_descriptor e_new = gr.add_edge(source, target);
+		edge_info ei;
+		double weight = w;
+		ei.weight = weight;
+		gr.set_edge_info(e_new, ei);
+		gr.set_edge_weight(e_new, weight);
+		assert(e_new != NULL);
+		assert(gr.ewrt.find(e_new) != gr.ewrt.end());
+		assert(gr.einf.find(e_new) != gr.einf.end());
+		edgeres.insert({e_new, comb});
+	}
+	assert(!gr.refine_splice_graph());
+
+	return 0;
+}
+
+
 /* resolve trivila intersections only 
 *  all four vertices should be directly connected but not recursively solvable
 *  1->2->3->4 and 1->3 and 2->4 forming a diomond shape
