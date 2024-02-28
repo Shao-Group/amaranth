@@ -182,6 +182,31 @@ bool aster::resolve_intersection_edge(aster_index ai)
 
 bool aster::resolve_trivial_node(aster_index ai)
 {
+	int s = ai.s();
+	int t = ai.t();
+	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
+	assert(s < t);
+	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
+
+	for(int i = 1; i < ai.size() - 1; i ++)
+	{
+		int v = ai.at(i);
+		assert(v > s && v < t);
+		if(gr.in_degree(v) > 1 && gr.out_degree(v) > 1) continue;
+
+		PEEI inEdges = gr.in_edges(v);
+		PEEI outEdges = gr.out_edges(v);
+		edges_combine_consecutive_and_replace(inEdges, outEdges);
+		assert(gr.degree(v) == 0);	
+
+		if(verbose >= 2) 
+		{
+			string msg = "aster resolved a trivial node " + to_string(v); 
+			msg += "in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+			cout << msg << endl;
+		}
+		return true;
+	}
 	return false;
 }
 
