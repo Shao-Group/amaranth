@@ -29,6 +29,7 @@ struct aster_index
 private:
 	vector<int> indices;	
 public:
+	inline aster_index() {};
 	inline aster_index(vector<int> v): indices(v) {};
 	inline const vector<int>& get_index() const {return indices;}
 	inline int s() const {return indices.front();}
