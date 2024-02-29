@@ -333,123 +333,87 @@ bool aster::divide_conquer_abutting(int source, int target, aster_result& res)
 	return true;
 }	
 
-//FIXME: use connected-component to do a more comprehensive work. Now works.
-bool aster::divide_conquer_cut_termini(int source, int target, aster_result& res)
+
+bool aster::divide_conquer_cut_termini(aster_index ai)
 {
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
+	int s = ai.s();
+	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t - 1);
-	assert(source < target - 1);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return false;
 
-	// examine if disjoint subgraphs; as the graph is DFS topo-sorted
-	vector<pair<int, int>> subgraph_intervals;
-	int subgraphNum = divide_conquer_cut_termini_find(source, target, subgraph_intervals);
-	if(subgraphNum <= 0) return false;
-	if(subgraph_intervals.size() == 0) return false;
-	// assertions 
-	for(const auto& pp: subgraph_intervals)	
-	{
-		int subsource = pp.first;
-		int subtarget = pp.second;
-		int ss = tp2v[subsource];
-		int tt = tp2v[subtarget];
-		for(int i = subsource; i < subtarget; i++)
-		{
-			int vidx = tp2v.at(i);
-			PEEI peei = gr.out_edges(vidx);
-			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
-			{
-				assert(v2tp.at((*it1)->target()) <= subtarget);
-			}
-		}
-		for(int i = subtarget; i > subsource; i--)
-		{
-			int vidx = tp2v.at(i);
-			PEEI peei = gr.in_edges(vidx);
-			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
-			{
-				assert(v2tp.at((*it1)->source()) >= subsource);
-			}
-		}
-	}
+	// get disjoint subgraphs' indices
+	set<aster_index> subgraphIntervals;
+	int subgraphNum = divide_conquer_cut_termini_find(ai, subgraphIntervals);
+	if(subgraphNum <= 1 || subgraphIntervals.size() <= 1) return false;
 
 	if(verbose >= 2) 
 	{
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "splitting disjoint graphs at termini"; 
-		msg += "\n\tsplitted intervals:";
-		for(const auto& iv: subgraph_intervals)
+		msg += "\n\tsplitted subgraphIntervals:";
+		for(const auto& iv: subgraphIntervals)
 		{
 			msg += "\n\t";
-			msg += "[" + to_string(tp2v.at(iv.first)) + "-" + to_string(tp2v.at(iv.second)) + "] ";
-			msg += "(Topo[" + to_string(iv.first) + "-" + to_string(iv.second) + "]); ";
+			msg += "[" + to_string(iv.s()) + "-" + to_string(iv.t()) + "];";
 		}
 		cout << msg << endl;
 	}
 
-	// get paths for subgraphs
-	vector<aster_result> resOfSubgraphs(subgraph_intervals.size());
-	for(int i = 0; i < subgraph_intervals.size(); i++)
+	// D&C sub intervals excld. s and t
+	vector<int> remainingIdx {s, t};
+	for(const aster_index& subItv: subgraphIntervals)
 	{
-		aster_result& res1 = resOfSubgraphs[i];
-		int subsource = subgraph_intervals[i].first;
-		int subtarget = subgraph_intervals[i].second;
-		divide_conquer(subsource, subtarget, res1);
-		assert(res1.subpaths.size() > 0);
-		for(path& p: res1.subpaths)
+		divide_conquer(subItv);
+		//Now all sub Itv should all has only one edge
+		int ss = subItv.s();
+		int tt = subItv.t();
+		remainingIdx.push_back(ss);
+		remainingIdx.push_back(tt);
+		assert(gr.out_degree(ss) <= 1 && gr.in_degree(tt) <= 1);
+		assert(gr.edge_exists(ss, tt));
+		for(int i = 1; i < subItv.size(); i++)
 		{
-			assert(p.v.size() >= 1);
-			assert(p.v.front() != s);
-			assert(p.v.back() != t);
-			p.v.insert(p.v.begin(), s);
-			p.v.push_back(t);
-			assert(origr.valid_path(p.v));
-			assert(p.v.size() >= 3);
+			int v = subItv.at(i);
+			assert(gr.degree(v) == 0);
 		}
 	}
-
-	// get penalty 
-	res.clear();
-	int numEvents = 0;
-	int sumPenalty = 0;
-	for(int i = 0; i < subgraph_intervals.size(); i++)
+	
+	//Now should all be trivial vertices, decompose remaining indices
+	for(int i = 1; i < ai.size() - 1; i++)
 	{
-		aster_result& res1 = resOfSubgraphs[i];
-		int shortestPathSize1 = res1.subpaths.at(find_shortest_path(res1)).v.size();
-		assert(shortestPathSize1 - 2 >= 1);
-		numEvents += shortestPathSize1 - 2;
-		sumPenalty += res1.dist;
-		res.subpaths.insert(res.subpaths.begin(), res1.subpaths.begin(), res1.subpaths.end());
+		int v = ai.at(i);
+		assert(gr.in_degree(v) == 1 || gr.out_degree(v) == 1);
 	}
-	assert(numEvents >= 1);
-	res.dist = event_size_penalty(numEvents) + sumPenalty;
+	sort(remainingIdx.begin(), remainingIdx.end());
+	aster_index remainingAsterIdx(remainingIdx);
+	assert(remainingAsterIdx.s() == s);
+	assert(remainingAsterIdx.t() == t);
+	divide_conquer(remainingAsterIdx);	
 
-	double w = 0;
-	for(const path& p: res.subpaths) w += p.abd;
-	replace_aster_index_to_one_edge(source, target, w);
+	assert(gr.edge_exists(s, t));
+	assert(gr.compute_num_paths(s, t, 2) == 1);
+	assert(edgeres.find(gr.edge(s,t).first) != edgeres.end());
 
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
-		msg += "with " + to_string(subgraph_intervals.size()) +" disjoint graphs at termini"; 
+		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
+		msg += "with " + to_string(subgraphIntervals.size()) +" disjoint graphs at termini"; 
 		cout << msg << endl;
 	}
-
 	return true;
 }
 
-/* return size of interval pairs 
+/* return size of interval pairs, EXCLUDING original s and t
 *  return -1 if not exists 
 *  if source/target is cut vertex, 
 * 		then all subgraph's sources must be source-vertex's out-edge targets
 * 		then all subgraph's targets must be target-vertex's in-edge  sources
+* FIXME: use connected components
 */
 int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<int, int>>& intervals)
 {
