@@ -180,6 +180,7 @@ bool aster::resolve_intersection_edge(aster_index ai)
 	return true;
 }
 
+//FIXME: when resolving trivial node, need to check if existing edge is there
 bool aster::resolve_trivial_node(aster_index ai)
 {
 	int s = ai.s();
@@ -423,130 +424,95 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 * 		then all subgraph's targets must be target-vertex's in-edge  sources
 * FIXME: use connected components
 */
-int aster::divide_conquer_cut_termini_find(int source, int target, vector<pair<int, int>>& intervals)
+int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiSubIntervals)
 {
-	assert(source < tp2v.size() && target < tp2v.size());
-	int s = tp2v[source];
-	int t = tp2v[target];
+	int s = ai.s();
+	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t - 1);
-	assert(source < target - 1);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return -1;
 	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return -1;
 
-	
-	constexpr int IS_SOURCE = 1;
-	constexpr int IS_TARGET = 2;
-	vector<pair <int, int>> subgraphDisjoinPoints;
-	PEEI peei1 = gr.out_edges(s);
-	for(edge_iterator it1 = peei1.first, it2 = peei1.second; it1 != it2; it1++)
+	// build undirected graph & find connected components
+	undirected_graph ug;
+	ug.clear();
+	map<int, int> ai2newi;
+	for(int i = 0; i < ai.size(); i++)
 	{
-		edge_descriptor e = *it1;
-		int subs = e->target();
-		assert(subs != t);
-		int subsource = v2tp.at(subs);
-		subgraphDisjoinPoints.push_back({subsource, IS_SOURCE});
+		ug.add_vertex();
+		ai2newi.insert({ai.at(i), i});
 	}
-	PEEI peei2 = gr.in_edges(t);
-	for(edge_iterator it1 = peei2.first, it2 = peei2.second; it1 != it2; it1++)
+	for(int k: ai.get_index())
 	{
-		edge_descriptor e = *it1;
-		int subt = e->source();
-		assert(subt != s);
-		int subtarget = v2tp.at(subt);
-		subgraphDisjoinPoints.push_back({subtarget, IS_TARGET});
+		PEEI pei;
+		pei = gr.in_edges(k);
+		for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+		{
+			edge_descriptor e = (*it1);
+			int s = e->source();
+			int t = e->target();
+			if(s == 0) continue;
+			if(! ai.find_index(s)) continue;
+			if(! ai.find_index(t)) continue;
+			if(t == gr.num_vertices() - 1) continue;
+			int news = ai2newi.at(s), newt = ai2newi.at(t);
+			ug.add_edge(news, newt); // duplicated edges does not affect connected components
+		}
+		pei = gr.out_edges(k);
+		for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+		{
+			edge_descriptor e = (*it1);
+			int s = e->source();
+			int t = e->target();
+			if(s == 0) continue;
+			if(! ai.find_index(s)) continue;
+			if(! ai.find_index(t)) continue;
+			if(t == gr.num_vertices() - 1) continue;
+			int news = ai2newi.at(s), newt = ai2newi.at(t);
+			ug.add_edge(news, newt); // duplicated edges does not affect connected components
+		}
 	}
-	sort(subgraphDisjoinPoints.begin(), subgraphDisjoinPoints.end());
+	vector< set<int> > vv = ug.compute_connected_components();
+	if(vv.size() <= 1) return -1;
 
-	// delete key if 1. IS_SOURCE and previous IS_SOURCE; 2. IS_TARGET and next IS_TARGET
-	assert((subgraphDisjoinPoints.begin()->second & IS_SOURCE) >= 1);
-	assert((prev(subgraphDisjoinPoints.end())->second & IS_TARGET) >= 1);
-    for (auto it = next(subgraphDisjoinPoints.begin()); it != prev(subgraphDisjoinPoints.end()); /*increment separately handled*/ ) 
+	// insert cc to aiSubIntervals
+	for(const auto& cc: vv)
 	{
-		if(it->first == next(it)->first) assert((it->second & IS_SOURCE) && (next(it)->second & IS_TARGET));
-		int label = it->second;
-		assert(label == IS_SOURCE || label == IS_TARGET);
-		int prevLable = prev(it)->second;
-		int nextLabel = next(it)->second;
-        if ((label & IS_SOURCE) && (prevLable & IS_SOURCE)) 
-		{
-			it->second -= IS_SOURCE;
-			if(it->second <= 0) it = subgraphDisjoinPoints.erase(it);
-			continue;            
-        } 
-		else if((label & IS_TARGET) && (nextLabel & IS_TARGET))
-		{
-			it->second -= IS_TARGET;
-			if(it->second <= 0) it = subgraphDisjoinPoints.erase(it);
-			continue;
-		}
-		else 
-		{
-            ++it;
-        }
-    }
-
-	// pupulate `intervals`
-	// use a vector and sort vector
-	intervals.clear();
-	for (auto it = subgraphDisjoinPoints.begin(); it != subgraphDisjoinPoints.end(); it++) 
-	{
-		// multi vertex interval
-		int label = it->second;
-		assert(label == IS_SOURCE || label == IS_TARGET);
-		if(it->second & IS_SOURCE)
-		{
-			assert(next(it)->second & IS_TARGET);
-			int subsource = it->first;
-			int subtarget = next(it)->first;
-			
-			assert(subsource <= subtarget);
-			assert(subsource > source);
-			assert(subtarget < target);
-			intervals.push_back({subsource, subtarget});
-		}
-		else 
-		{
-			assert(it->second & IS_TARGET);
-			assert(next(it) == subgraphDisjoinPoints.end() || next(it)->second & IS_SOURCE);
-		}
-    }
-
-
+		vector<int> ccSort(cc.begin(), cc.end());
+		sort(ccSort.begin(), ccSort.end());
+		aiSubIntervals.insert(aster_index(ccSort));
+	}
 	// assertions and validations
-	for(const auto& pp: intervals)
+	for(const auto& sub: aiSubIntervals)
 	{
-		int subsource = pp.first;
-		int subtarget = pp.second;
-		int ss = tp2v[subsource];
-		int tt = tp2v[subtarget];
-		for(int i = subsource; i < subtarget; i++)
+		int subsource = sub.s();
+		int subtarget = sub.t();
+
+		for(int i: sub.get_index())
 		{
-			int vidx = tp2v.at(i);
-			PEEI peei = gr.out_edges(vidx);
+			PEEI peei;
+			peei = gr.out_edges(i);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				if(v2tp.at((*it1)->target()) <= subtarget) continue;
-				intervals.clear();
+				if(sub.find_index((*it1)->target())) continue;
+				if(sub.find_index((*it1)->source())) continue;
+				aiSubIntervals.clear();
 				return -1;
 			}
-		}
-		for(int i = subtarget; i > subsource; i--)
-		{
-			int vidx = tp2v.at(i);
-			PEEI peei = gr.in_edges(vidx);
+			peei = gr.in_edges(i);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				if(v2tp.at((*it1)->source()) >= subsource) continue;
-				intervals.clear();
+				if(sub.find_index((*it1)->target())) continue;
+				if(sub.find_index((*it1)->source())) continue;
+				aiSubIntervals.clear();
 				return -1;
 			}
 		}
 	}
 
-	if(intervals.size() == 0) return -1;
-	return intervals.size();
+	if(aiSubIntervals.size() == 0) return -1;
+	return aiSubIntervals.size();
 }
 
 /* check if the graph can be divided to two disjoint graphs at a pivot k

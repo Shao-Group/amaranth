@@ -70,7 +70,7 @@ private:
 	bool divide_conquer_unitig(aster_index ai);
 	bool divide_conquer_abutting(aster_index ai);
 	bool divide_conquer_cut_termini(aster_index ai);
-	int  divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aipairs);
+	int  divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiSubIntervals);
 	bool divide_conquer_articulation_point(aster_index ai);
 	int  divide_conquer_articulation_find(aster_index ai, aster_index left, aster_index right);
 	// bool resolve_trivial_intersection(aster_index ai);
