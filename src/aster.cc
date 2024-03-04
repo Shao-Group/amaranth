@@ -1308,8 +1308,6 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 {
 	int s = ai.s();
 	int t = ai.t();
-	int source = v2tp.at(s);
-	int target = v2tp.at(t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);	
@@ -1343,6 +1341,7 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 	assert(! gr.check_path(s, t));
 
 	// put edge & res
+	assert(! gr.edge_exists(s, t));
 	edge_descriptor e_new = gr.add_edge(s, t);
 	edge_info ei;
 	ei.weight = w;
