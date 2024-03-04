@@ -44,7 +44,7 @@ private:
 	splice_graph gr;					// splice graph with modification
 	hyper_set hs;						// hyper edges
 	VI tp2v;							// DFS-based topologically sorted index to vertex index.
-	VI v2tp;							// vertex index to DFS-based topologically sorted index.
+	// VI v2tp;							// vertex index to DFS-based topologically sorted index.
 	map<edge_descriptor, aster_result> edgeres;
 	aster_mode mode;
 
@@ -58,7 +58,7 @@ private:
 	int init_edgeres();
 	int topological_sort_vertices();
 	int topological_sort_vertices_visit(int i, vector<bool>& visited, vector<int>& sorted);
-	int topological_sort_index_edges();
+	//  int topological_sort_index_edges();
 	//	bool aggressive_purge_intersecting_edges();
 	int balance_vertex(int);
 	int remove_small_junctions();

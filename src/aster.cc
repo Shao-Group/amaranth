@@ -13,8 +13,8 @@ See LICENSE for licensing.
 aster::aster(const splice_graph &g, const hyper_set &h)
 	: origr(g), gr(g), hs(h)
 {
-	paths.clear();					// predicted paths, original v index, inclusive
-    trsts.clear();			// predicted transcripts, original v index
+	paths.clear();				// predicted paths, original v index, inclusive
+    trsts.clear();				// predicted transcripts, original v index
 	non_full_trsts.clear();		// predicted non full length transcripts
 	mode = asterMode;
 
@@ -966,7 +966,7 @@ int aster::topological_sort_vertices()
 {
 	assert(gr.num_vertices() >= 2);
 	tp2v.clear();
-	v2tp.clear();
+	// v2tp.clear();
 
 	vector<bool> visited(gr.num_vertices(), false);
 	for(int i = 0; i < gr.num_vertices(); i++)	
@@ -974,28 +974,8 @@ int aster::topological_sort_vertices()
 		topological_sort_vertices_visit(i, visited, tp2v);
 	}
 	reverse(tp2v.begin(), tp2v.end());
-	v2tp.resize(tp2v.size());
-	for(int i = 0; i < tp2v.size(); i++) v2tp[tp2v[i]] = i;
-
-	/* // assertions topo sorted
-	for(int i = 0; i < gr.num_vertices(); i++)	
-	{
-		if(i >= 1) assert(gr.get_vertex_info(i - 1).rpos <= gr.get_vertex_info(i).lpos);
-		if (i < gr.num_vertices() - 1)  // proceeding out edges
-		{
-			PEEI          ei  = gr.out_edges(i);
-			edge_iterator it1 = ei.first;
-			edge_iterator it2 = ei.second;
-			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).rpos <= gr.get_vertex_info((*it1)->target()).lpos);
-		}
-		if (i >= 1)  // trailing in edges
-		{
-			PEEI          ei  = gr.in_edges(i);
-			edge_iterator it1 = ei.first;
-			edge_iterator it2 = ei.second;
-			for(; it1 != it2; it1++) assert(gr.get_vertex_info(i).lpos >= gr.get_vertex_info((*it1)->source()).rpos);
-		}
-	} */
+	// v2tp.resize(tp2v.size());
+	// for(int i = 0; i < tp2v.size(); i++) v2tp[tp2v[i]] = i;
 
 	if(verbose >= 3)	cout << "aster sorted " << tp2v_to_string() << endl;
 	assert(tp2v.front() == 0);
@@ -1031,6 +1011,7 @@ int aster::topological_sort_vertices_visit(int i, vector<bool>& visited, vector<
 /* Edges are sorted by their <source, target> represented by tp2v
 *  edges should be sorted & fetched independent of splice_graph implementation
 */ 
+/* 
 int aster::topological_sort_index_edges()
 {
 	MEI e2i;							// edge map, from edge to index, sorted by position
@@ -1065,6 +1046,7 @@ int aster::topological_sort_index_edges()
 	assert(i2e.size() == index);
 	return 0;
 }
+*/
 
 /*
 *  aggresively remove intersecting edges, whichever is topilocially smaller
