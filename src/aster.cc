@@ -89,8 +89,15 @@ int aster::divide_conquer()
 	assert(gr.num_vertices() > 2);
 	assert(tp2v.size() == gr.num_vertices());
 	divide_conquer({tp2v});
+
+	// collect paths
+	int s = 0;
+	int t = gr.num_vertices() - 1;
+	assert(gr.num_edges() == 1);
+	assert(gr.edge_exists(s,t));
+	edge_descriptor e = gr.edge(s, t).first;
 	paths.clear();
-	paths = res.subpaths;
+	paths = edgeres.at(e).subpaths;
 	if(paths.size() >= 1) for(const path & p : paths)	assert(origr.valid_path(p.v));
 	return 0;
 }
