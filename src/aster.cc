@@ -900,10 +900,6 @@ bool aster::divide_conquer_unitig(aster_index ai)
 	assert(valid_paths(unitigRes));
 	w = _avg_? (w / c): pow(w, 1.0/ c);
 
-	aster_result __res__;
-	res_combine_consecutive(unitigRes, edgeres.at(e), __res__);
-	unitigRes = std::move(__res__);		//FIXME:TODO: is this correct?	
-
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
