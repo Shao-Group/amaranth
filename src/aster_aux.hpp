@@ -37,11 +37,13 @@ public:
 	inline int t() const {return indices.back();}
 	inline int at(int i) const {return indices.at(i);}
 	inline int size() const {return indices.size();}
+	// split an index at position i, to left and right, both inclusive of i
 	inline void split(int i, aster_index left, aster_index right) const
 	{
+		assert(i > 0 && i < size() - 1);
+		assert(size() >= 3);
 		left = aster_index(vector<int>(indices.begin(), indices.begin() + i + 1));
 		right = aster_index(vector<int>(indices.begin() + i, indices.end()));
-		assert(size() >= 3);
 		assert(left.size() >= 2);
 		assert(right.size() >= 2);
 		assert(left.t() == right.s());
