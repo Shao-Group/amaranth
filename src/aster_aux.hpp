@@ -48,6 +48,7 @@ public:
 		assert(left.size() + right.size() == size() - 1);
 	}
 	inline bool find_index(int i) const {return find(indices.begin(), indices.end(), i) != indices.end();}
+	inline bool operator< (const aster_index& ai) const {return indices < ai.get_index();}
 };
 
 struct aster_result
