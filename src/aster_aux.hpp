@@ -49,6 +49,24 @@ public:
 		assert(left.t() == right.s());
 		assert(left.size() + right.size() == size() - 1);
 	}
+	inline void erase_itertor(vector<int>::iterator it) 
+	{
+		assert(std::distance(indices.begin(), it) >= 0);
+		assert(std::distance(indices.end(), it)   <= 0);
+		indices.erase(it);
+	}
+	inline void erase_index(int i) 
+	{
+		assert(i >= 0 && i <= size() - 1);
+		indices.erase(indices.begin() + i);
+	}
+	inline void erase_element(int i) 
+	{
+		assert(i >= s() && i <= t());
+		auto it = find(indices.begin(), indices.end(), i);
+		assert(it != indices.end());
+		indices.erase(it);
+	}
 	inline bool find_index(int i) const {return find(indices.begin(), indices.end(), i) != indices.end();}
 	inline bool operator< (const aster_index& ai) const {return indices < ai.get_index();}
 };
