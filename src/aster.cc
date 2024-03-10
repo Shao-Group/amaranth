@@ -187,7 +187,10 @@ bool aster::resolve_intersection_edge(aster_index ai)
 	return true;
 }
 
-//FIXME: when resolving trivial node, need to check if existing edge is there
+/*	find one trivial node and decompose it
+	Decomposed node is poped into the edgeres of its decomposed edges
+	s and t of the trivial node is connected, original edges removed
+*/
 bool aster::resolve_trivial_node(aster_index ai)
 {
 	int s = ai.s();
@@ -213,6 +216,8 @@ bool aster::resolve_trivial_node(aster_index ai)
 			msg += "in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 			cout << msg << endl;
 		}
+		ai.erase_index(i);
+		divide_conquer(ai);
 		return true;
 	}
 	return false;
@@ -223,6 +228,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 	2. remove those edges' edgeres
 	2. remove those edges
 */
+//FIXME: when resolving trivial node, need to check if existing edge is there
 int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 {
 	set<edge_descriptor> originalEdges;
