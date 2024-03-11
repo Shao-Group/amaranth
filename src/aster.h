@@ -38,6 +38,7 @@ private:		   // static stats
 	inline static int dnc_counter_resolve_trivial_intersection = 0;
 	inline static int dnc_counter_resolve_trivial_node = 0;
 	inline static int dnc_counter_resolve_intersection_edge = 0;
+	int stepCount = 0;
 
 private:
 	const splice_graph& origr;			// original splice graph

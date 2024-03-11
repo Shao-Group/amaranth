@@ -107,6 +107,7 @@ int aster::divide_conquer()
 // i, j are tp2v indices
 int aster::divide_conquer(aster_index ai)
 {
+	stepCount ++;
 	int s = ai.s();
 	int t = ai.t();
 
@@ -115,7 +116,16 @@ int aster::divide_conquer(aster_index ai)
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
+		if(output_graphviz_files) 
+		{
+			string gene_start_end = gr.chrm + ":"
+								+ to_string(gr.get_vertex_info(0).lpos) + "-"
+								+ to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
+								+ "\n";
+			gr.graphviz("asterviz." + gr.gid + ".step" + to_string(stepCount) + ".dot", gene_start_end + tp2v_to_string());
+		}
 	}
+
 
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
@@ -214,7 +224,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 		if(verbose >= 2) 
 		{
 			string msg = "aster resolved a trivial node " + to_string(v); 
-			msg += "in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+			msg += " in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 			cout << msg << endl;
 		}
 		ai.erase_index(i);
