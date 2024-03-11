@@ -494,7 +494,7 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			int news = ai2newi.at(s), newt = ai2newi.at(t);
 			ug.add_edge(news, newt); // duplicated edges does not affect connected components
 		}
-		PEEI pei = gr.out_edges(k);
+		pei = gr.out_edges(k);
 		for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
 		{
 			edge_descriptor e = (*it1);
