@@ -88,7 +88,8 @@ int aster::divide_conquer()
 	}
 	assert(gr.num_vertices() > 2);
 	assert(tp2v.size() == gr.num_vertices());
-	divide_conquer({tp2v});
+	aster_index ai({tp2v});
+	divide_conquer(ai);
 
 	// collect paths
 	int s = 0;
