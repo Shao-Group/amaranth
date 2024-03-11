@@ -19,6 +19,7 @@ aster::aster(const splice_graph &g, const hyper_set &h)
 	mode = asterMode;
 
     topological_sort_vertices();
+	prepare_graph();
 	make_stats();
 	init_edgeres();
 
@@ -44,15 +45,6 @@ int aster::assemble()
 		successStatus = false;
 		return 0;
 	}	
-	if (true)	//CLEAN: balance?
-	{
-		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
-		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
-		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
-		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
-		remove_small_junctions(); // CLEAN:?
-		gr.refine_splice_graph();
-	}
 
 	try
 	{
@@ -1258,6 +1250,17 @@ int aster::remove_small_junctions()
 	}
 
 	return true;
+}
+
+/* balance vertices, remove small junctions, refine graph */
+int aster::prepare_graph()
+{
+	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
+	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
+	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
+	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
+	remove_small_junctions();
+	gr.refine_splice_graph();
 }
 
 int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const

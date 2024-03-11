@@ -61,6 +61,7 @@ private:
 	int topological_sort_vertices_visit(int i, vector<bool>& visited, vector<int>& sorted);
 	//  int topological_sort_index_edges();
 	//	bool aggressive_purge_intersecting_edges();
+	int prepare_graph();
 	int balance_vertex(int);
 	int remove_small_junctions();
 
