@@ -564,8 +564,8 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			int s = e->source();
 			int t = e->target();
 			if(s == 0) continue;
-			if(! ai.find_index(s)) continue;
-			if(! ai.find_index(t)) continue;
+			if(! ai.index_found(s)) continue;
+			if(! ai.index_found(t)) continue;
 			if(t == gr.num_vertices() - 1) continue;
 			int news = ai2newi.at(s), newt = ai2newi.at(t);
 			ug.add_edge(news, newt); // duplicated edges does not affect connected components
@@ -577,8 +577,8 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			int s = e->source();
 			int t = e->target();
 			if(s == 0) continue;
-			if(! ai.find_index(s)) continue;
-			if(! ai.find_index(t)) continue;
+			if(! ai.index_found(s)) continue;
+			if(! ai.index_found(t)) continue;
 			if(t == gr.num_vertices() - 1) continue;
 			int news = ai2newi.at(s), newt = ai2newi.at(t);
 			ug.add_edge(news, newt); // duplicated edges does not affect connected components
@@ -606,16 +606,16 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			peei = gr.out_edges(i);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				if(sub.find_index((*it1)->target())) continue;
-				if(sub.find_index((*it1)->source())) continue;
+				if(sub.index_found((*it1)->target())) continue;
+				if(sub.index_found((*it1)->source())) continue;
 				aiSubIntervals.clear();
 				return -1;
 			}
 			peei = gr.in_edges(i);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				if(sub.find_index((*it1)->target())) continue;
-				if(sub.find_index((*it1)->source())) continue;
+				if(sub.index_found((*it1)->target())) continue;
+				if(sub.index_found((*it1)->source())) continue;
 				aiSubIntervals.clear();
 				return -1;
 			}
@@ -1352,8 +1352,8 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 		for(edge_descriptor e: setEdge)
 		{
 			assert(gr.edge(e));
-			if(! ai.find_index(e->source())) continue;;
-			if(! ai.find_index(e->target())) continue;
+			if(! ai.index_found(e->source())) continue;;
+			if(! ai.index_found(e->target())) continue;
 			gr.remove_edge(e);
 			edgeres.erase(e);
 		}

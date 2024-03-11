@@ -67,7 +67,7 @@ public:
 		assert(it != indices.end());
 		indices.erase(it);
 	}
-	inline bool find_index(int i) const {return find(indices.begin(), indices.end(), i) != indices.end();}
+	inline bool index_found(int i) const {return find(indices.begin(), indices.end(), i) != indices.end();}
 	inline bool operator< (const aster_index& ai) const {return indices < ai.get_index();}
 };
 
