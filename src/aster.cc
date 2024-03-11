@@ -50,7 +50,7 @@ int aster::assemble()
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 		for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
-		remove_small_junctions();
+		remove_small_junctions(); // CLEAN:?
 		gr.refine_splice_graph();
 	}
 
