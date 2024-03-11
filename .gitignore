@@ -88,3 +88,5 @@ aster
 test2/
 test*
 test*/
+config.h.in
+config.h.in~
