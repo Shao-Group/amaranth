@@ -231,7 +231,6 @@ bool aster::resolve_trivial_node(aster_index ai)
 	2. remove those edges' edgeres
 	2. remove those edges
 */
-//FIXME: when resolving trivial node, need to check if existing edge is there
 int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 {
 	set<edge_descriptor> originalEdges;
@@ -294,10 +293,18 @@ int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
 		aster_result res;
 		res_combine_parallel(comb, edgeres.at(e), res);
 		edgeres[e] = res;
+		assert(res.subpaths.size() >= 1);
+		for(const path& p: res.subpaths)
+		{
+			assert(p.v.front() == source);
+			assert(p.v.back() == target);
+		}
 	}
 	else
 	{
 		edge_descriptor e_new = gr.add_edge(source, target);
+		assert(edgeres.find(e_new) == edgeres.end());
+		edgeres[e_new] = comb;
 		edge_info ei;
 		double weight = w;
 		ei.weight = weight;
@@ -306,7 +313,12 @@ int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
 		assert(e_new != NULL);
 		assert(gr.ewrt.find(e_new) != gr.ewrt.end());
 		assert(gr.einf.find(e_new) != gr.einf.end());
-		edgeres.insert({e_new, comb});
+		assert(comb.subpaths.size() >= 1);
+		for(const path& p: comb.subpaths)
+		{
+			assert(p.v.front() == source);
+			assert(p.v.back() == target);
+		}
 	}
 	assert(!gr.refine_splice_graph());
 
@@ -409,6 +421,8 @@ bool aster::divide_conquer_abutting(aster_index ai)
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
 	assert(gr.edge(e));
+	aster_result res0 = move(edgeres.at(e));
+	edgeres.erase(e);
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
 	divide_conquer(ai);
@@ -419,18 +433,8 @@ bool aster::divide_conquer_abutting(aster_index ai)
 	edge_descriptor e1 = peb.first;
 	double w1 = gr.get_edge_weight(e1);
 	aster_result& res1 = edgeres.at(e1);
-	aster_result res2(vector<int>{s, t}, w);
 	aster_result rescomb;
-	res_combine_parallel(res1, res2, rescomb);
-	
-	/* int shortestPathIndex = find_shortest_path(res);
-	assert(shortestPathIndex >= 0);
-	int shortestPathSize = res.subpaths.at(shortestPathIndex).v.size();
-	int eventSize        = shortestPathSize - 2;
-	assert(eventSize >= 1);
-	path p({s, t}, w);
-	res.subpaths.push_back(p);
-	res.dist += event_size_penalty(eventSize); */
+	res_combine_parallel(res1, res0, rescomb);
 
 	replace_aster_index_to_one_edge(ai, w + w1, rescomb);
 
@@ -1334,6 +1338,15 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);	
+	assert(res.subpaths.size() >= 1);
+	set<int> __set__;
+	for(const path& p: res.subpaths)
+	{
+		assert(p.v.front() == s);
+		assert(p.v.back() == t);
+		for(int i: p.v) __set__.insert(i);
+	}
+	for(int i: __set__) assert(ai.index_found(i) || gr.degree(i) == 0);
 
 	// under 'closed' assumption all edges in (s, t) open interval must have sources/targets in [s, t] closed interval
 	for(int k: ai.get_index())
@@ -1357,8 +1370,8 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 			assert(gr.edge(e));
 			if(! ai.index_found(e->source())) continue;;
 			if(! ai.index_found(e->target())) continue;
-			gr.remove_edge(e);
 			edgeres.erase(e);
+			gr.remove_edge(e);
 		}
 	}
 	assert(! gr.check_path(s, t));
