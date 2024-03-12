@@ -1302,8 +1302,8 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 		for(edge_descriptor e: setEdge)
 		{
 			assert(gr.edge(e));
-			if(! ai.index_found(e->source())) continue;;
-			if(! ai.index_found(e->target())) continue;
+			assert(ai.index_found(e->source()) || e->target() == t);
+			assert(ai.index_found(e->target()) || e->source() == s);
 			edgeres.erase(e);
 			gr.remove_edge(e);
 		}
@@ -1320,7 +1320,7 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 	assert(e_new != NULL);
 	assert(gr.ewrt.find(e_new) != gr.ewrt.end());
 	assert(gr.einf.find(e_new) != gr.einf.end());
-	edgeres.insert({e_new, res});
+	edgeres[e_new] = res;
 
 	assert(!gr.refine_splice_graph());
 	return e_new;
