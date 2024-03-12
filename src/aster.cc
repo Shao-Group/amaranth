@@ -902,7 +902,7 @@ int aster::init_edgeres()
 	{
 		edge_descriptor e = *it1;
 		double w = gr.get_edge_weight(e);
-		edgeres.insert({e, aster_result(vector<int>{e->source(), e->target()}, w)});
+		edgeres[e] = aster_result(vector<int>{e->source(), e->target()}, w);
 	}
 	return 0;
 }
