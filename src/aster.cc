@@ -816,13 +816,6 @@ bool aster::divide_conquer_unitig(aster_index ai)
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
-	if(verbose >= 3)  //CLEAN:
-	{
-		string msg = "aster checking unitig in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		cout << msg;
-		cout << endl;
-	}
-
 	aster_result unitigRes;
 	bool   _avg_ = false;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
