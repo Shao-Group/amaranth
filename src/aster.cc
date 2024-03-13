@@ -206,6 +206,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 	{
 		int v = ai.at(i);
 		assert(v > s && v < t);
+		if(gr.degree(v) == 0) continue;
 		if(gr.in_degree(v) > 1 && gr.out_degree(v) > 1) continue;
 
 		PEEI inEdges = gr.in_edges(v);
@@ -230,26 +231,66 @@ bool aster::resolve_trivial_node(aster_index ai)
 	1. combine their res and push_back to edgeres
 	2. remove those edges' edgeres
 	2. remove those edges
+	Does: combine inEdges res in parallel, combine out Edges res in parallel, then combine In/Out consecutive
 */
-//FIXME: 先compress paralelel then combine consecutives
 int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 {
-	set<edge_descriptor> originalEdges;
-	//combine
+	//combine res
+	aster_result resIn;
+	int inResCount = 0;
+	set<edge_descriptor> originalInEdges;
 	for(edge_iterator it1 = inEdges.first, it2 = inEdges.second; it1 != it2; it1++)
 	{
 		edge_descriptor in = *it1;
-		originalEdges.insert(in);
-		for(edge_iterator ot1 = outEdges.first, ot2 = outEdges.second; ot1 != ot2; ot1++)
+		originalInEdges.insert(in);
+		aster_result resCombIn;
+		auto& res1 = edgeres.at(in);
+		inResCount += res1.subpaths.size();
+		res_combine_parallel(resIn, res1, resCombIn, false, true);
+		resIn = move(resCombIn);
+	}
+	aster_result resOut;
+	int outResCount = 0;
+	set<edge_descriptor> originalOutEdges;
+	for(edge_iterator ot1 = outEdges.first, ot2 = outEdges.second; ot1 != ot2; ot1++)
+	{
+		edge_descriptor out = *ot1;
+		originalOutEdges.insert(out);	
+		aster_result resCombOut;
+		auto& res2 = edgeres.at(out);
+		outResCount += res2.subpaths.size();
+		res_combine_parallel(resOut, res2, resCombOut, true, false);
+		resOut = resCombOut;
+	}
+	aster_result resComb;
+	res_combine_consecutive(resIn, resOut, resComb);
+	assert(resComb.subpaths.size() == inResCount + outResCount - 1);
+	assert(originalInEdges.size() == 1 || originalOutEdges.size() == 1);
+
+	// pop new edgeres from resComb
+	map<pair<int, int>, vector<const path*> > st2Path;
+	for(const path& p: resComb.subpaths)
+	{
+		int s = p.v.front();
+		int t = p.v.back();
+		if(st2Path.find({s,t}) == st2Path.end()) st2Path[{s,t}] = {};
+		st2Path[{s,t}].push_back(&p);
+	}
+	for(edge_descriptor in: originalInEdges)
+	{
+		for(edge_descriptor out: originalOutEdges)
 		{
-			edge_descriptor out = *ot1;
-			originalEdges.insert(out);	
-			assert(in->target() == out->source());
-			edge_combine_consecutive(in, out);
+			edge_combine_consecutive_pop_res(in, out, st2Path);
 		}
 	}
+
 	// remove
-	for(edge_descriptor e: originalEdges)
+	for(edge_descriptor e: originalInEdges)
+	{
+		edgeres.erase(e);
+		gr.remove_edge(e);
+	}
+	for(edge_descriptor e: originalOutEdges)
 	{
 		edgeres.erase(e);
 		gr.remove_edge(e);
@@ -257,11 +298,12 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 	return 0;
 }
 
+
 /* 	consecutively combine 2 edges, WITHOUT replacement
 	i.e.	combine their res and push_back to edgeres
 */
 //FIXME:TODO: hyperset?
-int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
+int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor out, const map<pair<int, int>, vector<const path*> >& st2Path)
 {
 	assert(in->target() == out->source());
 	int source = in->source();
@@ -274,11 +316,12 @@ int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
 	double w = _avg_? (w1 + w2 / 2.0) : pow(w1 * w2, 1.0/2.0);
 
 	// new res
-	aster_result& res1 = edgeres.at(in);
-	aster_result& res2 = edgeres.at(out);
-	aster_result comb; 
-	bool resCombineSuccess = res_combine_consecutive(res1, res2, comb);
-	assert(resCombineSuccess);
+	aster_result combinedRes;
+	for(const path* pptr :st2Path.at({source, target}))
+	{
+		combinedRes.subpaths.push_back(*pptr);
+	}
+	assert(combinedRes.subpaths.size() >= 1);
 
 	// put edge & res
 	if(PEB peb = gr.edge(source, target); peb.second)
@@ -292,7 +335,7 @@ int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
 		assert(gr.ewrt.find(e) != gr.ewrt.end());
 		assert(gr.einf.find(e) != gr.einf.end());
 		aster_result res;
-		res_combine_parallel(comb, edgeres.at(e), res);
+		res_combine_parallel(combinedRes, edgeres.at(e), res);
 		edgeres[e] = res;
 		assert(res.subpaths.size() >= 1);
 		for(const path& p: res.subpaths)
@@ -305,7 +348,7 @@ int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
 	{
 		edge_descriptor e_new = gr.add_edge(source, target);
 		assert(edgeres.find(e_new) == edgeres.end());
-		edgeres[e_new] = comb;
+		edgeres[e_new] = combinedRes;
 		edge_info ei;
 		double weight = w;
 		ei.weight = weight;
@@ -314,8 +357,8 @@ int aster::edge_combine_consecutive(edge_descriptor in, edge_descriptor out)
 		assert(e_new != NULL);
 		assert(gr.ewrt.find(e_new) != gr.ewrt.end());
 		assert(gr.einf.find(e_new) != gr.einf.end());
-		assert(comb.subpaths.size() >= 1);
-		for(const path& p: comb.subpaths)
+		assert(combinedRes.subpaths.size() >= 1);
+		for(const path& p: combinedRes.subpaths)
 		{
 			assert(p.v.front() == source);
 			assert(p.v.back() == target);
@@ -771,7 +814,7 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 /*	combine res1 and res2, add them to comb.
 	If comb is non-empty, it is an addition
 */ 
-bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_result& comb) const
+bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_result& comb, bool frontSame, bool backSame) const
 {	
 	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
 	if(res1.subpaths.size() == 0) 
@@ -797,14 +840,14 @@ bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_
 	for(const path& p: res1.subpaths)	
 	{
 		assert(p.v.size() >= 1); 
-		assert(p.v.front() == s);
-		assert(p.v.back() == t);
+		if(frontSame) assert(p.v.front() == s);
+		if(backSame)  assert(p.v.back() == t);
 	}
 	for(const path& p: res2.subpaths)	
 	{
 		assert(p.v.size() >= 1); 
-		assert(p.v.front() == s);
-		assert(p.v.back() == t);
+		if(frontSame) assert(p.v.front() == s);
+		if(backSame)  assert(p.v.back() == t);
 	}
 
 	int combOriSize = comb.subpaths.size();

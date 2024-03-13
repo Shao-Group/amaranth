@@ -80,9 +80,9 @@ private:
 	bool greedy(aster_index ai);
 
 	int edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges);
-	int edge_combine_consecutive(edge_descriptor in, edge_descriptor out);
+	int edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor out, const map<pair<int, int>, vector<const path*> >& st2Path);
 	bool res_combine_consecutive(aster_result& r1,  aster_result& r2, aster_result& comb) const;
-	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, aster_result& comb) const;
+	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, aster_result& comb, bool frontSame = true, bool backSame = true) const;
 	edge_descriptor replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res);
 
 	bool valid_paths(aster_result res) const;
