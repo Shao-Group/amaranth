@@ -1446,14 +1446,14 @@ int aster::event_size_penalty(int eventSize) const
 int aster::path_distance(const path& p1, const path& p2) const
 {
 	throw runtime_error("aster::path_distancen not implemented yet");
-	const vector<int>& v1 = p1.v; 
-	const vector<int>& v2 = p2.v;
-	assert(v1.size() > 0);
-	assert(v2.size() > 0);
-	if(v1.back() > v2.front()) return -1;
-	if(v2.back() > v1.front()) return -1;
+	// const vector<int>& v1 = p1.v; 
+	// const vector<int>& v2 = p2.v;
+	// assert(v1.size() > 0);
+	// assert(v2.size() > 0);
+	// if(v1.back() > v2.front()) return -1;
+	// if(v2.back() > v1.front()) return -1;
 
-	int edits = - basic_algo::ref_sw_query_nw(v1, v2, -1, -2, 0);
+	// int edits = - basic_algo::ref_sw_query_nw(v1, v2, -1, -2, 0);
 
 	return edits; //TODO: not finished
 }
