@@ -1503,8 +1503,7 @@ int aster::path_distance(const path& p1, const path& p2) const
 	// assert(v2.size() > 0);
 	// if(v1.back() > v2.front()) return -1;
 	// if(v2.back() > v1.front()) return -1;
-
-	// int edits = - basic_algo::ref_sw_query_nw(v1, v2, -1, -2, 0);
-
-	return edits; //TODO: not finished
+	int edits;
+	// edits = - basic_algo::ref_sw_query_nw(v1, v2, -1, -2, 0);
+	return edits = -1; //TODO: not finished
 }
