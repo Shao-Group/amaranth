@@ -231,6 +231,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 	2. remove those edges' edgeres
 	2. remove those edges
 */
+//FIXME: 先compress paralelel then combine consecutives
 int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 {
 	set<edge_descriptor> originalEdges;
