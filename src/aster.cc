@@ -103,7 +103,7 @@ int aster::divide_conquer(aster_index ai)
 	int s = ai.s();
 	int t = ai.t();
 
-	if(verbose >= 2)
+	if(false && verbose >= 2)
 	{
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
