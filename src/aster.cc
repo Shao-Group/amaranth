@@ -653,19 +653,22 @@ int aster::divide_conquer_articulation_find(aster_index ai, aster_index left, as
 }
 
 /*  combines subpaths of left and right sides of articulation point k
-*	res1, res2 could be empty
+	res1, res2 could be empty
+	If comb is non-empty, it is an addition
 */
 bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, aster_result& comb) const
 {
 	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
 	if(res1.subpaths.size() == 0) 
 	{
-		comb = res2;
+		comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
+		comb.dist += res2.dist;
 		return true;
 	}
 	if(res2.subpaths.size() == 0) 
 	{
-		comb = res1;
+		comb.dist += res1.dist;
+		comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
 		return true;
 	}
 
@@ -673,8 +676,9 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 	assert(res1.subpaths[0].v.size() > 0);
 	assert(res2.subpaths.size() > 0);
 	assert(res2.subpaths[0].v.size() > 0);
-
+	
 	int k = res1.subpaths[0].v.back();
+	int combOriSize = comb.subpaths.size();
 
 	for(const path& p: res1.subpaths)	
 	{
@@ -694,7 +698,6 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 	assert(index1 < res1.subpaths.size());
 	assert(index2 < res2.subpaths.size());
 	
-	comb.clear();
 	const path& rAnchor = res2.subpaths[index2];
 	for(int i = 0; i < res1.subpaths.size(); i++)	
 	{
@@ -726,7 +729,7 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 	assert(origr.valid_path(v));
 	comb.subpaths.push_back(path(v, abd));
 
-	assert(comb.subpaths.size() >= res1.subpaths.size() + res2.subpaths.size() - 1);
+	assert(comb.subpaths.size() >= combOriSize + res1.subpaths.size() + res2.subpaths.size() - 1);
 
 	if(verbose >= 3)
 	{
@@ -765,17 +768,22 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 	return true;
 }
 
+/*	combine res1 and res2, add them to comb.
+	If comb is non-empty, it is an addition
+*/ 
 bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_result& comb) const
 {	
 	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
 	if(res1.subpaths.size() == 0) 
 	{
-		comb = res2;
+		comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
+		comb.dist += res2.dist;
 		return true;
 	}
 	if(res2.subpaths.size() == 0) 
 	{
-		comb = res1;
+		comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
+		comb.dist += res1.dist;
 		return true;
 	}
 	assert(res1.subpaths.size() > 0);
@@ -799,10 +807,10 @@ bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_
 		assert(p.v.back() == t);
 	}
 
-	comb.clear();
+	int combOriSize = comb.subpaths.size();
 	comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
 	comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
-	assert(comb.subpaths.size() == res1.subpaths.size() + res2.subpaths.size());
+	assert(comb.subpaths.size() == combOriSize + res1.subpaths.size() + res2.subpaths.size());
 
 	//TODO: calculate dist
 	return true;
