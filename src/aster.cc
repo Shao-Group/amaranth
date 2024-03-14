@@ -122,11 +122,6 @@ int aster::divide_conquer(aster_index ai)
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 
-	if (resolve_trivial_node(ai))		
-	{
-		dnc_counter_resolve_trivial_node ++;
-		return 0;
-	}
 	if (divide_conquer_single_vertex(ai))			
 	{
 		dnc_counter_single ++;
@@ -150,6 +145,11 @@ int aster::divide_conquer(aster_index ai)
 	if (divide_conquer_articulation_point(ai))		
 	{
 		dnc_counter_articulation_point_disjoint ++;
+		return 0;
+	}
+	if (resolve_trivial_node(ai))		
+	{
+		dnc_counter_resolve_trivial_node ++;
 		return 0;
 	}
 	// if (resolve_trivial_intersection(ai))		
