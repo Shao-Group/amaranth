@@ -1465,6 +1465,8 @@ int aster::print_stats()
 	cout << "\t " << dnc_counter_cut_vertex;
 	cout << "\t " << dnc_counter_articulation_point_disjoint;
 	cout << "\t " << dnc_counter_resolve_trivial_intersection;
+	cout << "\t " << dnc_counter_resolve_trivial_node;
+	cout << "\t " << dnc_counter_resolve_intersection_edge;
 	cout << endl;
 	cout << "============================================================================" << endl;
 	return 0;
