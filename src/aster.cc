@@ -434,6 +434,7 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return false;
+	assert(ai.size() >= 3);
 
 	// get disjoint subgraphs' indices
 	set<aster_index> subgraphIntervals;
@@ -516,15 +517,16 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return -1;
 	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return -1;
+	if(ai.size() < 3) return -1;
 
 	// build undirected graph & find connected components
 	undirected_graph ug;
 	ug.clear();
 	map<int, int> ai2newi;
-	for(int i = 0; i < ai.size(); i++)
+	for(int i = 1; i < ai.size() - 1; i++)
 	{
 		ug.add_vertex();
-		ai2newi.insert({ai.at(i), i});
+		ai2newi.insert({ai.at(i), i - 1});
 	}
 	for(int i = 1; i < ai.size() - 1; i++)
 	{
@@ -538,6 +540,7 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			int t = e->target();
 			if(! ai.index_found(s)) return -1;
 			if(! ai.index_found(t)) return -1;
+			if(s == ai.s() || t == ai.t()) continue;
 			int news = ai2newi.at(s), newt = ai2newi.at(t);
 			ug.add_edge(news, newt); // duplicated edges does not affect connected components
 		}
@@ -549,15 +552,14 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			int t = e->target();
 			if(! ai.index_found(s)) return -1;
 			if(! ai.index_found(t)) return -1;
+			if(s == ai.s() || t == ai.t()) continue;
 			int news = ai2newi.at(s), newt = ai2newi.at(t);
 			ug.add_edge(news, newt); // duplicated edges does not affect connected components
 		}
 	}
-	ug.clear_vertex(0);
-	ug.clear_vertex(ug.num_vertices() - 1);
 
 	vector< set<int> > vv = ug.compute_connected_components();
-	
+
 	if(verbose >= 3) //CLEAN:
 	{
 		cout << "cc compute" << endl;
@@ -579,7 +581,7 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 		vector<int> ccSort(cc.begin(), cc.end());
 		for(int i = 0; i < ccSort.size(); i ++)
 		{
-			ccSort.at(i) = ai.at(i);
+			ccSort.at(i) = ai.at(i + 1);
 		}
 		sort(ccSort.begin(), ccSort.end());
 		aiSubIntervals.insert(aster_index(ccSort));
@@ -597,20 +599,16 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			peei = gr.out_edges(i);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				assert(sub.index_found((*it1)->target()));
-				assert(sub.index_found((*it1)->source()));
-				assert((*it1)->target() == t);
-				assert((*it1)->source() == s);
+				assert(sub.index_found((*it1)->target()) || (*it1)->target() == t);
+				assert(sub.index_found((*it1)->source()) || (*it1)->source() == s);
 				// aiSubIntervals.clear();
 				// return -1;
 			}
 			peei = gr.in_edges(i);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
 			{
-				assert(sub.index_found((*it1)->target()));
-				assert(sub.index_found((*it1)->source()));
-				assert((*it1)->target() == t);
-				assert((*it1)->source() == s);
+				assert(sub.index_found((*it1)->target()) || (*it1)->target() == t);
+				assert(sub.index_found((*it1)->source()) || (*it1)->source() == s);
 				// aiSubIntervals.clear();
 				// return -1;
 			}
