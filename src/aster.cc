@@ -101,6 +101,8 @@ int aster::divide_conquer()
 int aster::divide_conquer(aster_index ai)
 {
 	stepCount ++;
+	non_isolated_vertex_index(ai);
+
 	int s = ai.s();
 	int t = ai.t();
 
@@ -1509,4 +1511,21 @@ int aster::path_distance(const path& p1, const path& p2) const
 	int edits;
 	// edits = - basic_algo::ref_sw_query_nw(v1, v2, -1, -2, 0);
 	return edits = -1; //TODO: not finished
+}
+
+int aster::non_isolated_vertex_index(aster_index ai) const
+{
+	set<int> isolated_index;
+	for(int i = 0; i < ai.size(); i++)
+	{
+		int v = ai.at(i);
+		if(gr.degree(v) >= 1) continue;
+		if(i == 0 || i == ai.size() - 1) 
+		{
+			throw runtime_error("subgraph source/sink should not be isolated");
+		}
+		isolated_index.insert(i);
+	}
+	for(int i: isolated_index) ai.erase_index(i);
+	return isolated_index.size();
 }
