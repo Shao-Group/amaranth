@@ -557,6 +557,20 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 	ug.clear_vertex(ug.num_vertices() - 1);
 
 	vector< set<int> > vv = ug.compute_connected_components();
+	
+	if(verbose >= 3) //CLEAN:
+	{
+		cout << "cc compute" << endl;
+		for(const auto & cc: vv)
+		{
+			for(const auto & c: cc)
+			{
+				cout << c << " ";
+			}
+			cout << endl;
+		}
+	}
+
 	if(vv.size() <= 1) return -1;
 
 	// insert cc to aiSubIntervals
