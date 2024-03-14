@@ -579,7 +579,7 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 		vector<int> ccSort(cc.begin(), cc.end());
 		for(int i = 0; i < ccSort.size(); i ++)
 		{
-			ccSort[i] = ai.at(i);
+			ccSort.at(i) = ai.at(i);
 		}
 		sort(ccSort.begin(), ccSort.end());
 		aiSubIntervals.insert(aster_index(ccSort));
