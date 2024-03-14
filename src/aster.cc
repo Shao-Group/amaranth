@@ -560,19 +560,6 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 
 	vector< set<int> > vv = ug.compute_connected_components();
 
-	if(verbose >= 3) //CLEAN:
-	{
-		cout << "cc compute" << endl;
-		for(const auto & cc: vv)
-		{
-			for(const auto & c: cc)
-			{
-				cout << c << " ";
-			}
-			cout << endl;
-		}
-	}
-
 	if(vv.size() <= 1) return -1;
 
 	// insert cc to aiSubIntervals
@@ -586,6 +573,21 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 		sort(ccSort.begin(), ccSort.end());
 		aiSubIntervals.insert(aster_index(ccSort));
 	}
+
+	if(verbose >= 3) //CLEAN:
+	{
+		cout << "cc compute" << endl;
+		for(const auto & cc: aiSubIntervals)
+		{
+			for(const auto & c: cc.get_index())
+			{
+				cout << c << " ";
+			}
+			cout << endl;
+		}
+	}
+
+
 	// assertions and validations
 	for(const auto& sub: aiSubIntervals)
 	{
