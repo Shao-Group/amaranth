@@ -85,7 +85,7 @@ private:
 	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, aster_result& comb, bool frontSame = true, bool backSame = true) const;
 	edge_descriptor replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res);
 
-	int non_isolated_vertex_index(aster_index ai) const;
+	int non_isolated_vertex_index(aster_index& ai) const;
 	bool valid_paths(aster_result res) const;
 	bool valid_paths(vector<path> paths) const;
 	int event_size_penalty(int eventSize) const;
