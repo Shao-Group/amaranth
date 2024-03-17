@@ -90,3 +90,4 @@ test*
 test*/
 config.h.in
 config.h.in~
+*.pdf
