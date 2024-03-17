@@ -1533,19 +1533,25 @@ int aster::path_distance(const path& p1, const path& p2) const
 	return edits = -1; //TODO: not finished
 }
 
-int aster::non_isolated_vertex_index(aster_index ai) const
+int aster::non_isolated_vertex_index(aster_index& ai) const
 {
-	set<int> isolated_index;
-	for(int i = 0; i < ai.size(); i++)
+	while(true)
 	{
-		int v = ai.at(i);
-		if(gr.degree(v) >= 1) continue;
-		if(i == 0 || i == ai.size() - 1) 
+		bool isErase = false;
+		for(int i = 0; i < ai.size(); i++)
 		{
-			throw runtime_error("subgraph source/sink should not be isolated");
+			int v = ai.at(i);
+			if(gr.degree(v) >= 1) continue;
+			if(i == 0 || i == ai.size() - 1) 
+			{
+				throw runtime_error("subgraph source/sink should not be isolated");
+			}
+			ai.erase_index(i);
+			isErase = true;
+			break;
 		}
-		isolated_index.insert(i);
+		if(isErase) continue;
+		else break;
 	}
-	for(int i: isolated_index) ai.erase_index(i);
-	return isolated_index.size();
+	return 0;
 }
