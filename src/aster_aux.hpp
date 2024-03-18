@@ -47,7 +47,7 @@ public:
 		assert(left.size() >= 2);
 		assert(right.size() >= 2);
 		assert(left.t() == right.s());
-		assert(left.size() + right.size() == size() - 1);
+		assert(left.size() + right.size() == size() + 1);
 	}
 	inline void erase_itertor(vector<int>::iterator it) 
 	{
