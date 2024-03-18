@@ -443,7 +443,6 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 	if(verbose >= 2) 
 	{
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "splitting disjoint graphs at termini"; 
 		msg += "\n\tsplitted subgraphIntervals:";
 		for(const auto& iv: subgraphIntervals)
@@ -454,39 +453,17 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 		cout << msg << endl;
 	}
 
-	// D&C sub intervals excld. s and t
-	vector<int> remainingIdx {s, t};
+	// D&C sub intervals INCLUDING s and t
 	for(const aster_index& subItv: subgraphIntervals)
 	{
-		int ss = subItv.s();
-		int tt = subItv.t();
-		remainingIdx.push_back(ss);
-		remainingIdx.push_back(tt);
-		//Now all sub Itv should all has only one edge
 		divide_conquer(subItv);
-		assert(gr.out_degree(ss) <= 1 && gr.in_degree(tt) <= 1);
-		assert(gr.edge_exists(ss, tt));
+		// Now subItv is decomposed to one single edge
+		// next iteration should remove the abutting edge before decomposing the new subItv
+		for(int i : subItv.get_index()) assert(gr.degree(i) == 0 || i == s || i == t);
+		assert(gr.edge_exists(s, t));
 	}
-	// vertex is either decomposed, trivial, or s/t
-	for(int i: ai.get_index())
-	{
-		if(i == s || i == t) continue;
-		if(find(remainingIdx.begin(), remainingIdx.end(), i) == remainingIdx.end()) assert(gr.degree(i) == 0);
-		else assert(gr.out_degree(i) <= 1 || gr.in_degree(i) <= 1);
-	}
-	
-	//Now should all be trivial vertices, decompose remaining indices
-	sort(remainingIdx.begin(), remainingIdx.end());
-	for(int i = 1; i < remainingIdx.size() - 1; i++)
-	{
-		int v = remainingIdx.at(i);
-		assert(gr.in_degree(v) <= 1 || gr.out_degree(v) <= 1);
-	}
-	aster_index remainingAsterIdx(remainingIdx);
-	assert(remainingAsterIdx.s() == s);
-	assert(remainingAsterIdx.t() == t);
-	divide_conquer(remainingAsterIdx);	
 
+	for(int i: ai.get_index()) assert(gr.degree(i) == 0 || i == s || i == t);
 	assert(gr.edge_exists(s, t));
 	assert(gr.compute_num_paths(s, t, 2) == 1);
 	assert(edgeres.find(gr.edge(s,t).first) != edgeres.end());
@@ -494,14 +471,13 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with " + to_string(subgraphIntervals.size()) +" disjoint graphs at termini"; 
 		cout << msg << endl;
 	}
 	return true;
 }
 
-/* return size of interval pairs, EXCLUDING original s and t
+/* return size of interval pairs, INCLUDING original s and t
 *  return -1 if not exists 
 *  if source/target is cut vertex, 
 * 		then all subgraph's sources must be source-vertex's out-edge targets
@@ -518,7 +494,7 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 	if(gr.out_degree(s) == 1 || gr.in_degree(t) == 1) return -1;
 	if(ai.size() < 3) return -1;
 
-	// build undirected graph & find connected components
+	// build undirected graph w/o s and t & find connected components
 	undirected_graph ug;
 	ug.clear();
 	map<int, int> ai2newi;
@@ -570,18 +546,22 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 			ccSort.at(i) = ai.at(ccSort.at(i) + 1);
 		}
 		sort(ccSort.begin(), ccSort.end());
+		ccSort.insert(ccSort.begin(), ai.s());
+		ccSort.push_back(ai.t());
 		aiSubIntervals.insert(aster_index(ccSort));
 	}
 
 	// assertions and validations
 	for(const auto& sub: aiSubIntervals)
 	{
-		int subsource = sub.s();
-		int subtarget = sub.t();
+		assert(sub.size() >= 3);
+		int subsource = sub.at(2);
+		int subtarget = sub.at(sub.size() - 1 - 1);
 		assert(subsource > s);
 		assert(subtarget < t);
 		for(int i: sub.get_index())
 		{
+			if(i == s || i == t) continue;
 			PEEI peei;
 			peei = gr.out_edges(i);
 			for(edge_iterator it1 = peei.first, it2 = peei.second; it1 != it2; it1++)
@@ -666,10 +646,19 @@ int aster::divide_conquer_articulation_find(aster_index ai, aster_index left, as
 
 	int pivot = -1;
 	int index = -1;
+
+	//TODO: optimize
+	splice_graph grLocal(gr);
+	for(int i = 0; i < grLocal.num_vertices(); i++)
+	{
+		if(ai.index_found(i)) continue;
+		grLocal.clear_vertex(i);
+	}
+
 	for(int i = 1; i < ai.size() - 1; i++)
 	{
 		int v = ai.at(i);
-		splice_graph gr2(gr);
+		splice_graph gr2(grLocal);
 		gr2.clear_vertex(v);
 		if(gr2.check_path(s, t)) continue;
 		pivot = v;
@@ -692,6 +681,7 @@ int aster::divide_conquer_articulation_find(aster_index ai, aster_index left, as
 	//assertion
 	splice_graph gr2(gr);
 	gr2.clear_vertex(pivot);
+	for(int i = 0; i < gr2.num_vertices(); i++) if(!ai.index_found(i)) gr2.clear_vertex(i); 
 	assert(! gr2.check_path(s, t)); 
 
 	return pivot;
@@ -1355,7 +1345,7 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 			gr.remove_edge(e);
 		}
 	}
-	assert(! gr.check_path(s, t));
+	for(int i: ai.get_index()) assert(gr.degree(i) == 0 || i == ai.s() || i == ai.t());
 
 	// put edge & res
 	assert(! gr.edge_exists(s, t));
