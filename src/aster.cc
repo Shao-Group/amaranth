@@ -122,6 +122,8 @@ int aster::divide_conquer(aster_index ai)
 
 	int s = ai.s();
 	int t = ai.t();
+	splice_graph local;
+	local_graph(ai, local);
 
 	if(verbose >= 2)
 	{
@@ -147,7 +149,7 @@ int aster::divide_conquer(aster_index ai)
 		dnc_counter_single ++;
 		return 0;
 	} 
-	if (divide_conquer_unitig(ai))					
+	if (divide_conquer_unitig(ai, local))		
 	{
 		dnc_counter_unitig ++;
 		return 0;
@@ -873,7 +875,7 @@ bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_
 }
 
 /* examine if dnc unitig between source to target; if true, populate res */
-bool aster::divide_conquer_unitig(aster_index ai)
+bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -881,24 +883,26 @@ bool aster::divide_conquer_unitig(aster_index ai)
 	assert(s < t);
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 
+
+	// local graph, num path >= 1
+	assert(ai.size() >= 2);
+	if(ai.size() ==  2) assert(gr.valid_path({s, t}) && localGr.valid_path({s, t}));
+	int n = localGr.compute_num_paths(s, t, 2);
+	assert(n >= 1);
+	if(n > 1) return false;
+
+	// populate unitig
 	aster_result unitigRes;
 	bool   _avg_ = false;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
-
-	int n = gr.compute_num_paths(s, t, 2);
-	if(s == t - 1)  assert(n == 1); // only two vertices
-	assert(n >= 1);
-	if(n > 1) return false;	
-
-	// populate unitig
+	
 	double c = 0.0;
 	int ss = s;
 	while(true)
 	{
 		assert(ss <= t);
 		if (ss == t) break;
-		assert(gr.out_degree(ss) >= 1);
-		if (gr.out_degree(ss) > 1) return false;
+		assert(gr.out_degree(ss) == 1 || ss == s || ss == t);
 		edge_descriptor e = (*(gr.out_edges(ss).first));
 		double ew = gr.get_edge_weight(e);
 		w = _avg_? (w + ew): (w * ew);
@@ -915,7 +919,6 @@ bool aster::divide_conquer_unitig(aster_index ai)
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with a unitig path: "; 
 		cout << msg;
 		cout << endl;

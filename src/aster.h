@@ -69,7 +69,7 @@ private:
 	int divide_conquer(aster_index ai);
 	bool resolve_trivial_node(aster_index ai);
 	bool divide_conquer_single_vertex(aster_index ai);
-	bool divide_conquer_unitig(aster_index ai);
+	bool divide_conquer_unitig(aster_index ai, splice_graph& local);
 	bool divide_conquer_abutting(aster_index ai);
 	bool divide_conquer_cut_termini(aster_index ai);
 	int  divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiSubIntervals);
