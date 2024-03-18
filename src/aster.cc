@@ -443,10 +443,10 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "] "; 
 		msg += "splitting disjoint graphs at termini"; 
 		msg += "\n\tsplitted subgraphIntervals:";
-		cout << msg;
+		cout << msg << endl;
 		for(const auto& iv: subgraphIntervals)
 		{
 			string msg;
@@ -456,7 +456,6 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 			printv(iv.get_index());
 			cout << endl;
 		}
-		cout << msg << endl;
 	}
 
 	// D&C sub intervals INCLUDING s and t
@@ -675,7 +674,7 @@ int aster::divide_conquer_articulation_find(aster_index ai, aster_index left, as
 
 	if(verbose >= 2) 
 	{
-		string msg = "\t found articulation point = " + to_string(pivot) + ")";
+		string msg = "\t found articulation point = " + to_string(pivot);
 		cout << msg << endl;
 	}
 
