@@ -924,9 +924,8 @@ bool aster::divide_conquer_single_vertex(aster_index ai)
 
 	if(gr.degree(s) == 0)  return true;
 
-	aster_result res;
-	double abd = gr.get_vertex_weight(s);
-
+	// aster_result res;
+	// double abd = gr.get_vertex_weight(s);
 	throw runtime_error("single vertex should not be called");
 	return false;
 }
@@ -1150,7 +1149,6 @@ int aster::remove_small_junctions()
 	{
 		if(gr.degree(i) <= 0) continue;
 
-		bool b = true;
 		edge_iterator it1, it2;
 		PEEI pei;
 		int32_t p1 = gr.get_vertex_info(i).lpos;
@@ -1236,6 +1234,7 @@ int aster::prepare_graph()
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	remove_small_junctions();
 	gr.refine_splice_graph();
+	return 0;
 }
 
 int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const
