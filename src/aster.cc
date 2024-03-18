@@ -1509,9 +1509,10 @@ int aster::path_distance(const path& p1, const path& p2) const
 	// if(v2.back() > v1.front()) return -1;
 	int edits;
 	// edits = - basic_algo::ref_sw_query_nw(v1, v2, -1, -2, 0);
-	return edits = -1; //TODO: not finished
+	return edits = -1;
 }
 
+// remove isolated vertices from aster_index, edit in-place
 int aster::non_isolated_vertex_index(aster_index& ai) const
 {
 	while(true)
