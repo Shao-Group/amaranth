@@ -102,6 +102,7 @@ int aster::divide_conquer(aster_index ai)
 {
 	stepCount ++;
 	non_isolated_vertex_index(ai);
+	assert_closed_vertex_interval(ai);
 
 	int s = ai.s();
 	int t = ai.t();
@@ -1526,6 +1527,35 @@ int aster::non_isolated_vertex_index(aster_index& ai) const
 		}
 		if(isErase) continue;
 		else break;
+	}
+	return 0;
+}
+
+// all internal nodes (excl. s and t) must have internal edges whose target/source can be found in aster_index
+int aster::assert_closed_vertex_interval(const aster_index &ai)
+{
+	if(ai.size() <= 2) return 0;
+	int s = ai.s();
+	int t = ai.t();
+	for(int i = 1; i < ai.size() - 1; i++)
+	{
+		if (gr.degree(i) <= 0) continue;
+		int k = ai.at(i);
+
+		PEEI pi = gr.in_edges(k);
+		for(edge_iterator it = pi.first; it != pi.second; it++)
+		{
+			edge_descriptor e = *it;
+			assert(gr.edge(e));
+			assert(ai.index_found(e->source()) || e->target() == t);
+		}
+		PEEI po = gr.out_edges(k);
+		for(edge_iterator it = po.first; it != po.second; it++)
+		{
+			edge_descriptor e = *it;
+			assert(gr.edge(e));
+			assert(ai.index_found(e->target()) || e->source() == s);
+		}
 	}
 	return 0;
 }
