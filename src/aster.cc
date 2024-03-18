@@ -106,19 +106,19 @@ int aster::divide_conquer(aster_index ai)
 	int s = ai.s();
 	int t = ai.t();
 
-	if(false && verbose >= 2)
+	if(verbose >= 2)
 	{
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "])";
 		cout << msg << endl;
-		if(output_graphviz_files) 
-		{
-			string gene_start_end = gr.chrm + ":"
-								+ to_string(gr.get_vertex_info(0).lpos) + "-"
-								+ to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
-								+ "\n";
-			gr.graphviz("asterviz." + gr.gid + ".step" + to_string(stepCount) + ".dot", gene_start_end + tp2v_to_string());
-		}
+	}
+
+	if(false && verbose >= 2 && output_graphviz_files)
+	{
+		string gene_start_end = gr.chrm + ":"
+							+ to_string(gr.get_vertex_info(0).lpos) + "-"
+							+ to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
+							+ "\n";
+		gr.graphviz("asterviz." + gr.gid + ".step" + to_string(stepCount) + ".dot", gene_start_end + tp2v_to_string());
 	}
 
 
