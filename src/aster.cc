@@ -445,10 +445,15 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += "splitting disjoint graphs at termini"; 
 		msg += "\n\tsplitted subgraphIntervals:";
+		cout << msg;
 		for(const auto& iv: subgraphIntervals)
 		{
-			msg += "\n\t";
-			msg += "[" + to_string(iv.s()) + "-" + to_string(iv.t()) + "];";
+			string msg;
+			msg += "\t";
+			msg += "[" + to_string(iv.s()) + "-" + to_string(iv.t()) + "]: ";
+			cout << msg;
+			printv(iv.get_index());
+			cout << endl;
 		}
 		cout << msg << endl;
 	}
