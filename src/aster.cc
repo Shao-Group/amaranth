@@ -1329,6 +1329,7 @@ int aster::find_shortest_path(const aster_result& res) const
 */
 edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res)
 {
+	assert_closed_vertex_interval(ai);
 	int s = ai.s();
 	int t = ai.t();
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
@@ -1348,6 +1349,7 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 	for(int k: ai.get_index())
 	{
 		if(gr.degree(k) <= 0) continue;
+		if(k == s || k == t) continue;
 		assert(k >= s);
 		assert(k <= t);
 		set<edge_descriptor> setEdge;
@@ -1364,8 +1366,8 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 		for(edge_descriptor e: setEdge)
 		{
 			assert(gr.edge(e));
-			assert(ai.index_found(e->source()) || e->target() == t);
-			assert(ai.index_found(e->target()) || e->source() == s);
+			assert(ai.index_found(e->source()));
+			assert(ai.index_found(e->target()));
 			edgeres.erase(e);
 			gr.remove_edge(e);
 		}
