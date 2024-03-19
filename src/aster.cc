@@ -893,36 +893,53 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 	assert(n >= 1);
 	if(n > 1) return false;
 
+	// find unitig in localGr
+	int ss = s;
+	vector<int> unitig;
+	while(true)
+	{
+		unitig.push_back(ss);
+		assert(ss <= t);
+		if (ss == t) break;
+		assert(gr.out_degree(ss) == 1 || ss == s || ss == t);
+		assert(localGr.out_degree(ss) == 1);
+		edge_descriptor e = (*(localGr.out_edges(ss).first));
+		ss  = e->target();
+	}
+	assert(unitig.size() >= 2);
+	assert(localGr.valid_path(unitig));
+
 	// populate unitig
 	aster_result unitigRes;
 	bool   _avg_ = false;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
-
 	double c = 0.0;
-	int ss = s;
-	while(true)
+	for(int i = 0; i < unitig.size() - 1; i++)
 	{
-		assert(ss <= t);
-		if (ss == t) break;
-		assert(gr.out_degree(ss) == 1 || ss == s || ss == t);
-		edge_descriptor e = (*(gr.out_edges(ss).first));
+		int ss = unitig.at(i);
+		int tt = unitig.at(i + 1);
+		assert(ai.index_found(ss));
+		assert(ai.index_found(tt));
+		auto [e, edgeExists] = gr.edge(ss, tt);
+		assert(edgeExists);
+
 		double ew = gr.get_edge_weight(e);
 		w = _avg_? (w + ew): (w * ew);
-		ss  = e->target();
-
 		aster_result __res__;
 		res_combine_consecutive(unitigRes, edgeres.at(e), __res__);
 		unitigRes = __res__;
 		c += 1.0;
 	}
-	assert(valid_paths(unitigRes));
 	w = _avg_? (w / c): pow(w, 1.0/ c);
+	assert(valid_paths(unitigRes));
 
 	if(verbose >= 2) 
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		msg += "with a unitig path: "; 
-		cout << msg;
+		msg += "with a unitig path."; 
+		cout << msg << endl;
+		cout << "\t local path:";
+		printv(unitig);
 		cout << endl;
 	}
 
@@ -1375,7 +1392,6 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 	for(int i: ai.get_index()) assert(gr.degree(i) == 0 || i == ai.s() || i == ai.t());
 
 	// put edge & res
-	assert(! gr.edge_exists(s, t));
 	edge_descriptor e_new = gr.add_edge(s, t);
 	edge_info ei;
 	ei.weight = w;
