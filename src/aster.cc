@@ -124,14 +124,17 @@ int aster::divide_conquer(aster_index ai)
 	int t = ai.t();
 	splice_graph local;
 	local_graph(ai, local);
+	assert(local.num_vertices() == gr.num_vertices());
 
 	if(verbose >= 2)
 	{
-		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg;
+		msg += "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "] ";
+		msg += "(step " + to_string(stepCount) + ")";
 		cout << msg << endl;
 	}
 
-	if(false && verbose >= 2 && output_graphviz_files)
+	if(true && verbose >= 2 && output_graphviz_files)
 	{
 		string gene_start_end = gr.chrm + ":"
 							+ to_string(gr.get_vertex_info(0).lpos) + "-"
@@ -139,7 +142,6 @@ int aster::divide_conquer(aster_index ai)
 							+ "\n";
 		gr.graphviz("asterviz." + gr.gid + ".step" + to_string(stepCount) + ".dot", gene_start_end + tp2v_to_string());
 	}
-
 
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
