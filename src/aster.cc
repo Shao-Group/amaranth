@@ -117,6 +117,7 @@ int aster::local_graph(const aster_index& ai, splice_graph& local)
 int aster::divide_conquer(aster_index ai)
 {
 	stepCount ++;
+	int stepCountLocal = stepCount;
 	non_isolated_vertex_index(ai);
 	assert_closed_vertex_interval(ai);
 
@@ -149,31 +150,37 @@ int aster::divide_conquer(aster_index ai)
 	if (divide_conquer_single_vertex(ai))			
 	{
 		dnc_counter_single ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	} 
 	if (divide_conquer_unitig(ai, local))		
 	{
 		dnc_counter_unitig ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_abutting(ai))				
 	{
 		dnc_counter_abutting ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_cut_termini(ai)) 	
 	{
 		dnc_counter_cut_vertex ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_articulation_point(ai))		
 	{
 		dnc_counter_articulation_point_disjoint ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (resolve_trivial_node(ai))		
 	{
 		dnc_counter_resolve_trivial_node ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	// if (resolve_trivial_intersection(ai))		
@@ -184,10 +191,12 @@ int aster::divide_conquer(aster_index ai)
 	if (resolve_intersection_edge(ai))
 	{
 		dnc_counter_resolve_intersection_edge ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if(mode != aster_mode::MINI && greedy(ai))
 	{
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 
@@ -196,6 +205,8 @@ int aster::divide_conquer(aster_index ai)
 	string msg = "aster-mini failed on graph " + gr.gid;
 	msg += " [" + gr.chrm + ":" + to_string(gr.get_vertex_info(0).lpos) + "-" + to_string(gr.get_vertex_info(0).rpos) + "]";
 	msg += " in subgraph vertexIndex [" + to_string(s) + ", " + to_string(t) + "]";
+	msg += " error at step " + to_string(stepCountLocal);
+	
 	throw aster_error(msg.c_str());
 	return -1;
 }
