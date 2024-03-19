@@ -87,6 +87,7 @@ private:
 
 	int non_isolated_vertex_index(aster_index& ai) const;
 	int assert_closed_vertex_interval(const aster_index& ai);
+	int local_graph(const aster_index& ai, splice_graph& local);
 	bool valid_paths(aster_result res) const;
 	bool valid_paths(vector<path> paths) const;
 	int event_size_penalty(int eventSize) const;

@@ -96,6 +96,22 @@ int aster::divide_conquer()
 	return 0;
 }
 
+// make a copy of graph with only edges inside aster_index, to local splice graph
+// nodes are not removed
+int aster::local_graph(const aster_index& ai, splice_graph& local)
+{
+	assert_closed_vertex_interval(ai);
+	MEE x2y, y2x;
+	local.clear();
+	local.copy(gr, x2y, y2x);
+	for(int i = 0; i < local.num_vertices(); i++) // TODO: optimize
+	{
+		if(ai.index_found(i)) continue;
+		local.clear_vertex(i);
+	}
+	return 0;
+}
+
 // divide_conquer(i ,j) solves a subproblem between 
 // i, j are tp2v indices
 int aster::divide_conquer(aster_index ai)
