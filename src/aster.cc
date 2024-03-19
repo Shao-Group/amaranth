@@ -897,7 +897,7 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 	aster_result unitigRes;
 	bool   _avg_ = false;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
-	
+
 	double c = 0.0;
 	int ss = s;
 	while(true)
