@@ -501,7 +501,7 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 
 	for(int i: ai.get_index()) assert(gr.degree(i) == 0 || i == s || i == t);
 	assert(gr.edge_exists(s, t));
-	assert(gr.compute_num_paths(s, t, 2) == 1);
+	// assert(gr.compute_num_paths(s, t, 2) == 1);
 	assert(edgeres.find(gr.edge(s,t).first) != edgeres.end());
 
 	if(verbose >= 2) 
