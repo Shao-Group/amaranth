@@ -388,6 +388,7 @@ int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor 
 	}
 	else
 	{
+		assert(! gr.edge_exists(source, target));
 		edge_descriptor e_new = gr.add_edge(source, target);
 		assert(edgeres.find(e_new) == edgeres.end());
 		edgeres[e_new] = combinedRes;
@@ -1405,9 +1406,16 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 			gr.remove_edge(e);
 		}
 	}
+	if(auto [e, b] = gr.edge(s,t); b) 
+	{
+		edgeres.erase(e);
+		gr.remove_edge(e);
+	}
+
 	for(int i: ai.get_index()) assert(gr.degree(i) == 0 || i == ai.s() || i == ai.t());
 
 	// put edge & res
+	assert(!gr.edge_exists(s,t));
 	edge_descriptor e_new = gr.add_edge(s, t);
 	edge_info ei;
 	ei.weight = w;
