@@ -83,7 +83,15 @@ int aster::divide_conquer()
 	assert(tp2v.size() == gr.num_vertices());
 	aster_index ai({tp2v});
 	divide_conquer(ai);
-
+	
+	if(output_graphviz_files && verbose >= 3) 
+	{
+		string gene_start_end = gr.chrm + ":"
+							  + to_string(gr.get_vertex_info(0).lpos) + "-"
+							  + to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
+							  + "\n";
+		gr.graphviz("asterviz.final" + gr.gid + ".dot", gene_start_end + tp2v_to_string());
+	}
 	// collect paths
 	int s = 0;
 	int t = gr.num_vertices() - 1;
