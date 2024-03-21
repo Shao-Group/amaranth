@@ -289,7 +289,7 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 		auto& res1 = edgeres.at(in);
 		inResCount += res1.subpaths.size();
 		res_combine_parallel(resIn, res1, resCombIn, false, true);
-		resIn = move(resCombIn);
+		resIn = resCombIn;
 	}
 	aster_result resOut;
 	int outResCount = 0;
@@ -436,7 +436,7 @@ bool aster::divide_conquer_abutting(aster_index ai)
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
 	assert(gr.edge(e));
-	aster_result res0 = move(edgeres.at(e));
+	aster_result res0 = edgeres.at(e);
 	edgeres.erase(e);
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
