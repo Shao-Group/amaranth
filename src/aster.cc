@@ -10,8 +10,8 @@ See LICENSE for licensing.
 #include "aster.h"
 #include "basic_algo.h"
 
-aster::aster(const splice_graph &g, const hyper_set &h)
-	: origr(g), gr(g), hs(h)
+aster::aster(const splice_graph &g, const hyper_set &h, bool _avg)
+	: origr(g), gr(g), hs(h), avgMode(_avg)
 {
 	paths.clear();				// predicted paths, original v index, inclusive
     trsts.clear();				// predicted transcripts, original v index
@@ -354,7 +354,7 @@ int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor 
 	// new weight
 	double w1 = gr.get_edge_weight(in);
 	double w2 = gr.get_edge_weight(out);
-	bool   _avg_ = false;	
+	bool   _avg_ = avgMode;	
 	double w = _avg_? (w1 + w2 / 2.0) : pow(w1 * w2, 1.0/2.0);
 
 	// new res
@@ -928,7 +928,7 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 
 	// populate unitig
 	aster_result unitigRes;
-	bool   _avg_ = false;       							// average if true, geom mean if false
+	bool   _avg_ = avgMode;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
 	double c = 0.0;
 	for(int i = 0; i < unitig.size() - 1; i++)

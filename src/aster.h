@@ -19,7 +19,7 @@ See LICENSE for licensing.
 class aster
 {
 public:
-	aster(const splice_graph &gr, const hyper_set &hs);
+	aster(const splice_graph &gr, const hyper_set &hs, bool avgMode);
 	int assemble();
 	static int print_stats();
 
@@ -48,6 +48,7 @@ private:
 	// VI v2tp;							// vertex index to DFS-based topologically sorted index.
 	map<edge_descriptor, aster_result> edgeres;
 	aster_mode mode;
+	bool avgMode;						// true: avg, false: geometric mean
 
 public:
 	vector<path> paths;							// predicted paths, original v index, inclusive
