@@ -40,7 +40,7 @@ int analyzer::analyze()
         gr.gid = gene0.transcripts[0].gene_id;
 
         gtf0.build_splice_graph(gr);
-        aster asterInstance(gr, {});
+        aster asterInstance(gr, {}, true);
 
         trsts.insert(trsts.end(), asterInstance.trsts.begin(), asterInstance.trsts.end());
         non_full_trsts.insert(non_full_trsts.end(), asterInstance.non_full_trsts.begin(), asterInstance.non_full_trsts.end());

@@ -230,7 +230,7 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			gr.gid = gid;
 
 			//CLEAN: new assembly algo starts
-			aster asterInstance(gr, hs);
+			aster asterInstance(gr, hs, true);
 			if(asterInstance.trsts.size() == 0) continue;
 
 			if(verbose >= 2)
