@@ -84,7 +84,7 @@ int aster::divide_conquer()
 	aster_index ai({tp2v});
 	divide_conquer(ai);
 	
-	if(output_graphviz_files && verbose >= 3) 
+	if(false && output_graphviz_files && verbose >= 3) 
 	{
 		string gene_start_end = gr.chrm + ":"
 							  + to_string(gr.get_vertex_info(0).lpos) + "-"
@@ -143,7 +143,7 @@ int aster::divide_conquer(aster_index ai)
 		cout << msg << endl;
 	}
 
-	if(true && verbose >= 2 && output_graphviz_files)
+	if(false && verbose >= 2 && output_graphviz_files)
 	{
 		string gene_start_end = gr.chrm + ":"
 							+ to_string(gr.get_vertex_info(0).lpos) + "-"
