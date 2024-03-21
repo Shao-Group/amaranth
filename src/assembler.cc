@@ -231,11 +231,9 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 
 			//CLEAN: new assembly algo starts
 			aster asterInstance(gr, hs, true);
-			if(asterInstance.trsts.size() == 0) continue;
-
 			if(verbose >= 2)
 			{
-				printf("assembly with r = %d, total %lu transcripts:\n", r, asterInstance.trsts.size());
+				printf("assembly with r = %d, total %lu transcripts, run 1:\n", r, asterInstance.trsts.size());
 				for(int i = 0; i < asterInstance.trsts.size(); i++) asterInstance.trsts[i].write(cout);
 			}
 
@@ -246,6 +244,22 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			for(int i = 0; i < asterInstance.non_full_trsts.size(); i++)
 			{
 				ts2.add(asterInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+			}
+
+			aster asterInstance2(gr, hs, false);
+			if(verbose >= 2)
+			{
+				printf("assembly with r = %d, total %lu transcripts, run 2:\n", r, asterInstance2.trsts.size());
+				for(int i = 0; i < asterInstance2.trsts.size(); i++) asterInstance2.trsts[i].write(cout);
+			}
+
+			for(int i = 0; i < asterInstance2.trsts.size(); i++)
+			{
+				ts1.add(asterInstance2.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+			}
+			for(int i = 0; i < asterInstance2.non_full_trsts.size(); i++)
+			{
+				ts2.add(asterInstance2.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
 			//CLEAN: new assembly algo ends
 
