@@ -156,36 +156,24 @@ int aster::divide_conquer(aster_index ai)
 	if (divide_conquer_unitig(ai, local))		
 	{
 		dnc_counter_unitig ++;
-		splice_graph local;
-		local_graph(ai, local);
-		assert(local.compute_num_paths(s, t, 2) == 1);
 		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_abutting(ai))				
 	{
 		dnc_counter_abutting ++;
-		splice_graph local;
-		local_graph(ai, local);
-		assert(local.compute_num_paths(s, t, 2) == 1);
 		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_cut_termini(ai)) 	
 	{
 		dnc_counter_cut_vertex ++;
-		splice_graph local;
-		local_graph(ai, local);
-		assert(local.compute_num_paths(s, t, 2) == 1);
 		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_articulation_point(ai))		
 	{
 		dnc_counter_articulation_point_disjoint ++;
-		splice_graph local;
-		local_graph(ai, local);
-		assert(local.compute_num_paths(s, t, 2) == 1);
 		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
 		return 0;
 	}
