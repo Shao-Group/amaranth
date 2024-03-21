@@ -32,13 +32,13 @@ private:
 public:
 	inline aster_index() {};
 	inline aster_index(vector<int> v): indices(v) {};
-	inline const vector<int>& get_index() const {return indices;}
-	inline int s() const {return indices.front();}
-	inline int t() const {return indices.back();}
-	inline int at(int i) const {return indices.at(i);}
+	inline const vector<int>& get_index() const {assert (size() > 0); return indices;}
+	inline int s() const {assert (size() > 0); return indices.front();}
+	inline int t() const {assert (size() > 0); return indices.back();}
+	inline int at(int i) const {assert (size() > 0); return indices.at(i);}
 	inline int size() const {return indices.size();}
 	// split an index at index i, to left and right, both inclusive of i
-	inline void split(int i, aster_index left, aster_index right) const
+	inline void split(int i, aster_index& left, aster_index& right) const
 	{
 		assert(i > 0 && i < size() - 1);
 		assert(size() >= 3);
@@ -51,24 +51,32 @@ public:
 	}
 	inline void erase_itertor(vector<int>::iterator it) 
 	{
+		assert (size() > 0);
 		assert(std::distance(indices.begin(), it) >= 0);
 		assert(std::distance(indices.end(), it)   <= 0);
 		indices.erase(it);
 	}
 	inline void erase_index(int i) 
 	{
+		assert (size() > 0);
 		assert(i >= 0 && i <= size() - 1);
 		indices.erase(indices.begin() + i);
 	}
 	inline void erase_element(int i) 
 	{
+		assert (size() > 0);
 		assert(i >= s() && i <= t());
 		auto it = find(indices.begin(), indices.end(), i);
 		assert(it != indices.end());
 		indices.erase(it);
 	}
-	inline bool index_found(int i) const {return find(indices.begin(), indices.end(), i) != indices.end();}
-	inline bool operator< (const aster_index& ai) const {return indices < ai.get_index();}
+	inline bool index_found(int i) const {assert (size() > 0); return find(indices.begin(), indices.end(), i) != indices.end();}
+	inline bool operator< (const aster_index& ai) const 
+	{
+		assert (size() > 0); 
+		assert (ai.size() > 0);
+		return indices < ai.get_index();
+	}
 };
 
 struct aster_result
