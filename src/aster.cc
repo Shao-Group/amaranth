@@ -673,7 +673,7 @@ bool aster::divide_conquer_articulation_point(aster_index ai)
 
 // find a pivot-TopoIndex s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
 // return -1 if cannot fine artivulation point
-int aster::divide_conquer_articulation_find(aster_index ai, aster_index left, aster_index right) 
+int aster::divide_conquer_articulation_find(aster_index ai, aster_index& left, aster_index& right) 
 {
 	int s = ai.s();
 	int t = ai.t();
