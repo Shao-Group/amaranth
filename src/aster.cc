@@ -1292,8 +1292,8 @@ int aster::prepare_graph()
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
-	remove_small_junctions();
-	gr.refine_splice_graph();
+	// remove_small_junctions();
+	// gr.refine_splice_graph();
 	return 0;
 }
 
