@@ -262,6 +262,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 
 		PEEI inEdges = gr.in_edges(v);
 		PEEI outEdges = gr.out_edges(v);
+		assert((gr.in_degree(v) == 1 || gr.out_degree(v) == 1) && gr.degree(v) >= 2);
 		edges_combine_consecutive_and_replace(inEdges, outEdges);
 		assert(gr.degree(v) == 0);	
 
@@ -287,7 +288,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 {
 	//combine res
-	aster_result resIn;
+	aster_result resIn = edgeres.at(*(inEdges.first)) ;
 	int inResCount = 0;
 	set<edge_descriptor> originalInEdges;
 	for(edge_iterator it1 = inEdges.first, it2 = inEdges.second; it1 != it2; it1++)
@@ -297,10 +298,14 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 		aster_result resCombIn;
 		auto& res1 = edgeres.at(in);
 		inResCount += res1.subpaths.size();
-		res_combine_parallel(resIn, res1, resCombIn, false, true);
-		resIn = resCombIn;
+		if (it1 != inEdges.first) 
+		{
+			res_combine_parallel(resIn, res1, resCombIn, false, true);
+			resIn = resCombIn;
+		}
+		assert(resIn.size() >= 1);
 	}
-	aster_result resOut;
+	aster_result resOut = edgeres.at(*(outEdges.first));
 	int outResCount = 0;
 	set<edge_descriptor> originalOutEdges;
 	for(edge_iterator ot1 = outEdges.first, ot2 = outEdges.second; ot1 != ot2; ot1++)
@@ -310,11 +315,18 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 		aster_result resCombOut;
 		auto& res2 = edgeres.at(out);
 		outResCount += res2.subpaths.size();
-		res_combine_parallel(resOut, res2, resCombOut, true, false);
-		resOut = resCombOut;
+		if(ot1 != outEdges.first) 
+		{
+			res_combine_parallel(resOut, res2, resCombOut, true, false);
+			resOut = resCombOut;
+		}
+		assert(resOut.size() >= 1);
 	}
 	aster_result resComb;
+	assert(resIn.size() >= 1);
+	assert(resOut.size() >= 1);
 	res_combine_consecutive(resIn, resOut, resComb);
+	assert(resComb.size() >= 1);
 	assert(resComb.subpaths.size() == inResCount + outResCount - 1);
 	assert(originalInEdges.size() == 1 || originalOutEdges.size() == 1);
 
@@ -949,7 +961,20 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 	bool   _avg_ = avgMode;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
 	double c = 0.0;
-	for(int i = 0; i < unitig.size() - 1; i++)
+	{
+		int ss = unitig.at(0);
+		int tt = unitig.at(1);
+		assert(ai.index_found(ss));
+		assert(ai.index_found(tt));
+		auto [e, edgeExists] = gr.edge(ss, tt);
+		assert(edgeExists);
+		double ew = gr.get_edge_weight(e);
+		w = _avg_? (w + ew): (w * ew);
+		c += 1.0;
+		unitigRes = edgeres.at(e);
+	}
+	
+	for(int i = 1; i < unitig.size() - 1; i++)
 	{
 		int ss = unitig.at(i);
 		int tt = unitig.at(i + 1);
@@ -1017,6 +1042,11 @@ int aster::init_edgeres()
 		edge_descriptor e = *it1;
 		double w = gr.get_edge_weight(e);
 		edgeres[e] = aster_result(vector<int>{e->source(), e->target()}, w);
+	}
+	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+	{
+		edge_descriptor e = *it1;
+		assert(edgeres.at(e).size() >= 1);
 	}
 	return 0;
 }
