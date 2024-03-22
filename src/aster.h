@@ -65,6 +65,7 @@ private:
 	int prepare_graph();
 	int balance_vertex(int);
 	int remove_small_junctions();
+	int purge_empty_vertex();
 
 	int divide_conquer();
 	int divide_conquer(aster_index ai);

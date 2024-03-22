@@ -1250,6 +1250,17 @@ int aster::balance_vertex(int vertexIndex)
 	return 0;
 }
 
+// clear empty vertex from graph
+int aster::purge_empty_vertex()
+{
+	for(int i = 0; i < gr.num_vertices(); i++)
+	{
+		if(gr.get_vertex_info(i).type == EMPTY_VERTEX) gr.clear_vertex(i);
+	}
+	gr.refine_splice_graph();
+	return 0;
+}
+
 int aster::remove_small_junctions()
 {
 	SE se;
@@ -1341,7 +1352,8 @@ int aster::prepare_graph()
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	// remove_small_junctions();
-	// gr.refine_splice_graph();
+	purge_empty_vertex();
+	gr.refine_splice_graph();
 	return 0;
 }
 
