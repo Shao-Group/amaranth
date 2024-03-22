@@ -85,6 +85,7 @@ struct aster_result
 	int dist = -1;
 	inline aster_result() {};
 	inline aster_result(const vector<int>& v, double w): subpaths({path(v, w)}), dist(0) {};
+	inline int size() const	{return subpaths.size();};
 	inline void clear() {subpaths.clear(); dist = -1;}
 };
 

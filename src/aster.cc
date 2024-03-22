@@ -735,19 +735,21 @@ int aster::divide_conquer_articulation_find(aster_index ai, aster_index& left, a
 */
 bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, aster_result& comb) const
 {
-	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
-	if(res1.subpaths.size() == 0) 
-	{
-		comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
-		comb.dist += res2.dist;
-		return true;
-	}
-	if(res2.subpaths.size() == 0) 
-	{
-		comb.dist += res1.dist;
-		comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
-		return true;
-	}
+	assert(res1.size() >= 1);
+	assert(res2.size() >= 1);
+	// if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
+	// if(res1.subpaths.size() == 0) 
+	// {
+	// 	comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
+	// 	comb.dist += res2.dist;
+	// 	return true;
+	// }
+	// if(res2.subpaths.size() == 0) 
+	// {
+	// 	comb.dist += res1.dist;
+	// 	comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
+	// 	return true;
+	// }
 
 	assert(res1.subpaths.size() > 0);
 	assert(res1.subpaths[0].v.size() > 0);
@@ -850,19 +852,21 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 */ 
 bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_result& comb, bool frontSame, bool backSame) const
 {	
-	if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
-	if(res1.subpaths.size() == 0) 
-	{
-		comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
-		comb.dist += res2.dist;
-		return true;
-	}
-	if(res2.subpaths.size() == 0) 
-	{
-		comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
-		comb.dist += res1.dist;
-		return true;
-	}
+	assert(res1.size() >= 1);
+	assert(res2.size() >= 1);
+	// if(res1.subpaths.size() == 0 && res2.subpaths.size() == 0) return false;
+	// if(res1.subpaths.size() == 0) 
+	// {
+	// 	comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
+	// 	comb.dist += res2.dist;
+	// 	return true;
+	// }
+	// if(res2.subpaths.size() == 0) 
+	// {
+	// 	comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
+	// 	comb.dist += res1.dist;
+	// 	return true;
+	// }
 	assert(res1.subpaths.size() > 0);
 	assert(res1.subpaths[0].v.size() > 0);
 	assert(res2.subpaths.size() > 0);
