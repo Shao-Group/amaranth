@@ -54,6 +54,7 @@ int aster::assemble()
 	}
 	catch(const aster_error& e)
 	{
+		assert(0); // should not have err
 		cerr << e.what() << '\n';
 		print_stats();
 		string gene_start_end = gr.chrm + ":"
@@ -251,6 +252,14 @@ bool aster::resolve_trivial_node(aster_index ai)
 		assert(v > s && v < t);
 		if(gr.degree(v) == 0) continue;
 		if(gr.in_degree(v) > 1 && gr.out_degree(v) > 1) continue;
+
+		if(verbose >= 3) 
+		{
+			string msg = "aster processing trivial node " + to_string(v); 
+			msg += " in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+			cout << msg << endl;
+		}
+
 		PEEI inEdges = gr.in_edges(v);
 		PEEI outEdges = gr.out_edges(v);
 		edges_combine_consecutive_and_replace(inEdges, outEdges);
@@ -645,6 +654,13 @@ bool aster::divide_conquer_articulation_point(aster_index ai)
 	if (pivot < 0) return false;
 	assert(pivot > s && pivot < t);
 
+	if(verbose >= 2)
+	{
+		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		msg += "with subgraphs at articulation point " + to_string(pivot);
+		cout << msg << endl;
+	}
+
 	divide_conquer(aileft); 	
 	PEB peb1 = gr.edge(s, pivot);
 	edge_descriptor e1 = peb1.first;
@@ -668,9 +684,7 @@ bool aster::divide_conquer_articulation_point(aster_index ai)
 	if(verbose >= 2)
 	{
 		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
-		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
-		msg += "with subgraphs at articulation point " + to_string(tp2v[pivot]);
-		msg += " (topoIndex = " + to_string(pivot) + ")";
+		msg += "with subgraphs at articulation point " + to_string(pivot);
 		cout << msg << endl;
 	}
 
