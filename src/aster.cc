@@ -40,11 +40,11 @@ int aster::assemble()
 	if(gr.num_vertices() == 2) return 0;
 	assert(gr.num_vertices() > 2);
 
-	if(gr.num_vertices() > 1000) //FIXME:
+	if(gr.num_vertices() > 1000) //TODO:CLEAN:
 	{
-		cerr << gr.gid <<" too big to process with D&C " << gr.num_vertices() << endl; 
-		successStatus = false;
-		return 0;
+		cerr << gr.gid <<" graph is very big to process with D&C, but still do " << gr.num_vertices() << endl; 
+		// successStatus = false;
+		// return 0;
 	}	
 
 	try
@@ -156,6 +156,12 @@ int aster::divide_conquer(aster_index ai)
 	assert(s <= t);
 	assert(s < gr.num_vertices() && t < gr.num_vertices() && s >= 0 && t >= 0);
 
+	if (doesFastDnC && resolve_trivial_node(ai))		
+	{
+		dnc_counter_resolve_trivial_node ++;
+		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		return 0;
+	}
 	if (divide_conquer_single_vertex(ai))			
 	{
 		dnc_counter_single ++;

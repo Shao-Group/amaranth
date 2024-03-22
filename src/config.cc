@@ -65,6 +65,7 @@ double min_subregion_ave = 1.5;
 
 // for aster
 aster_mode asterMode = aster_mode::ASSEMBLER;
+bool doesFastDnC = false;
 
 // for revising/decomposing splice graph
 double min_guaranteed_edge_weight = 0.01;
@@ -320,6 +321,10 @@ int parse_arguments(int argc, const char ** argv)
 			else if(s == "ASSEMBLY") asterMode = aster_mode::ASSEMBLER;
 			else throw runtime_error("received unknown --asterMode MDOE.");
 			i++;
+		}
+		else if(string(argv[i]) == "--fast")
+		{
+			doesFastDnC = true;
 		}
 		else if(string(argv[i]) == "--library_type")
 		{

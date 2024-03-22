@@ -97,6 +97,7 @@ extern double min_subregion_ave;
 // for aster
 enum class aster_mode {REF, STAT_ONLY, MINI, ASSEMBLER};
 extern aster_mode asterMode;
+extern bool doesFastDnC;
 
 // for subsetsum and router
 extern int max_dp_table_size;

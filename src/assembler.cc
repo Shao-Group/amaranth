@@ -331,8 +331,8 @@ int assembler::write()
         if(fout1.fail()) return 0;
         for(int i = 0; i < non_full_trsts.size(); i++)
         {
-                transcript &t = non_full_trsts[i];
-                t.write(fout1);
+			transcript &t = non_full_trsts[i];
+			t.write(fout1);
         }
         fout1.close();
 
