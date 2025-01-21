@@ -1,5 +1,10 @@
-# Introduction
+# Aster minimal number of splices/partial spliced transcripts possibilities
+organized as a a tree of the splicing status of a partially spliced transcript.
+minimize number of internal nodes
 
+
+
+# Introduction
 Scallop2 is a reference-based transcript assembler
 specifically optimized for paired-/multiple-end RNA-seq data.
 The development of Scallop2 has been based on the [Scallop](https://github.com/Kingsford-Group/scallop) assembler.

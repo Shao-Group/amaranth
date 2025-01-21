@@ -919,14 +919,32 @@ bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_
 		if(frontSame) assert(p.v.front() == s);
 		if(backSame)  assert(p.v.back() == t);
 	}
+    
+    // Collapse existing paths (if duplicated) by adding their counts
+	map<vector<int>, double> unique_paths;
+    for(const path& p : comb.subpaths) 
+	{
+        unique_paths[p.v] = p.abd;
+    }
+    for(const path& p : res1.subpaths) 
+	{
+        if(unique_paths.find(p.v) != unique_paths.end()) unique_paths[p.v] += p.abd;
+        else unique_paths[p.v] = p.abd;
+    }
+    for(const path& p : res2.subpaths) 
+	{
+        if(unique_paths.find(p.v) != unique_paths.end()) unique_paths[p.v] += p.abd;  
+        else unique_paths[p.v] = p.abd;
+    }
 
-	int combOriSize = comb.subpaths.size();
-	comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
-	comb.subpaths.insert(comb.subpaths.end(), res2.subpaths.begin(), res2.subpaths.end());
-	assert(comb.subpaths.size() == combOriSize + res1.subpaths.size() + res2.subpaths.size());
+    comb.subpaths.clear();
+    for(const auto& pair : unique_paths) {
+        comb.subpaths.push_back(path(pair.first, pair.second));
+    }
 
 	//TODO: calculate dist
-	return true;
+    assert(comb.subpaths.size() >= 1);
+    return true;
 }
 
 /* examine if dnc unitig between source to target; if true, populate res */
