@@ -801,8 +801,24 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 		assert(p.v.front() == k);
 	}
 
-	int index1 = find_shortest_path(res1);
-	int index2 = find_shortest_path(res2);
+	int index1 = -1;
+	int index2 = -1;
+	if (strategy == aster_strategy::SHORT) 
+	{
+		index1 = find_shortest_path(res1);
+		index2 = find_shortest_path(res2);
+	} 
+	else if (strategy == aster_strategy::LONG) 
+	{
+		index1 = find_longest_path(res1);
+		index2 = find_longest_path(res2);
+	} 
+	else 
+	{  // Default: strategy == aster_strategy::HEAVY)
+		index1 = find_heaviest_path(res1);
+		index2 = find_heaviest_path(res2);
+	}
+	
 	assert(index1 >= 0);
 	assert(index2 >= 0);
 	assert(index1 < res1.subpaths.size());
