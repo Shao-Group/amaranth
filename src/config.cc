@@ -101,6 +101,7 @@ string output_file;
 string output_file1;
 
 // for controling
+bool use_filter = true;
 bool output_tex_files = false;
 bool output_graphviz_files = false;
 string fixed_gene_name = "";
@@ -335,6 +336,14 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--fast")
 		{
 			doesFastDnC = true;
+		}
+		else if(string(argv[i]) == "--no-filter")
+		{
+			use_filter = false;
+		}
+		else if(string(argv[i]) == "--use-filter")
+		{
+			use_filter = true;
 		}
 		else if(string(argv[i]) == "--library_type")
 		{

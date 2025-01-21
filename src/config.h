@@ -134,6 +134,7 @@ extern string output_file;
 extern string output_file1;
 
 // for controling
+extern bool use_filter;
 extern bool output_tex_files;
 extern bool output_graphviz_files;
 extern string fixed_gene_name;

@@ -126,17 +126,6 @@ int assembler::process(int n)
 	{
 		bundle_base &bb = pool[i];
 
-		/*
-		// calculate the number of hits with splices
-		int splices = 0;
-		for(int k = 0; k < bb.hits.size(); k++)
-		{
-			if(bb.hits[k].spos.size() >= 1) splices++;
-		}
-		if(bb.hits.size() < min_num_hits_in_bundle && splices < min_num_splices_in_bundle) continue;
-		//printf("bundle %d has %lu reads, %d reads have splices\n", i, bb.hits.size(), splices);
-		*/
-
 		int cnt1 = 0;
 		int cnt2 = 0;
 		for(int k = 0; k < bb.hits.size(); k++)
@@ -191,15 +180,20 @@ int assembler::process(int n)
 		{
 			if(gv2[k].exons.size() >= 2) gv2[k].coverage /= (1.0 * assemble_duplicates);
 		}
-		//FIXME: use filter
 		filter ft1(gv1);
-		// ft1.filter_length_coverage();
-		// ft1.remove_nested_transcripts();
+		if (use_filter)
+		{
+			ft1.filter_length_coverage();
+			ft1.remove_nested_transcripts();
+		}
 		if(ft1.trs.size() >= 1) trsts.insert(trsts.end(), ft1.trs.begin(), ft1.trs.end());
 
 		filter ft2(gv2);
-		// ft2.filter_length_coverage();
-		// ft2.remove_nested_transcripts();
+		if (use_filter)
+		{
+			ft2.filter_length_coverage();
+			ft2.remove_nested_transcripts();
+		}
 		if(ft2.trs.size() >= 1) non_full_trsts.insert(non_full_trsts.end(), ft2.trs.begin(), ft2.trs.end());
 	}
 	pool.clear();
@@ -229,7 +223,6 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			string gid = "gene." + tostring(index) + "." + tostring(k) + "." + tostring(r);
 			gr.gid = gid;
 
-			//CLEAN: new assembly algo starts
 			aster asterInstance(gr, hs, true);
 			if(verbose >= 2)
 			{
@@ -261,34 +254,6 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			{
 				ts2.add(asterInstance2.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
-			//CLEAN: new assembly algo ends
-
-			/*
-			filter ft(sc.trsts);
-			//ft.join_single_exon_transcripts();
-			ft.filter_length_coverage();
-			if(ft.trs.size() >= 1) gv.insert(gv.end(), ft.trs.begin(), ft.trs.end());
-
-			if(verbose >= 2)
-			{
-			printf("transcripts after filtering:\n");
-			for(int i = 0; i < ft.trs.size(); i++) ft.trs[i].write(cout);
-
-			printf("non full length transcripts:\n");
-			for(int i = 0; i < sc.non_full_trsts.size(); i++) sc.non_full_trsts[i].write(cout);
-			}
-
-			filter ft1(sc.non_full_trsts);
-			//ft.join_single_exon_transcripts();
-			ft1.filter_length_coverage();
-			if(ft1.trs.size() >= 1) gv1.insert(gv1.end(), ft1.trs.begin(), ft1.trs.end());
-
-			if(verbose >= 2)
-			{
-			printf("non full transcripts after filtering:\n");
-			for(int i = 0; i < ft1.trs.size(); i++) ft1.trs[i].write(cout);
-			}
-			*/
 		}
 	}
 
