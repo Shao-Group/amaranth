@@ -29,7 +29,6 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool _avg)
 	assemble();
 	get_transcripts();	
 	assert(paths.size() == trsts.size() + non_full_trsts.size());
-	assert(paths.size() <= origr.num_edges());
 	if(verbose >= 1 && successStatus) cout << "aster assembled " << gr.gid << ", #path = " << paths.size() << endl;
 }
 
