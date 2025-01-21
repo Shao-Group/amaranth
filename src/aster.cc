@@ -1041,24 +1041,81 @@ bool aster::divide_conquer_single_vertex(aster_index ai)
 
 int aster::init_edgeres()
 {
-	edgeres.clear();
-	PEEI pei = gr.edges();
-	
 	// init edgeres for each edge
-	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
-	{
-		edge_descriptor e = *it1;
-		double w = gr.get_edge_weight(e);
-		edgeres[e] = aster_result(vector<int>{e->source(), e->target()}, w);
-	}
-	
-	// sanity check 
-	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
-	{
-		edge_descriptor e = *it1;
-		assert(edgeres.at(e).size() >= 1);
-	}
-	return 0;
+    edgeres.clear();
+
+    PEEI pei = gr.edges();
+    for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+    {
+        edge_descriptor e = *it1;
+        double w = gr.get_edge_weight(e);
+        edgeres[e] = aster_result(vector<int>{e->source(), e->target()}, w);
+    }
+    
+	// Then handle hyper-edges from hs.edges
+    for(size_t i = 0; i < hs.edges.size(); i++) 
+    {
+        const vector<int>& hedge = hs.edges[i];
+        if(hedge.size() < 2) continue;
+        
+        // Convert edge indices to node sequence
+        vector<int> nodes;
+        bool valid = true;
+        
+        // hyper_edge: Get first edge to get starting node
+        edge_descriptor first_edge = i2e[hedge[0]];
+        nodes.push_back(first_edge->source());
+        nodes.push_back(first_edge->target());
+        
+        // hyper_edge:  Process remaining edges
+        for(size_t j = 1; j < hedge.size(); j++) 
+        {
+            if(hedge[j] == -1) {
+                valid = false;
+                break;
+            }
+            
+            edge_descriptor curr_edge = i2e[hedge[j]];
+            
+            // Verify connectivity
+            if(curr_edge->source() != nodes.back()) {
+                valid = false;
+                break;
+            }
+            
+            nodes.push_back(curr_edge->target());
+        }
+        if(!valid || nodes.size() < 2) continue;
+
+		double w = hs.ecnts[i];
+        
+        // Add hyper-edge to graph: Check if edge already exists
+		if(auto [e, exists] = gr.edge(nodes.front(), nodes.back()); exists)
+		{
+            // Edge exists - combine the aster_results
+			assert (e != null_edge);
+            aster_result new_res(nodes, w);
+            aster_result combined_res;
+            assert(edgeres.find(e) != edgeres.end());
+            res_combine_parallel(edgeres[e], new_res, combined_res);
+            edgeres[e] = combined_res;
+            
+            double old_w = gr.get_edge_weight(e);
+            gr.set_edge_weight(e, old_w + w);  // Update edge weight
+        } 
+		else 
+		{
+            // Create new edge for this hyper-edge
+            edge_descriptor new_edge = gr.add_edge(nodes.front(), nodes.back());
+			edge_info ei;
+			ei.weight = w;
+			ei.strand = gr.strand;
+			gr.set_edge_info(new_edge, ei);
+            gr.set_edge_weight(new_edge, w);
+            edgeres[new_edge] = aster_result(nodes, w);
+        }
+    }
+    return 0;
 }
 
 
