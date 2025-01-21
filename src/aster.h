@@ -44,6 +44,9 @@ private:
 	const splice_graph& origr;			// original splice graph
 	splice_graph gr;					// splice graph with modification
 	hyper_set hs;						// hyper edges
+	MEI e2i;							// edge map, from edge to index
+	VE i2e;								// edge map, from index to edge
+
 	VI tp2v;							// DFS-based topologically sorted index to vertex index.
 	// VI v2tp;							// vertex index to DFS-based topologically sorted index.
 	map<edge_descriptor, aster_result> edgeres;

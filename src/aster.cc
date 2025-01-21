@@ -1356,7 +1356,7 @@ int aster::remove_small_junctions()
 	return true;
 }
 
-/* balance vertices, remove small junctions, refine graph */
+/* balance vertices, remove small junctions, refine graph, build index, build hs */
 int aster::prepare_graph()
 {
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
@@ -1366,6 +1366,9 @@ int aster::prepare_graph()
 	// remove_small_junctions();
 	purge_empty_vertex();
 	gr.refine_splice_graph();
+	gr.get_edge_indices(i2e, e2i);
+	hs.build(gr, e2i);
+
 	return 0;
 }
 
