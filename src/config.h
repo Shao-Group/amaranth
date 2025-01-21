@@ -96,7 +96,9 @@ extern double min_subregion_ave;
 
 // for aster
 enum class aster_mode {REF, STAT_ONLY, MINI, ASSEMBLER};
+enum class aster_strategy {LONG, SHORT, HEAVY};
 extern aster_mode asterMode;
+extern aster_strategy asterStrategy;
 extern bool doesFastDnC;
 
 // for subsetsum and router

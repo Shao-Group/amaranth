@@ -65,6 +65,7 @@ double min_subregion_ave = 1.5;
 
 // for aster
 aster_mode asterMode = aster_mode::ASSEMBLER;
+aster_strategy asterStrategy = aster_strategy::HEAVY;
 bool doesFastDnC = false;
 
 // for revising/decomposing splice graph
@@ -322,6 +323,15 @@ int parse_arguments(int argc, const char ** argv)
 			else throw runtime_error("received unknown --asterMode MDOE.");
 			i++;
 		}
+		else if(string(argv[i]) == "--asterStrategy" || string(argv[i]) == "-s")
+		{
+			string s(argv[i + 1]);
+			if(s == "LONG") asterStrategy = aster_strategy::LONG;
+			else if(s == "SHORT") asterStrategy = aster_strategy::SHORT;
+			else if(s == "HEAVY") asterStrategy = aster_strategy::HEAVY;
+			else throw runtime_error("received unknown --asterStrategy value.");
+			i++;
+		}
 		else if(string(argv[i]) == "--fast")
 		{
 			doesFastDnC = true;
@@ -548,6 +558,22 @@ int print_help()
 	printf(" %-42s  %s\n", "--min_bundle_gap <integer>",  "minimum distances required to start a new bundle, default: 100");
 	printf(" %-42s  %s\n", "--min_num_hits_in_bundle <integer>",  "minimum number of reads required in a gene locus, default: 5");
 	printf(" %-42s  %s\n", "--min_flank_length <integer>",  "minimum match length in each side for a spliced read, default: 3");
+
+	printf(" %-42s  %s\n", "--use-filter",  "use filtering to select subpaths before final assembly");
+	printf(" %-42s  %s\n", "--no-filter",  "disable filtering, use all subpaths in final assembly");
+
+	// aster - mode
+	printf(" %-42s  %s\n", "-m/--asterMode <REF|STAT|MINI|ASSEMBLY>", "set ASTER operation mode (default: ASSEMBLY):");
+	printf(" %-42s  %s\n", "", "    REF: reference-guided assembly mode");
+	printf(" %-42s  %s\n", "", "    STAT: statistical analysis only mode");
+	printf(" %-42s  %s\n", "", "    MINI: minimal assembly mode");
+	printf(" %-42s  %s\n", "", "    ASSEMBLY: full assembly mode");
+
+	// aster - path selection modes
+	printf(" %-42s  %s\n", "-s/--asterStrategy <LONG|SHORT|HEAVY>", "set ASTER path selection strategy (default: HEAVY):");
+	printf(" %-42s  %s\n", "", "    LONG: use longest subpath as anchor");
+	printf(" %-42s  %s\n", "", "    SHORT: use shortest subpath as anchor");
+	printf(" %-42s  %s\n", "", "    HEAVY: use highest coverage subpath as anchor");
 
 	return 0;
 }

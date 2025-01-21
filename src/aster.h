@@ -51,6 +51,7 @@ private:
 	// VI v2tp;							// vertex index to DFS-based topologically sorted index.
 	map<edge_descriptor, aster_result> edgeres;
 	aster_mode mode;
+	aster_strategy strategy;
 	bool avgMode;						// true: avg, false: geometric mean
 
 public:
