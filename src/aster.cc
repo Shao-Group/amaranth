@@ -1043,12 +1043,16 @@ int aster::init_edgeres()
 {
 	edgeres.clear();
 	PEEI pei = gr.edges();
+	
+	// init edgeres for each edge
 	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
 	{
 		edge_descriptor e = *it1;
 		double w = gr.get_edge_weight(e);
 		edgeres[e] = aster_result(vector<int>{e->source(), e->target()}, w);
 	}
+	
+	// sanity check 
 	for(edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
 	{
 		edge_descriptor e = *it1;
@@ -1056,6 +1060,8 @@ int aster::init_edgeres()
 	}
 	return 0;
 }
+
+
 
 /*
 * DFS based topological sort 
