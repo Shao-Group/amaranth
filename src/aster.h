@@ -99,8 +99,12 @@ private:
 	int event_size_penalty(int eventSize) const;
 	int path_distance(const path& p1, const path& p2) const;
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const;
+	
+	// find_*_path functions w.r.t. strategy
 	int find_longest_path(const aster_result& res) const;
 	int find_shortest_path(const aster_result& res) const;
+	int find_heaviest_path(const aster_result& res) const;
+
 	int get_transcripts();
 	
 	string tp2v_to_string() const;

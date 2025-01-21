@@ -1504,6 +1504,25 @@ int aster::find_shortest_path(const aster_result& res) const
 	return shortestPathIndex;
 }
 
+// return index of heaviest path (highest abundance) in res.subpaths
+int aster::find_heaviest_path(const aster_result& res) const
+{
+    int heaviestPathIndex = -1;
+    double heaviestPathWeight = -1.0;
+    if (res.subpaths.size() == 0) return heaviestPathIndex;
+
+    heaviestPathIndex = 0;
+    heaviestPathWeight = res.subpaths.front().abd;
+    for(int i = 0; i < res.subpaths.size(); i++) 
+    {
+        const path& p = res.subpaths.at(i);
+        if(p.abd <= heaviestPathWeight) continue;
+        heaviestPathWeight = p.abd;
+        heaviestPathIndex = i;
+    }
+    return heaviestPathIndex;
+}
+
 /* 
 *  Assume internal nodes must be "closed" in [s, t]
 *  only remove edges in [s,t] (toposorted). 
