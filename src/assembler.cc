@@ -192,15 +192,15 @@ int assembler::process(int n)
 			if(gv2[k].exons.size() >= 2) gv2[k].coverage /= (1.0 * assemble_duplicates);
 		}
 		//FIXME: use filter
-		// filter ft1(gv1);
+		filter ft1(gv1);
 		// ft1.filter_length_coverage();
 		// ft1.remove_nested_transcripts();
-		// if(ft1.trs.size() >= 1) trsts.insert(trsts.end(), ft1.trs.begin(), ft1.trs.end());
+		if(ft1.trs.size() >= 1) trsts.insert(trsts.end(), ft1.trs.begin(), ft1.trs.end());
 
-		// filter ft2(gv2);
+		filter ft2(gv2);
 		// ft2.filter_length_coverage();
 		// ft2.remove_nested_transcripts();
-		// if(ft2.trs.size() >= 1) non_full_trsts.insert(non_full_trsts.end(), ft2.trs.begin(), ft2.trs.end());
+		if(ft2.trs.size() >= 1) non_full_trsts.insert(non_full_trsts.end(), ft2.trs.begin(), ft2.trs.end());
 	}
 	pool.clear();
 	return 0;
