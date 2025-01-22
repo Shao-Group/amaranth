@@ -17,6 +17,7 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool _avg)
     trsts.clear();				// predicted transcripts, original v index
 	non_full_trsts.clear();		// predicted non full length transcripts
 	mode = asterMode;
+	strategy = asterStrategy;
 
     topological_sort_vertices();
 	prepare_graph();
