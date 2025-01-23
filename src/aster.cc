@@ -1084,6 +1084,7 @@ int aster::init_edgeres()
     }
     
 	// Then handle hyper-edges from hs.edges
+	map<vector<int>, double> nodes2weight;
     for(size_t i = 0; i < hs.edges.size(); i++) 
     {
         const vector<int>& hedge = hs.edges[i];
@@ -1118,9 +1119,17 @@ int aster::init_edgeres()
         }
         if(!valid || nodes.size() < 2) continue;
 
+		for(int n: nodes) assert(n >= 0 && n < gr.num_vertices());
+		
 		double w = hs.ecnts[i];
-        
-        // Add hyper-edge to graph: Check if edge already exists
+		if(nodes2weight.find(nodes) == nodes2weight.end()) nodes2weight[nodes] = w;
+		else nodes2weight[nodes] += w;
+    }
+
+	// Add hyper-edge to graph
+	for (auto& [nodes, w] : nodes2weight)
+	{
+		// Check if edge already exists
 		if(auto [e, exists] = gr.edge(nodes.front(), nodes.back()); exists)
 		{
             // Edge exists - combine the aster_results
@@ -1145,7 +1154,8 @@ int aster::init_edgeres()
             gr.set_edge_weight(new_edge, w);
             edgeres[new_edge] = aster_result(nodes, w);
         }
-    }
+	}
+
     return 0;
 }
 
