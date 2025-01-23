@@ -91,3 +91,11 @@ test*/
 config.h.in
 config.h.in~
 *.pdf
+*.gtf
+*.refmap
+*.tmap
+*.loci
+*.stats
+*.tracking
+*.id
+*.tid
