@@ -19,7 +19,7 @@ See LICENSE for licensing.
 class aster
 {
 public:
-	aster(const splice_graph &gr, const hyper_set &hs, bool avgMode);
+	aster(const splice_graph &gr, const hyper_set &hs, bool avgMode, aster_mode m = asterMode, aster_strategy s = asterStrategy);
 	int assemble();
 	static int print_stats();
 

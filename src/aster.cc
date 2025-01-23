@@ -10,15 +10,13 @@ See LICENSE for licensing.
 #include "aster.h"
 #include "basic_algo.h"
 
-aster::aster(const splice_graph &g, const hyper_set &h, bool _avg)
-	: origr(g), gr(g), hs(h), avgMode(_avg)
+aster::aster(const splice_graph &g, const hyper_set &h, bool _avg, aster_mode m, aster_strategy s)
+	: origr(g), gr(g), hs(h), avgMode(_avg), mode(m), strategy(s)
 {
 	paths.clear();				// predicted paths, original v index, inclusive
     trsts.clear();				// predicted transcripts, original v index
 	non_full_trsts.clear();		// predicted non full length transcripts
-	mode = asterMode;
-	strategy = asterStrategy;
-
+	
     topological_sort_vertices();
 	prepare_graph();
 	make_stats();
@@ -371,7 +369,6 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 /* 	consecutively combine 2 edges, WITHOUT replacement
 	i.e.	combine their res and push_back to edgeres
 */
-//FIXME:TODO: hyperset?
 int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor out, const map<pair<int, int>, vector<const path*> >& st2Path)
 {
 	assert(in->target() == out->source());
