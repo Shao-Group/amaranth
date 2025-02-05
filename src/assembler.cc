@@ -156,16 +156,6 @@ int assembler::process(int n)
 		bd.print(index++);
 		assemble(bd.gr, bd.hs, ts1, ts2);
 
-		/*
-		bd.build(1, false);
-		bd.print(index++);
-		assemble(bd.gr, bd.hs, ts1, ts2);
-
-		bd.build(2, false);
-		bd.print(index++);
-		assemble(bd.gr, bd.hs, ts1, ts2);
-		*/
-
 		int sdup = assemble_duplicates / 1 + 1;
 		int mdup = assemble_duplicates / 2 + 0;
 
@@ -223,7 +213,7 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			string gid = "gene." + tostring(index) + "." + tostring(k) + "." + tostring(r);
 			gr.gid = gid;
 
-			aster asterInstance(gr, hs, true);
+			aster asterInstance(gr, hs, true);//FIXME: add strategy mode
 			if(verbose >= 2)
 			{
 				printf("assembly with r = %d, total %lu transcripts, run 1:\n", r, asterInstance.trsts.size());
@@ -237,22 +227,6 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			for(int i = 0; i < asterInstance.non_full_trsts.size(); i++)
 			{
 				ts2.add(asterInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
-			}
-
-			aster asterInstance2(gr, hs, false);
-			if(verbose >= 2)
-			{
-				printf("assembly with r = %d, total %lu transcripts, run 2:\n", r, asterInstance2.trsts.size());
-				for(int i = 0; i < asterInstance2.trsts.size(); i++) asterInstance2.trsts[i].write(cout);
-			}
-
-			for(int i = 0; i < asterInstance2.trsts.size(); i++)
-			{
-				ts1.add(asterInstance2.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
-			}
-			for(int i = 0; i < asterInstance2.non_full_trsts.size(); i++)
-			{
-				ts2.add(asterInstance2.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
 		}
 	}
@@ -292,14 +266,14 @@ int assembler::write()
 	}
 	fout.close();
 
-        ofstream fout1(output_file1.c_str());
-        if(fout1.fail()) return 0;
-        for(int i = 0; i < non_full_trsts.size(); i++)
-        {
-			transcript &t = non_full_trsts[i];
-			t.write(fout1);
-        }
-        fout1.close();
+	ofstream fout1(output_file1.c_str());
+	if(fout1.fail()) return 0;
+	for(int i = 0; i < non_full_trsts.size(); i++)
+	{
+		transcript &t = non_full_trsts[i];
+		t.write(fout1);
+	}
+	fout1.close();
 
 	return 0;
 }
