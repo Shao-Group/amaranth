@@ -99,3 +99,6 @@ config.h.in~
 *.tracking
 *.id
 *.tid
+*.gtf
+*.loci
+*.tracking
