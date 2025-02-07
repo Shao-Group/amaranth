@@ -63,9 +63,9 @@ int32_t min_subregion_len = 15;
 int32_t min_subregion_max = 3;
 double min_subregion_ave = 1.5;
 
-// for aster
-aster_mode asterMode = aster_mode::ASSEMBLER;
-aster_strategy asterStrategy = aster_strategy::HEAVY;
+// for amaranth
+amaranth_mode amaranthMode = amaranth_mode::ASSEMBLER;
+amaranth_strategy amaranthStrategy = amaranth_strategy::HEAVY;
 bool doesFastDnC = false;
 
 // for revising/decomposing splice graph
@@ -94,7 +94,7 @@ int simulation_num_edges = 0;
 int simulation_max_edge_weight = 0;
 
 // input and output
-string algo = "aster";
+string algo = "amaranth";
 string input_file;
 string ref_file;
 string output_file;
@@ -108,7 +108,7 @@ string fixed_gene_name = "";
 int batch_bundle_size = 100;
 int verbose = 1;
 int assemble_duplicates = 1; //TODO:
-string version = "v0.0.1";
+string version = "v0.1";
 
 int parse_arguments(int argc, const char ** argv)
 {
@@ -314,23 +314,23 @@ int parse_arguments(int argc, const char ** argv)
 			min_router_count = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--asterMode" || string(argv[i]) == "-m")
+		else if(string(argv[i]) == "--amaranthMode" || string(argv[i]) == "-m")
 		{
 			string s(argv[i + 1]);
-			if(s == "REF") asterMode = aster_mode::REF;
-			else if(s == "STAT") asterMode = aster_mode::STAT_ONLY;
-			else if(s == "MINI") asterMode = aster_mode::MINI;
-			else if(s == "ASSEMBLY") asterMode = aster_mode::ASSEMBLER;
-			else throw runtime_error("received unknown --asterMode MDOE.");
+			if(s == "REF") amaranthMode = amaranth_mode::REF;
+			else if(s == "STAT") amaranthMode = amaranth_mode::STAT_ONLY;
+			else if(s == "MINI") amaranthMode = amaranth_mode::MINI;
+			else if(s == "ASSEMBLY") amaranthMode = amaranth_mode::ASSEMBLER;
+			else throw runtime_error("received unknown --amaranthMode MDOE.");
 			i++;
 		}
-		else if(string(argv[i]) == "--asterStrategy" || string(argv[i]) == "-s")
+		else if(string(argv[i]) == "--amaranthStrategy" || string(argv[i]) == "-s")
 		{
 			string s(argv[i + 1]);
-			if(s == "LONG") asterStrategy = aster_strategy::LONG;
-			else if(s == "SHORT") asterStrategy = aster_strategy::SHORT;
-			else if(s == "HEAVY") asterStrategy = aster_strategy::HEAVY;
-			else throw runtime_error("received unknown --asterStrategy value.");
+			if(s == "LONG") amaranthStrategy = amaranth_strategy::LONG;
+			else if(s == "SHORT") amaranthStrategy = amaranth_strategy::SHORT;
+			else if(s == "HEAVY") amaranthStrategy = amaranth_strategy::HEAVY;
+			else throw runtime_error("received unknown --amaranthStrategy value.");
 			i++;
 		}
 		else if(string(argv[i]) == "--fast")
@@ -441,7 +441,7 @@ int parse_arguments(int argc, const char ** argv)
 	}
 
 	// verify arguments
-	if(asterMode != aster_mode::REF)
+	if(amaranthMode != amaranth_mode::REF)
 	{
 		if(input_file == "")  
 		{
@@ -453,11 +453,11 @@ int parse_arguments(int argc, const char ** argv)
 		}
 		
 	}
-	if(asterMode == aster_mode::REF)
+	if(amaranthMode == amaranth_mode::REF)
 	{
 		if(ref_file == "") 
 		{
-			throw runtime_error("error: asterMode is ref, but reference-file is missing.");
+			throw runtime_error("error: amaranthMode is ref, but reference-file is missing.");
 		}
 	}
 
@@ -547,7 +547,7 @@ int print_command_line(int argc, const char ** argv)
 int print_help()
 {
 	printf("\n");
-	printf("Usage: aster -i <bam-file> -o <gtf-file> [options]\n");
+	printf("Usage: amaranth -i <bam-file> -o <gtf-file> [options]\n");
 	printf("\n");
 	printf("Options:\n");
 	printf(" %-42s  %s\n", "--help",  "print usage of Scallop and exit");
@@ -571,15 +571,15 @@ int print_help()
 	printf(" %-42s  %s\n", "--use-filter",  "use filtering to select subpaths before final assembly");
 	printf(" %-42s  %s\n", "--no-filter",  "disable filtering, use all subpaths in final assembly");
 
-	// aster - mode
-	printf(" %-42s  %s\n", "-m/--asterMode <REF|STAT|MINI|ASSEMBLY>", "set ASTER operation mode (default: ASSEMBLY):");
+	// amaranth - mode
+	printf(" %-42s  %s\n", "-m/--amaranthMode <REF|STAT|MINI|ASSEMBLY>", "set AMARANTH operation mode (default: ASSEMBLY):");
 	printf(" %-42s  %s\n", "", "    REF: reference-guided assembly mode");
 	printf(" %-42s  %s\n", "", "    STAT: statistical analysis only mode");
 	printf(" %-42s  %s\n", "", "    MINI: minimal assembly mode");
 	printf(" %-42s  %s\n", "", "    ASSEMBLY: full assembly mode");
 
-	// aster - path selection modes
-	printf(" %-42s  %s\n", "-s/--asterStrategy <LONG|SHORT|HEAVY>", "set ASTER path selection strategy (default: HEAVY):");
+	// amaranth - path selection modes
+	printf(" %-42s  %s\n", "-s/--amaranthStrategy <LONG|SHORT|HEAVY>", "set AMARANTH path selection strategy (default: HEAVY):");
 	printf(" %-42s  %s\n", "", "    LONG: use longest subpath as anchor");
 	printf(" %-42s  %s\n", "", "    SHORT: use shortest subpath as anchor");
 	printf(" %-42s  %s\n", "", "    HEAVY: use highest coverage subpath as anchor");
@@ -589,7 +589,7 @@ int print_help()
 
 int print_copyright()
 {
-	printf("Aster assembler %s (c) 2024 Xiaofei Carl Zang, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
+	printf("Amaranth assembler %s (c) 2024 Xiaofei Carl Zang, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
 	return 0;
 }
 

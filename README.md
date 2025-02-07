@@ -1,4 +1,4 @@
-# Aster minimal number of splices/partial spliced transcripts possibilities
+# Amaranth minimal number of splices/partial spliced transcripts possibilities
 organized as a a tree of the splicing status of a partially spliced transcript.
 minimize number of internal nodes
 

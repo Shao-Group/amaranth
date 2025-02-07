@@ -1,5 +1,5 @@
 /*
-Part of Aster Assembler
+Part of Amaranth Assembler
 (c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
 See LICENSE for licensing.
 */
@@ -16,7 +16,7 @@ See LICENSE for licensing.
 #include "config.h"
 #include "genome.h"
 #include "gtf.h"
-#include "aster.h"
+#include "amaranth.h"
 
 typedef map< edge_descriptor, vector<int> > MEV;
 typedef pair< edge_descriptor, vector<int> > PEV;

@@ -1,5 +1,5 @@
 /*
-Part of Aster Transcript Assembler
+Part of Amaranth Transcript Assembler
 (c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
 See LICENSE for licensing.
 */
@@ -7,7 +7,7 @@ See LICENSE for licensing.
 #include <algorithm>
 #include <cmath>
 #include "util.h"
-#include "aster.h"
+#include "amaranth.h"
 #include "basic_algo.h"
 #include "analyzer.h"
 
@@ -40,10 +40,10 @@ int analyzer::analyze()
         gr.gid = gene0.transcripts[0].gene_id;
 
         gtf0.build_splice_graph(gr);
-        aster asterInstance(gr, {}, true);
+        amaranth amaranthInstance(gr, {}, true);
 
-        trsts.insert(trsts.end(), asterInstance.trsts.begin(), asterInstance.trsts.end());
-        non_full_trsts.insert(non_full_trsts.end(), asterInstance.non_full_trsts.begin(), asterInstance.non_full_trsts.end());
+        trsts.insert(trsts.end(), amaranthInstance.trsts.begin(), amaranthInstance.trsts.end());
+        non_full_trsts.insert(non_full_trsts.end(), amaranthInstance.non_full_trsts.begin(), amaranthInstance.non_full_trsts.end());
     }
 
     return 0;
@@ -51,7 +51,7 @@ int analyzer::analyze()
 
 int analyzer::print()
 {
-    aster::print_stats();
+    amaranth::print_stats();
     return 0;
 }
 

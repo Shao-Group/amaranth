@@ -15,7 +15,7 @@ See LICENSE for licensing.
 #include "genome.h"
 #include "assembler.h"
 #include "bundle.h"
-#include "aster.h"
+#include "amaranth.h"
 #include "sgraph_compare.h"
 #include "super_graph.h"
 #include "filter.h"
@@ -101,7 +101,7 @@ int assembler::assemble()
 	pool.push_back(bb2);
 	process(0);
 
-	aster::print_stats();
+	amaranth::print_stats();
 
 	assign_RPKM();
 
@@ -213,20 +213,20 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			string gid = "gene." + tostring(index) + "." + tostring(k) + "." + tostring(r);
 			gr.gid = gid;
 
-			aster asterInstance(gr, hs, true);//FIXME: add strategy mode
+			amaranth amaranthInstance(gr, hs, true);//FIXME: add strategy mode
 			if(verbose >= 2)
 			{
-				printf("assembly with r = %d, total %lu transcripts, run 1:\n", r, asterInstance.trsts.size());
-				for(int i = 0; i < asterInstance.trsts.size(); i++) asterInstance.trsts[i].write(cout);
+				printf("assembly with r = %d, total %lu transcripts, run 1:\n", r, amaranthInstance.trsts.size());
+				for(int i = 0; i < amaranthInstance.trsts.size(); i++) amaranthInstance.trsts[i].write(cout);
 			}
 
-			for(int i = 0; i < asterInstance.trsts.size(); i++)
+			for(int i = 0; i < amaranthInstance.trsts.size(); i++)
 			{
-				ts1.add(asterInstance.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				ts1.add(amaranthInstance.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
-			for(int i = 0; i < asterInstance.non_full_trsts.size(); i++)
+			for(int i = 0; i < amaranthInstance.non_full_trsts.size(); i++)
 			{
-				ts2.add(asterInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				ts2.add(amaranthInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 			}
 		}
 	}

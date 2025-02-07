@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT(aster, 0.0, shaomingfu@gmail.com)
+AC_INIT(amaranth, 0.1, xbz5174@psu.edu)
 AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_HEADERS([config.h])
@@ -24,7 +24,7 @@ AC_ARG_WITH(zlib, AS_HELP_STRING([--with-zlib], [home directory for zlib]), ZLIB
 AC_ARG_WITH(fortran, AS_HELP_STRING([--with-fortran], [home directory for fortran]), FORTRAN_HOME=$withval, FORTRAN_HOME=)
 
 # Assign CXXFLAGS
-CXXFLAGS='-Wall -std=c++17 -Wno-sign-compare'
+CXXFLAGS='-Wall -std=c++20 -Wno-sign-compare'
 AS_IF([test "x$CLP_HOME" != "x"], [AC_SUBST([CXXFLAGS], ["-I$CLP_HOME/include/coin $CXXFLAGS"])], [])
 AS_IF([test "x$BOOST_HOME" != "x"], [AC_SUBST([CXXFLAGS], ["-I$BOOST_HOME $CXXFLAGS"])], [])
 AS_IF([test "x$HTSLIB_HOME" != "x"], [AC_SUBST([CXXFLAGS], ["-I$HTSLIB_HOME/include $CXXFLAGS"])], [])

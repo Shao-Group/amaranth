@@ -94,11 +94,11 @@ extern int32_t min_subregion_len;
 extern int32_t min_subregion_max;
 extern double min_subregion_ave;
 
-// for aster
-enum class aster_mode {REF, STAT_ONLY, MINI, ASSEMBLER};
-enum class aster_strategy {LONG, SHORT, HEAVY};
-extern aster_mode asterMode;
-extern aster_strategy asterStrategy;
+// for amaranth
+enum class amaranth_mode {REF, STAT_ONLY, MINI, ASSEMBLER};
+enum class amaranth_strategy {LONG, SHORT, HEAVY};
+extern amaranth_mode amaranthMode;
+extern amaranth_strategy amaranthStrategy;
 extern bool doesFastDnC;
 
 // for subsetsum and router

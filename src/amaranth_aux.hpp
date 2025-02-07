@@ -1,11 +1,11 @@
 /*
-Part of Aster Assembler
+Part of Amaranth Assembler
 (c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
 See LICENSE for licensing.
 */
 
-#ifndef __ASTER_AUX_H__
-#define __ASTER_AUX_H__
+#ifndef __AMARANTH_AUX_H__
+#define __AMARANTH_AUX_H__
 
 #include <stdexcept>
 #include "splice_graph.h"
@@ -24,26 +24,26 @@ typedef pair<int, int> PI;
 typedef map<int, int> MI;
 typedef vector<int> VI;
 
-struct aster_index
+struct amaranth_index
 {
 private:
 	vector<int> indices;	
 	
 public:
-	inline aster_index() {};
-	inline aster_index(vector<int> v): indices(v) {};
+	inline amaranth_index() {};
+	inline amaranth_index(vector<int> v): indices(v) {};
 	inline const vector<int>& get_index() const {assert (size() > 0); return indices;}
 	inline int s() const {assert (size() > 0); return indices.front();}
 	inline int t() const {assert (size() > 0); return indices.back();}
 	inline int at(int i) const {assert (size() > 0); return indices.at(i);}
 	inline int size() const {return indices.size();}
 	// split an index at index i, to left and right, both inclusive of i
-	inline void split(int i, aster_index& left, aster_index& right) const
+	inline void split(int i, amaranth_index& left, amaranth_index& right) const
 	{
 		assert(i > 0 && i < size() - 1);
 		assert(size() >= 3);
-		left = aster_index(vector<int>(indices.begin(), indices.begin() + i + 1));
-		right = aster_index(vector<int>(indices.begin() + i, indices.end()));
+		left = amaranth_index(vector<int>(indices.begin(), indices.begin() + i + 1));
+		right = amaranth_index(vector<int>(indices.begin() + i, indices.end()));
 		assert(left.size() >= 2);
 		assert(right.size() >= 2);
 		assert(left.t() == right.s());
@@ -71,7 +71,7 @@ public:
 		indices.erase(it);
 	}
 	inline bool index_found(int i) const {assert (size() > 0); return find(indices.begin(), indices.end(), i) != indices.end();}
-	inline bool operator< (const aster_index& ai) const 
+	inline bool operator< (const amaranth_index& ai) const 
 	{
 		assert (size() > 0); 
 		assert (ai.size() > 0);
@@ -79,20 +79,20 @@ public:
 	}
 };
 
-struct aster_result
+struct amaranth_result
 {
 	vector<path> subpaths;	// predicted paths, original v index, inclusive
 	int dist = -1;
-	inline aster_result() {};
-	inline aster_result(const vector<int>& v, double w): subpaths({path(v, w)}), dist(0) {};
+	inline amaranth_result() {};
+	inline amaranth_result(const vector<int>& v, double w): subpaths({path(v, w)}), dist(0) {};
 	inline int size() const	{return subpaths.size();};
 	inline void clear() {subpaths.clear(); dist = -1;}
 };
 
-class aster_error : public runtime_error 
+class amaranth_error : public runtime_error 
 {
 public:
-    aster_error(const char* message) : runtime_error(message) {}
+    amaranth_error(const char* message) : runtime_error(message) {}
 };
 
 #endif

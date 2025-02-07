@@ -1268,7 +1268,7 @@ int splice_graph::output_transcripts1(vector<transcript> &v, vector<transcript> 
 int splice_graph::output_transcript(transcript &trst, const path &p, const string &tid) const
 {
 	trst.seqname = chrm;
-	trst.source = "aster";
+	trst.source = "amaranth";
 	trst.gene_id = gid;
 	trst.transcript_id = tid;
 	trst.coverage = p.abd;

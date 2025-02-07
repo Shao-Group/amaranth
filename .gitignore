@@ -83,8 +83,8 @@ gene.*.tex
 *.tmp
 DevLog
 DevLog.md
-src/aster
-aster
+src/amaranth
+amaranth
 test2/
 test*
 test*/
@@ -102,3 +102,4 @@ config.h.in~
 *.gtf
 *.loci
 *.tracking
+src/amaranth

@@ -42,11 +42,11 @@ int main(int argc, const char **argv)
 		printf("\n");
 	}
 
-	if(asterMode == aster_mode::REF)
+	if(amaranthMode == amaranth_mode::REF)
 	{
 		analyzer alyz(ref_file);
 		alyz.print();
-		cout << "Aster completed analyzing the reference transcriptome. Thank you for using!" << endl;
+		cout << "Amaranth completed analyzing the reference transcriptome. Thank you for using!" << endl;
 		return 0;
 	}
 
@@ -57,7 +57,7 @@ int main(int argc, const char **argv)
 
 	assembler asmb;
 	asmb.assemble();
-	cout << "Aster completed assembling the transcripts. Thank you for using!" << endl;
+	cout << "Amaranth completed assembling the transcripts. Thank you for using!" << endl;
 
 	return 0;
 }

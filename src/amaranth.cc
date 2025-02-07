@@ -1,5 +1,5 @@
 /*
-Part of Aster Transcript Assembler
+Part of Amaranth Transcript Assembler
 (c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
 See LICENSE for licensing.
 */
@@ -7,10 +7,10 @@ See LICENSE for licensing.
 #include <algorithm>
 #include <cmath>
 #include "util.h"
-#include "aster.h"
+#include "amaranth.h"
 #include "basic_algo.h"
 
-aster::aster(const splice_graph &g, const hyper_set &h, bool _avg, aster_mode m, aster_strategy s)
+amaranth::amaranth(const splice_graph &g, const hyper_set &h, bool _avg, amaranth_mode m, amaranth_strategy s)
 	: origr(g), gr(g), hs(h), avgMode(_avg), mode(m), strategy(s)
 {
 	paths.clear();				// predicted paths, original v index, inclusive
@@ -22,18 +22,18 @@ aster::aster(const splice_graph &g, const hyper_set &h, bool _avg, aster_mode m,
 	make_stats();
 	init_edgeres();
 
-	if(mode == aster_mode::STAT_ONLY) print_stats();
+	if(mode == amaranth_mode::STAT_ONLY) print_stats();
 
-	if(verbose >= 1) cout << "aster assembling " << gr.gid << endl;
+	if(verbose >= 1) cout << "amaranth assembling " << gr.gid << endl;
 	assemble();
 	get_transcripts();	
 	assert(paths.size() == trsts.size() + non_full_trsts.size());
-	if(verbose >= 1 && successStatus) cout << "aster assembled " << gr.gid << ", #path = " << paths.size() << endl;
+	if(verbose >= 1 && successStatus) cout << "amaranth assembled " << gr.gid << ", #path = " << paths.size() << endl;
 }
 
-int aster::assemble()
+int amaranth::assemble()
 {	
-	if(mode == aster_mode::STAT_ONLY) return 0;
+	if(mode == amaranth_mode::STAT_ONLY) return 0;
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
 	assert(gr.num_vertices() > 2);
@@ -50,7 +50,7 @@ int aster::assemble()
 		divide_conquer();
 		successStatus = true;
 	}
-	catch(const aster_error& e)
+	catch(const amaranth_error& e)
 	{
 		assert(0); // should not have err
 		cerr << e.what() << '\n';
@@ -59,7 +59,7 @@ int aster::assemble()
 							  + to_string(gr.get_vertex_info(0).lpos) + "-"
 							  + to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
 							  + "\n";
-		gr.graphviz("asterviz_err." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
+		gr.graphviz("amaranthviz_err." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
 		paths.clear();
 		successStatus = false;
 	}	
@@ -68,7 +68,7 @@ int aster::assemble()
 	return 0;
 }
 
-int aster::divide_conquer()
+int amaranth::divide_conquer()
 {
 	if(output_graphviz_files) 
 	{
@@ -76,11 +76,11 @@ int aster::divide_conquer()
 							  + to_string(gr.get_vertex_info(0).lpos) + "-"
 							  + to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
 							  + "\n";
-		gr.graphviz("asterviz." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
+		gr.graphviz("amaranthviz." + gr.gid + ".dot", gene_start_end + tp2v_to_string());
 	}
 	assert(gr.num_vertices() > 2);
 	assert(tp2v.size() == gr.num_vertices());
-	aster_index ai({tp2v});
+	amaranth_index ai({tp2v});
 	divide_conquer(ai);
 	
 	if(false && output_graphviz_files && verbose >= 3) 
@@ -89,7 +89,7 @@ int aster::divide_conquer()
 							  + to_string(gr.get_vertex_info(0).lpos) + "-"
 							  + to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
 							  + "\n";
-		gr.graphviz("asterviz.final" + gr.gid + ".dot", gene_start_end + tp2v_to_string());
+		gr.graphviz("amaranthviz.final" + gr.gid + ".dot", gene_start_end + tp2v_to_string());
 	}
 	// collect paths
 	int s = 0;
@@ -103,9 +103,9 @@ int aster::divide_conquer()
 	return 0;
 }
 
-// make a copy of graph with only edges inside aster_index, to local splice graph
+// make a copy of graph with only edges inside amaranth_index, to local splice graph
 // nodes are not removed
-int aster::local_graph(const aster_index& ai, splice_graph& local)
+int amaranth::local_graph(const amaranth_index& ai, splice_graph& local)
 {
 	assert_closed_vertex_interval(ai);
 	MEE x2y, y2x;
@@ -121,7 +121,7 @@ int aster::local_graph(const aster_index& ai, splice_graph& local)
 
 // divide_conquer(i ,j) solves a subproblem between 
 // i, j are tp2v indices
-int aster::divide_conquer(aster_index ai)
+int amaranth::divide_conquer(amaranth_index ai)
 {
 	stepCount ++;
 	int stepCountLocal = stepCount;
@@ -137,7 +137,7 @@ int aster::divide_conquer(aster_index ai)
 	if(verbose >= 2)
 	{
 		string msg;
-		msg += "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "] ";
+		msg += "amaranth processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "] ";
 		msg += "(step " + to_string(stepCount) + ")";
 		cout << msg << endl;
 	}
@@ -148,7 +148,7 @@ int aster::divide_conquer(aster_index ai)
 							+ to_string(gr.get_vertex_info(0).lpos) + "-"
 							+ to_string(gr.get_vertex_info(gr.num_vertices() - 1).rpos)
 							+ "\n";
-		gr.graphviz("asterviz." + gr.gid + ".step" + to_string(stepCount) + ".dot", gene_start_end + tp2v_to_string());
+		gr.graphviz("amaranthviz." + gr.gid + ".step" + to_string(stepCount) + ".dot", gene_start_end + tp2v_to_string());
 	}
 
 	assert(s <= t);
@@ -157,43 +157,43 @@ int aster::divide_conquer(aster_index ai)
 	if (doesFastDnC && resolve_trivial_node(ai))		
 	{
 		dnc_counter_resolve_trivial_node ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_single_vertex(ai))			
 	{
 		dnc_counter_single ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	} 
 	if (divide_conquer_unitig(ai, local))		
 	{
 		dnc_counter_unitig ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_abutting(ai))				
 	{
 		dnc_counter_abutting ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_cut_termini(ai)) 	
 	{
 		dnc_counter_cut_vertex ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (divide_conquer_articulation_point(ai))		
 	{
 		dnc_counter_articulation_point_disjoint ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	if (resolve_trivial_node(ai))		
 	{
 		dnc_counter_resolve_trivial_node ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
 	// if (resolve_trivial_intersection(ai))		
@@ -204,34 +204,34 @@ int aster::divide_conquer(aster_index ai)
 	if (resolve_intersection_edge(ai))
 	{
 		dnc_counter_resolve_intersection_edge ++;
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
-	if(mode != aster_mode::MINI && greedy(ai))
+	if(mode != amaranth_mode::MINI && greedy(ai))
 	{
-		if(verbose >= 3) cout << "aster completed step " << stepCountLocal << endl;
+		if(verbose >= 3) cout << "amaranth completed step " << stepCountLocal << endl;
 		return 0;
 	}
 
 	num_intersecting_graph ++;
 
-	string msg = "aster-mini failed on graph " + gr.gid;
+	string msg = "amaranth-mini failed on graph " + gr.gid;
 	msg += " [" + gr.chrm + ":" + to_string(gr.get_vertex_info(0).lpos) + "-" + to_string(gr.get_vertex_info(0).rpos) + "]";
 	msg += " in subgraph vertexIndex [" + to_string(s) + ", " + to_string(t) + "]";
 	msg += " error at step " + to_string(stepCountLocal);
 	
-	throw aster_error(msg.c_str());
+	throw amaranth_error(msg.c_str());
 	return -1;
 }
 
-bool aster::greedy(aster_index ai)
+bool amaranth::greedy(amaranth_index ai)
 {
 	//TODO:
 	return false;	
 	throw runtime_error("not implemented yet"); 
 }
 
-bool aster::resolve_intersection_edge(aster_index ai)
+bool amaranth::resolve_intersection_edge(amaranth_index ai)
 {
 	return false;
 	divide_conquer(ai);
@@ -242,7 +242,7 @@ bool aster::resolve_intersection_edge(aster_index ai)
 	Decomposed node is poped into the edgeres of its decomposed edges
 	s and t of the trivial node is connected, original edges removed
 */
-bool aster::resolve_trivial_node(aster_index ai)
+bool amaranth::resolve_trivial_node(amaranth_index ai)
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -259,7 +259,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 
 		if(verbose >= 3) 
 		{
-			string msg = "aster processing trivial node " + to_string(v); 
+			string msg = "amaranth processing trivial node " + to_string(v); 
 			msg += " in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 			cout << msg << endl;
 		}
@@ -272,7 +272,7 @@ bool aster::resolve_trivial_node(aster_index ai)
 
 		if(verbose >= 2) 
 		{
-			string msg = "aster resolved a trivial node " + to_string(v); 
+			string msg = "amaranth resolved a trivial node " + to_string(v); 
 			msg += " in subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 			cout << msg << endl;
 		}
@@ -289,17 +289,17 @@ bool aster::resolve_trivial_node(aster_index ai)
 	2. remove those edges
 	Does: combine inEdges res in parallel, combine out Edges res in parallel, then combine In/Out consecutive
 */
-int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
+int amaranth::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 {
 	//combine res
-	aster_result resIn = edgeres.at(*(inEdges.first)) ;
+	amaranth_result resIn = edgeres.at(*(inEdges.first)) ;
 	int inResCount = 0;
 	set<edge_descriptor> originalInEdges;
 	for(edge_iterator it1 = inEdges.first, it2 = inEdges.second; it1 != it2; it1++)
 	{
 		edge_descriptor in = *it1;
 		originalInEdges.insert(in);
-		aster_result resCombIn;
+		amaranth_result resCombIn;
 		auto& res1 = edgeres.at(in);
 		inResCount += res1.subpaths.size();
 		if (it1 != inEdges.first) 
@@ -309,14 +309,14 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 		}
 		assert(resIn.size() >= 1);
 	}
-	aster_result resOut = edgeres.at(*(outEdges.first));
+	amaranth_result resOut = edgeres.at(*(outEdges.first));
 	int outResCount = 0;
 	set<edge_descriptor> originalOutEdges;
 	for(edge_iterator ot1 = outEdges.first, ot2 = outEdges.second; ot1 != ot2; ot1++)
 	{
 		edge_descriptor out = *ot1;
 		originalOutEdges.insert(out);	
-		aster_result resCombOut;
+		amaranth_result resCombOut;
 		auto& res2 = edgeres.at(out);
 		outResCount += res2.subpaths.size();
 		if(ot1 != outEdges.first) 
@@ -326,7 +326,7 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 		}
 		assert(resOut.size() >= 1);
 	}
-	aster_result resComb;
+	amaranth_result resComb;
 	assert(resIn.size() >= 1);
 	assert(resOut.size() >= 1);
 	res_combine_consecutive(resIn, resOut, resComb);
@@ -369,7 +369,7 @@ int aster::edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges)
 /* 	consecutively combine 2 edges, WITHOUT replacement
 	i.e.	combine their res and push_back to edgeres
 */
-int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor out, const map<pair<int, int>, vector<const path*> >& st2Path)
+int amaranth::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor out, const map<pair<int, int>, vector<const path*> >& st2Path)
 {
 	assert(in->target() == out->source());
 	int source = in->source();
@@ -382,7 +382,7 @@ int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor 
 	double w = _avg_? (w1 + w2 / 2.0) : pow(w1 * w2, 1.0/2.0);
 
 	// new res
-	aster_result combinedRes;
+	amaranth_result combinedRes;
 	for(const path* pptr :st2Path.at({source, target}))
 	{
 		combinedRes.subpaths.push_back(*pptr);
@@ -400,7 +400,7 @@ int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor 
 		gr.set_edge_weight(e, weight);
 		assert(gr.ewrt.find(e) != gr.ewrt.end());
 		assert(gr.einf.find(e) != gr.einf.end());
-		aster_result res;
+		amaranth_result res;
 		res_combine_parallel(combinedRes, edgeres.at(e), res);
 		edgeres[e] = res;
 		assert(res.subpaths.size() >= 1);
@@ -437,7 +437,7 @@ int aster::edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor 
 }
 
 /* remove abutting edge, then call divide_conquer(source, target, res) again */
-bool aster::divide_conquer_abutting(aster_index ai)
+bool amaranth::divide_conquer_abutting(amaranth_index ai)
 {	
 	int s = ai.s();
 	int t = ai.t();
@@ -449,7 +449,7 @@ bool aster::divide_conquer_abutting(aster_index ai)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "amaranth processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "removing the direct edge between them."; 
 		cout << msg << endl;
@@ -460,7 +460,7 @@ bool aster::divide_conquer_abutting(aster_index ai)
 	assert(e != null_edge);
 	double w = gr.get_edge_weight(e);
 	assert(gr.edge(e));
-	aster_result res0 = edgeres.at(e);
+	amaranth_result res0 = edgeres.at(e);
 	edgeres.erase(e);
 	gr.remove_edge(e);
 	assert(gr.check_path(s, t));
@@ -471,15 +471,15 @@ bool aster::divide_conquer_abutting(aster_index ai)
 	assert(peb.second == true);
 	edge_descriptor e1 = peb.first;
 	double w1 = gr.get_edge_weight(e1);
-	aster_result& res1 = edgeres.at(e1);
-	aster_result rescomb;
+	amaranth_result& res1 = edgeres.at(e1);
+	amaranth_result rescomb;
 	res_combine_parallel(res1, res0, rescomb);
 
-	replace_aster_index_to_one_edge(ai, w + w1, rescomb);
+	replace_amaranth_index_to_one_edge(ai, w + w1, rescomb);
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "amaranth processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with a direct edge between them."; 
 		cout << msg << endl;
@@ -489,7 +489,7 @@ bool aster::divide_conquer_abutting(aster_index ai)
 }	
 
 
-bool aster::divide_conquer_cut_termini(aster_index ai)
+bool amaranth::divide_conquer_cut_termini(amaranth_index ai)
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -501,13 +501,13 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 	assert(ai.size() >= 3);
 
 	// get disjoint subgraphs' indices
-	set<aster_index> subgraphIntervals;
+	set<amaranth_index> subgraphIntervals;
 	int subgraphNum = divide_conquer_cut_termini_find(ai, subgraphIntervals);
 	if(subgraphNum <= 1 || subgraphIntervals.size() <= 1) return false;
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "] "; 
+		string msg = "amaranth processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "] "; 
 		msg += "splitting disjoint graphs at termini"; 
 		msg += "\n\tsplitted subgraphIntervals:";
 		cout << msg << endl;
@@ -523,7 +523,7 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 	}
 
 	// D&C sub intervals INCLUDING s and t
-	for(const aster_index& subItv: subgraphIntervals)
+	for(const amaranth_index& subItv: subgraphIntervals)
 	{
 		divide_conquer(subItv);
 		// Now subItv is decomposed to one single edge
@@ -539,7 +539,7 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "amaranth processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += "with " + to_string(subgraphIntervals.size()) +" disjoint graphs at termini"; 
 		cout << msg << endl;
 	}
@@ -552,7 +552,7 @@ bool aster::divide_conquer_cut_termini(aster_index ai)
 * 		then all subgraph's sources must be source-vertex's out-edge targets
 * 		then all subgraph's targets must be target-vertex's in-edge  sources
 */
-int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiSubIntervals)
+int amaranth::divide_conquer_cut_termini_find(amaranth_index ai, set<amaranth_index>& aiSubIntervals)
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -617,7 +617,7 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 		sort(ccSort.begin(), ccSort.end());
 		ccSort.insert(ccSort.begin(), ai.s());
 		ccSort.push_back(ai.t());
-		aiSubIntervals.insert(aster_index(ccSort));
+		aiSubIntervals.insert(amaranth_index(ccSort));
 	}
 
 	// assertions and validations
@@ -655,7 +655,7 @@ int aster::divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiS
 ** divide and conquer the problem to dnc[s, k], dnc [k, t]
 ** not disjoint: (s,t) edge exists, or multiple subgraphs can be found
 */
-bool aster::divide_conquer_articulation_point(aster_index ai)
+bool amaranth::divide_conquer_articulation_point(amaranth_index ai)
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -664,14 +664,14 @@ bool aster::divide_conquer_articulation_point(aster_index ai)
 	assert(gr.out_degree(s) >= 1 || gr.in_degree(t) >= 1);
 	if(gr.edge_exists(s,t)) return false;
 	
-	aster_index aileft, airight;
+	amaranth_index aileft, airight;
 	int pivot = divide_conquer_articulation_find(ai, aileft, airight);
 	if (pivot < 0) return false;
 	assert(pivot > s && pivot < t);
 
 	if(verbose >= 2)
 	{
-		string msg = "aster processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "amaranth processing subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += "with subgraphs at articulation point " + to_string(pivot);
 		cout << msg << endl;
 	}
@@ -686,19 +686,19 @@ bool aster::divide_conquer_articulation_point(aster_index ai)
 	edge_descriptor e2 = peb2.first;
 	assert(peb2.second);
 
-	aster_result & res1 = edgeres.at(e1);
-	aster_result & res2 = edgeres.at(e2);
-	aster_result comb;
+	amaranth_result & res1 = edgeres.at(e1);
+	amaranth_result & res2 = edgeres.at(e2);
+	amaranth_result comb;
 	bool combineSuccess = res_combine_consecutive(res1, res2, comb);
 	if (!combineSuccess) return false;
 
 	double w = 0;
 	for(const path& p: comb.subpaths) w += p.abd;
-	replace_aster_index_to_one_edge(ai, w, comb);
+	replace_amaranth_index_to_one_edge(ai, w, comb);
 
 	if(verbose >= 2)
 	{
-		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "amaranth processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += "with subgraphs at articulation point " + to_string(pivot);
 		cout << msg << endl;
 	}
@@ -708,7 +708,7 @@ bool aster::divide_conquer_articulation_point(aster_index ai)
 
 // find a pivot-TopoIndex s.t. removing this vertex will split grpah to two parts between [source, pivot] and [pivot, target]
 // return -1 if cannot fine artivulation point
-int aster::divide_conquer_articulation_find(aster_index ai, aster_index& left, aster_index& right) 
+int amaranth::divide_conquer_articulation_find(amaranth_index ai, amaranth_index& left, amaranth_index& right) 
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -762,7 +762,7 @@ int aster::divide_conquer_articulation_find(aster_index ai, aster_index& left, a
 	res1, res2 could be empty
 	If comb is non-empty, it is an addition
 */
-bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, aster_result& comb) const
+bool amaranth::res_combine_consecutive(amaranth_result& res1,  amaranth_result& res2, amaranth_result& comb) const
 {
 	assert(res1.size() >= 1);
 	assert(res2.size() >= 1);
@@ -779,6 +779,8 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 	// 	comb.subpaths.insert(comb.subpaths.end(), res1.subpaths.begin(), res1.subpaths.end());
 	// 	return true;
 	// }
+
+	//TODO: remove some paths with very low support
 
 	assert(res1.subpaths.size() > 0);
 	assert(res1.subpaths[0].v.size() > 0);
@@ -801,18 +803,18 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 
 	int index1 = -1;
 	int index2 = -1;
-	if (strategy == aster_strategy::SHORT) 
+	if (strategy == amaranth_strategy::SHORT) 
 	{
 		index1 = find_shortest_path(res1);
 		index2 = find_shortest_path(res2);
 	} 
-	else if (strategy == aster_strategy::LONG) 
+	else if (strategy == amaranth_strategy::LONG) 
 	{
 		index1 = find_longest_path(res1);
 		index2 = find_longest_path(res2);
 	} 
 	else 
-	{  // Default: strategy == aster_strategy::HEAVY)
+	{  // Default: strategy == amaranth_strategy::HEAVY)
 		index1 = find_heaviest_path(res1);
 		index2 = find_heaviest_path(res2);
 	}
@@ -895,7 +897,7 @@ bool aster::res_combine_consecutive(aster_result& res1,  aster_result& res2, ast
 /*	combine res1 and res2, add them to comb.
 	If comb is non-empty, it is an addition
 */ 
-bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_result& comb, bool frontSame, bool backSame) const
+bool amaranth::res_combine_parallel(amaranth_result& res1,  amaranth_result& res2, amaranth_result& comb, bool frontSame, bool backSame) const
 {	
 	assert(res1.size() >= 1);
 	assert(res2.size() >= 1);
@@ -961,7 +963,7 @@ bool aster::res_combine_parallel(aster_result& res1,  aster_result& res2, aster_
 }
 
 /* examine if dnc unitig between source to target; if true, populate res */
-bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
+bool amaranth::divide_conquer_unitig(amaranth_index ai, splice_graph& localGr)
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -994,7 +996,7 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 	assert(localGr.valid_path(unitig));
 
 	// populate unitig
-	aster_result unitigRes;
+	amaranth_result unitigRes;
 	bool   _avg_ = avgMode;       							// average if true, geom mean if false
 	double w     = _avg_? 0: 1;
 	double c = 0.0;
@@ -1022,7 +1024,7 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 
 		double ew = gr.get_edge_weight(e);
 		w = _avg_? (w + ew): (w * ew);
-		aster_result __res__;
+		amaranth_result __res__;
 		res_combine_consecutive(unitigRes, edgeres.at(e), __res__);
 		unitigRes = __res__;
 		c += 1.0;
@@ -1032,7 +1034,7 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "amaranth processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		msg += "with a unitig path."; 
 		cout << msg << endl;
 		cout << "\t local path:";
@@ -1040,13 +1042,13 @@ bool aster::divide_conquer_unitig(aster_index ai, splice_graph& localGr)
 		cout << endl;
 	}
 
-	replace_aster_index_to_one_edge(ai, w, unitigRes);
+	replace_amaranth_index_to_one_edge(ai, w, unitigRes);
 	return true;
 }
 
 /* examine if dnc single vertex; if true, populate res 
 */
-bool aster::divide_conquer_single_vertex(aster_index ai)
+bool amaranth::divide_conquer_single_vertex(amaranth_index ai)
 {
 	int s = ai.s();
 	int t = ai.t();
@@ -1056,7 +1058,7 @@ bool aster::divide_conquer_single_vertex(aster_index ai)
 	
 	if(verbose >= 2) 
 	{
-		string msg = "aster processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
+		string msg = "amaranth processed subgraph, vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		// msg += " (topoIndex [" + to_string(source) + "," + to_string(target) + "]), ";
 		msg += "with a single-vertex [" + to_string(s) + ", " + to_string(t) + "]"; 
 		cout << msg << endl;
@@ -1064,13 +1066,13 @@ bool aster::divide_conquer_single_vertex(aster_index ai)
 
 	if(gr.degree(s) == 0)  return true;
 
-	// aster_result res;
+	// amaranth_result res;
 	// double abd = gr.get_vertex_weight(s);
 	throw runtime_error("single vertex should not be called");
 	return false;
 }
 
-int aster::init_edgeres()
+int amaranth::init_edgeres()
 {
 	// init edgeres for each edge
     edgeres.clear();
@@ -1080,7 +1082,7 @@ int aster::init_edgeres()
     {
         edge_descriptor e = *it1;
         double w = gr.get_edge_weight(e);
-        edgeres[e] = aster_result(vector<int>{e->source(), e->target()}, w);
+        edgeres[e] = amaranth_result(vector<int>{e->source(), e->target()}, w);
     }
     
 	// Then handle hyper-edges from hs.edges
@@ -1132,10 +1134,10 @@ int aster::init_edgeres()
 		// Check if edge already exists
 		if(auto [e, exists] = gr.edge(nodes.front(), nodes.back()); exists)
 		{
-            // Edge exists - combine the aster_results
+            // Edge exists - combine the amaranth_results
 			assert (e != null_edge);
-            aster_result new_res(nodes, w);
-            aster_result combined_res;
+            amaranth_result new_res(nodes, w);
+            amaranth_result combined_res;
             assert(edgeres.find(e) != edgeres.end());
             res_combine_parallel(edgeres[e], new_res, combined_res);
             edgeres[e] = combined_res;
@@ -1152,7 +1154,7 @@ int aster::init_edgeres()
 			ei.strand = gr.strand;
 			gr.set_edge_info(new_edge, ei);
             gr.set_edge_weight(new_edge, w);
-            edgeres[new_edge] = aster_result(nodes, w);
+            edgeres[new_edge] = amaranth_result(nodes, w);
         }
 	}
 
@@ -1166,7 +1168,7 @@ int aster::init_edgeres()
 * This guarantees all disjoint subgraphs are gathered together
 * assuming no two vertices have the same <lpos, rpos>
 */
-int aster::topological_sort_vertices()
+int amaranth::topological_sort_vertices()
 {
 	assert(gr.num_vertices() >= 2);
 	tp2v.clear();
@@ -1181,7 +1183,7 @@ int aster::topological_sort_vertices()
 	// v2tp.resize(tp2v.size());
 	// for(int i = 0; i < tp2v.size(); i++) v2tp[tp2v[i]] = i;
 
-	if(verbose >= 3)	cout << "aster sorted " << tp2v_to_string() << endl;
+	if(verbose >= 3)	cout << "amaranth sorted " << tp2v_to_string() << endl;
 	assert(tp2v.front() == 0);
 	assert(tp2v.back() == gr.num_vertices() - 1);
 	assert(tp2v.size() == gr.num_vertices());
@@ -1190,7 +1192,7 @@ int aster::topological_sort_vertices()
 }
 
 /* visit a node i in DFS, push i to _tp2v */
-int aster::topological_sort_vertices_visit(int i, vector<bool>& visited, vector<int>& _tp2v)
+int amaranth::topological_sort_vertices_visit(int i, vector<bool>& visited, vector<int>& _tp2v)
 {
 	if(visited[i]) return 0;
 	visited[i] = true;
@@ -1216,7 +1218,7 @@ int aster::topological_sort_vertices_visit(int i, vector<bool>& visited, vector<
 *  edges should be sorted & fetched independent of splice_graph implementation
 */ 
 /* 
-int aster::topological_sort_index_edges()
+int amaranth::topological_sort_index_edges()
 {
 	MEI e2i;							// edge map, from edge to index, sorted by position
 	VE i2e;								// edge map, from index to edge, sorted	by position
@@ -1255,7 +1257,7 @@ int aster::topological_sort_index_edges()
 /*
 *  aggresively remove intersecting edges, whichever is topilocially smaller
 */
-/* bool aster::aggressive_purge_intersecting_edges()
+/* bool amaranth::aggressive_purge_intersecting_edges()
 {
 	if(gr.num_vertices() > 1000)
 	{
@@ -1292,7 +1294,7 @@ int aster::topological_sort_index_edges()
 	return (purgeCount >= 1);
 } */
 
-int aster::balance_vertex(int vertexIndex)
+int amaranth::balance_vertex(int vertexIndex)
 {
 	int v = vertexIndex;
 	if(gr.degree(v) <= 0) return 0;
@@ -1361,7 +1363,7 @@ int aster::balance_vertex(int vertexIndex)
 }
 
 // clear empty vertex from graph
-int aster::purge_empty_vertex()
+int amaranth::purge_empty_vertex()
 {
 	for(int i = 0; i < gr.num_vertices(); i++)
 	{
@@ -1371,7 +1373,7 @@ int aster::purge_empty_vertex()
 	return 0;
 }
 
-int aster::remove_small_junctions()
+int amaranth::remove_small_junctions()
 {
 	SE se;
 	for(int i = 1; i < gr.num_vertices() - 1; i++)
@@ -1455,7 +1457,7 @@ int aster::remove_small_junctions()
 }
 
 /* balance vertices, remove small junctions, refine graph, build index, build hs */
-int aster::prepare_graph()
+int amaranth::prepare_graph()
 {
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
 	for(int i = 1; i < gr.num_vertices() - 1; i++) balance_vertex(i);
@@ -1470,7 +1472,7 @@ int aster::prepare_graph()
 	return 0;
 }
 
-int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const
+int amaranth::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const
 {
 	if (edgePath.size() == 0) return 0;
 	vertexPath.clear();
@@ -1491,7 +1493,7 @@ int aster::edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const
 }
 
 // return index of longest path in res.subpaths
-int aster::find_longest_path(const aster_result& res) const
+int amaranth::find_longest_path(const amaranth_result& res) const
 {
 	int longestPathIndex = -1;
 	int longestPathSize = -1;
@@ -1510,7 +1512,7 @@ int aster::find_longest_path(const aster_result& res) const
 }
 
 // return index of shortest path in res.subpaths
-int aster::find_shortest_path(const aster_result& res) const
+int amaranth::find_shortest_path(const amaranth_result& res) const
 {
 	int shortestPathIndex = -1;
 	int shortestPathSize = -1;
@@ -1529,7 +1531,7 @@ int aster::find_shortest_path(const aster_result& res) const
 }
 
 // return index of heaviest path (highest abundance) in res.subpaths
-int aster::find_heaviest_path(const aster_result& res) const
+int amaranth::find_heaviest_path(const amaranth_result& res) const
 {
     int heaviestPathIndex = -1;
     double heaviestPathWeight = -1.0;
@@ -1553,7 +1555,7 @@ int aster::find_heaviest_path(const aster_result& res) const
 *  Maybe not necessarily removes all edges from/to vertices in [s,t] if it is not closed
 *  i.e. for nodes reachable from s and reachable to t, they cannot reach any other nodes but themselves and s,t
 */
-edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res)
+edge_descriptor amaranth::replace_amaranth_index_to_one_edge(amaranth_index ai, double w, amaranth_result res)
 {
 	assert_closed_vertex_interval(ai);
 	int s = ai.s();
@@ -1622,12 +1624,12 @@ edge_descriptor aster::replace_aster_index_to_one_edge(aster_index ai, double w,
 	return e_new;
 }
 
-bool aster::valid_paths(aster_result res) const
+bool amaranth::valid_paths(amaranth_result res) const
 {
 	return valid_paths(res.subpaths);
 }
 
-bool aster::valid_paths(vector<path> paths) const
+bool amaranth::valid_paths(vector<path> paths) const
 {
 	for(const path& p : paths)
 	{
@@ -1637,10 +1639,10 @@ bool aster::valid_paths(vector<path> paths) const
 }
 
 // assign path.nf, populate trsts and non_full_trsts
-int aster::get_transcripts()
+int amaranth::get_transcripts()
 {
 	if(successStatus == false) return 0;
-	if(mode == aster_mode::STAT_ONLY) return 0;
+	if(mode == amaranth_mode::STAT_ONLY) return 0;
 	if(origr.num_edges() == 0) return 0;
 	if(origr.num_vertices() == 2) return 0;
 	if(paths.size() == 0) return 0;
@@ -1677,7 +1679,7 @@ int aster::get_transcripts()
 }
 
 
-int aster::make_stats()
+int amaranth::make_stats()
 {
 	if(verbose >= 3 && num_graph != 0 && num_graph % 100 == 0)	print_stats();
 
@@ -1700,9 +1702,9 @@ int aster::make_stats()
 	return 0;
 }
 
-int aster::print_stats()
+int amaranth::print_stats()
 {
-	cout << "aster stats ================================================================" << endl;
+	cout << "amaranth stats ================================================================" << endl;
 	cout << "\t num graphs = " << num_graph  << endl; 
 	cout << "\t num intersecting graphs " << num_intersecting_graph << endl;
 	cout << "\t num exons = " << num_exon  << endl; 
@@ -1723,7 +1725,7 @@ int aster::print_stats()
 	return 0;
 }
 
-string aster::tp2v_to_string() const
+string amaranth::tp2v_to_string() const
 {
 	string tp2vString = gr.gid + "\n\tDFS TopoSorted vertex index vector:";
 	for (int i = 0; i < tp2v.size(); i++)
@@ -1736,7 +1738,7 @@ string aster::tp2v_to_string() const
 }
 
 // exponential penalty guarantees to violate triangle inequality
-int aster::event_size_penalty(int eventSize) const
+int amaranth::event_size_penalty(int eventSize) const
 {
 	assert(eventSize >= 0);
 	return pow(2, eventSize) - 1;
@@ -1747,9 +1749,9 @@ int aster::event_size_penalty(int eventSize) const
 *		positive int: number of edits
 *		assertion error: size not positive
 */
-int aster::path_distance(const path& p1, const path& p2) const
+int amaranth::path_distance(const path& p1, const path& p2) const
 {
-	throw runtime_error("aster::path_distancen not implemented yet");
+	throw runtime_error("amaranth::path_distancen not implemented yet");
 	// const vector<int>& v1 = p1.v; 
 	// const vector<int>& v2 = p2.v;
 	// assert(v1.size() > 0);
@@ -1761,8 +1763,8 @@ int aster::path_distance(const path& p1, const path& p2) const
 	return edits = -1;
 }
 
-// remove isolated vertices from aster_index, edit in-place
-int aster::non_isolated_vertex_index(aster_index& ai) const
+// remove isolated vertices from amaranth_index, edit in-place
+int amaranth::non_isolated_vertex_index(amaranth_index& ai) const
 {
 	while(true)
 	{
@@ -1785,8 +1787,8 @@ int aster::non_isolated_vertex_index(aster_index& ai) const
 	return 0;
 }
 
-// all internal nodes (excl. s and t) must have internal edges whose target/source can be found in aster_index
-int aster::assert_closed_vertex_interval(const aster_index &ai)
+// all internal nodes (excl. s and t) must have internal edges whose target/source can be found in amaranth_index
+int amaranth::assert_closed_vertex_interval(const amaranth_index &ai)
 {
 	if(ai.size() <= 2) return 0;
 	int s = ai.s();

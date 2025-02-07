@@ -1,11 +1,11 @@
 /*
-Part of Aster Assembler
+Part of Amaranth Assembler
 (c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
 See LICENSE for licensing.
 */
 
-#ifndef __ASTER_H__
-#define __ASTER_H__
+#ifndef __AMARANTH_H__
+#define __AMARANTH_H__
 
 #include <stdexcept>
 #include "splice_graph.h"
@@ -14,12 +14,12 @@ See LICENSE for licensing.
 #include "router.h"
 #include "path.h"
 #include "config.h"
-#include "aster_aux.hpp"
+#include "amaranth_aux.hpp"
 
-class aster
+class amaranth
 {
 public:
-	aster(const splice_graph &gr, const hyper_set &hs, bool avgMode, aster_mode m = asterMode, aster_strategy s = asterStrategy);
+	amaranth(const splice_graph &gr, const hyper_set &hs, bool avgMode, amaranth_mode m = amaranthMode, amaranth_strategy s = amaranthStrategy);
 	int assemble();
 	static int print_stats();
 
@@ -49,9 +49,9 @@ private:
 
 	VI tp2v;							// DFS-based topologically sorted index to vertex index.
 	// VI v2tp;							// vertex index to DFS-based topologically sorted index.
-	map<edge_descriptor, aster_result> edgeres;
-	aster_mode mode;
-	aster_strategy strategy;
+	map<edge_descriptor, amaranth_result> edgeres;
+	amaranth_mode mode;
+	amaranth_strategy strategy;
 	bool avgMode;						// true: avg, false: geometric mean
 
 public:
@@ -72,38 +72,38 @@ private:
 	int purge_empty_vertex();
 
 	int divide_conquer();
-	int divide_conquer(aster_index ai);
-	bool resolve_trivial_node(aster_index ai);
-	bool divide_conquer_single_vertex(aster_index ai);
-	bool divide_conquer_unitig(aster_index ai, splice_graph& local);
-	bool divide_conquer_abutting(aster_index ai);
-	bool divide_conquer_cut_termini(aster_index ai);
-	int  divide_conquer_cut_termini_find(aster_index ai, set<aster_index>& aiSubIntervals);
-	bool divide_conquer_articulation_point(aster_index ai);
-	int  divide_conquer_articulation_find(aster_index ai, aster_index& left, aster_index& right);
-	// bool resolve_trivial_intersection(aster_index ai);
-	bool resolve_intersection_edge(aster_index ai);
-	bool greedy(aster_index ai);
+	int divide_conquer(amaranth_index ai);
+	bool resolve_trivial_node(amaranth_index ai);
+	bool divide_conquer_single_vertex(amaranth_index ai);
+	bool divide_conquer_unitig(amaranth_index ai, splice_graph& local);
+	bool divide_conquer_abutting(amaranth_index ai);
+	bool divide_conquer_cut_termini(amaranth_index ai);
+	int  divide_conquer_cut_termini_find(amaranth_index ai, set<amaranth_index>& aiSubIntervals);
+	bool divide_conquer_articulation_point(amaranth_index ai);
+	int  divide_conquer_articulation_find(amaranth_index ai, amaranth_index& left, amaranth_index& right);
+	// bool resolve_trivial_intersection(amaranth_index ai);
+	bool resolve_intersection_edge(amaranth_index ai);
+	bool greedy(amaranth_index ai);
 
 	int edges_combine_consecutive_and_replace(PEEI inEdges, PEEI outEdges);
 	int edge_combine_consecutive_pop_res(edge_descriptor in, edge_descriptor out, const map<pair<int, int>, vector<const path*> >& st2Path);
-	bool res_combine_consecutive(aster_result& r1,  aster_result& r2, aster_result& comb) const;
-	bool res_combine_parallel   (aster_result& r1,  aster_result& r2, aster_result& comb, bool frontSame = true, bool backSame = true) const;
-	edge_descriptor replace_aster_index_to_one_edge(aster_index ai, double w, aster_result res);
+	bool res_combine_consecutive(amaranth_result& r1,  amaranth_result& r2, amaranth_result& comb) const;
+	bool res_combine_parallel   (amaranth_result& r1,  amaranth_result& r2, amaranth_result& comb, bool frontSame = true, bool backSame = true) const;
+	edge_descriptor replace_amaranth_index_to_one_edge(amaranth_index ai, double w, amaranth_result res);
 
-	int non_isolated_vertex_index(aster_index& ai) const;
-	int assert_closed_vertex_interval(const aster_index& ai);
-	int local_graph(const aster_index& ai, splice_graph& local);
-	bool valid_paths(aster_result res) const;
+	int non_isolated_vertex_index(amaranth_index& ai) const;
+	int assert_closed_vertex_interval(const amaranth_index& ai);
+	int local_graph(const amaranth_index& ai, splice_graph& local);
+	bool valid_paths(amaranth_result res) const;
 	bool valid_paths(vector<path> paths) const;
 	int event_size_penalty(int eventSize) const;
 	int path_distance(const path& p1, const path& p2) const;
 	int edge_path_to_vertex_path(const VE& edgePath, VI& vertexPath) const;
 	
 	// find_*_path functions w.r.t. strategy
-	int find_longest_path(const aster_result& res) const;
-	int find_shortest_path(const aster_result& res) const;
-	int find_heaviest_path(const aster_result& res) const;
+	int find_longest_path(const amaranth_result& res) const;
+	int find_shortest_path(const amaranth_result& res) const;
+	int find_heaviest_path(const amaranth_result& res) const;
 
 	int get_transcripts();
 	
