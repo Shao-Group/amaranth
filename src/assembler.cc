@@ -49,9 +49,10 @@ int assembler::assemble()
 
 		if(p.tid < 0) continue;
 		if((p.flag & 0x4) >= 1) continue;										// read is not mapped
+		if(remove_dup && ((p.flag & 0x400) >= 1)) continue;						// read is PCR or optical duplicate
 		if((p.flag & 0x100) >= 1 && use_second_alignment == false) continue;	// secondary alignment
 		if(p.n_cigar > max_num_cigar) continue;									// ignore hits with more than max-num-cigar types
-		if(p.qual < min_mapping_quality) continue;							// ignore hits with small quality
+		if(p.qual < min_mapping_quality) continue;							    // ignore hits with small quality
 		if(p.n_cigar < 1) continue;												// should never happen
 
 		hit ht(b1t, hid++);

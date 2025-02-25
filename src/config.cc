@@ -101,6 +101,7 @@ string output_file;
 string output_file1;
 
 // for controling
+bool remove_dup = false;
 bool use_filter = true;
 bool output_tex_files = false;
 bool output_graphviz_files = false;
@@ -345,6 +346,14 @@ int parse_arguments(int argc, const char ** argv)
 		{
 			use_filter = true;
 		}
+		else if(string(argv[i]) == "--remove-pcr-duplicates")
+		{
+			remove_dup = true;
+		}
+		else if(string(argv[i]) == "--no-remove-pcr-duplicates")
+		{
+			remove_dup = false;
+		}
 		else if(string(argv[i]) == "--library_type")
 		{
 			string s(argv[i + 1]);
@@ -570,6 +579,8 @@ int print_help()
 
 	printf(" %-42s  %s\n", "--use-filter",  "use filtering to select subpaths before final assembly, default: use-filter");
 	printf(" %-42s  %s\n", "--no-filter",   "disable filtering, use all subpaths in final assembly,  default: use-filter");
+	printf(" %-42s  %s\n", "--remove-pcr-duplicates",     "remove PCR duplicates in the input bam file, default: not-remove");
+	printf(" %-42s  %s\n", "--no-remove-pcr-duplicates",  "not remove PCR duplicates in the input bam file, default: not-remove");
 
 	// amaranth - mode
 	printf(" %-42s  %s\n", "-m/--amaranthMode <REF|STAT|MINI|ASSEMBLY>", "set AMARANTH operation mode (default: ASSEMBLY):");
