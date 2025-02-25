@@ -568,8 +568,8 @@ int print_help()
 	printf(" %-42s  %s\n", "--min_num_hits_in_bundle <integer>",  "minimum number of reads required in a gene locus, default: 5");
 	printf(" %-42s  %s\n", "--min_flank_length <integer>",  "minimum match length in each side for a spliced read, default: 3");
 
-	printf(" %-42s  %s\n", "--use-filter",  "use filtering to select subpaths before final assembly");
-	printf(" %-42s  %s\n", "--no-filter",  "disable filtering, use all subpaths in final assembly");
+	printf(" %-42s  %s\n", "--use-filter",  "use filtering to select subpaths before final assembly, default: use-filter");
+	printf(" %-42s  %s\n", "--no-filter",   "disable filtering, use all subpaths in final assembly,  default: use-filter");
 
 	// amaranth - mode
 	printf(" %-42s  %s\n", "-m/--amaranthMode <REF|STAT|MINI|ASSEMBLY>", "set AMARANTH operation mode (default: ASSEMBLY):");
