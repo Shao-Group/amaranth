@@ -134,6 +134,7 @@ extern string output_file;
 extern string output_file1;
 
 // for controling
+extern bool remove_retained_intron;
 extern bool remove_dup;
 extern bool use_filter;
 extern bool output_tex_files;

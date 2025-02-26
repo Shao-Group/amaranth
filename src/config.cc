@@ -101,6 +101,7 @@ string output_file;
 string output_file1;
 
 // for controling
+bool remove_retained_intron = false;
 bool remove_dup = false;
 bool use_filter = true;
 bool output_tex_files = false;
@@ -354,6 +355,15 @@ int parse_arguments(int argc, const char ** argv)
 		{
 			remove_dup = false;
 		}
+		else if(string(argv[i]) == "--remove-reteind-intron")
+		{
+			remove_retained_intron = true;
+		}
+		else if(string(argv[i]) == "--no-remove-reteind-intron")
+		{
+			remove_retained_intron = false;
+		}
+
 		else if(string(argv[i]) == "--library_type")
 		{
 			string s(argv[i + 1]);
