@@ -996,6 +996,29 @@ bool bundle::remove_inner_boundaries()
 	return flag;
 }
 
+/**
+ * @brief Removes potential intron contamination from the splice graph. (criteria 1 & 2)
+ * 
+ * This function identifies and removes vertices that likely represent intron contamination 
+ * by checking these conditions:
+ * - The vertex has exactly one incoming and one outgoing edge
+ * - The vertex is not connected to source (0) or sink vertices
+ * - The vertex positions match with its adjacent vertices
+ * 
+ * Criteria for removal:
+ * if remove_retained_intron is true:
+ *   - Vertex weight is greater than double the direct edge weight AND
+ *   - Both adjacent edge weights are greater than the direct edge weight 
+ *   Then the vertex is kept (continue)
+ * 
+ * if remove_retained_intron is false:
+ *   - Vertex weight must be less than the direct edge weight AND
+ *   - Vertex weight must be less than max_intron_contamination_coverage
+ *   Then vertex is removed
+ *
+ * @return bool Returns true if any vertex was identified and marked as intron contamination,
+ *              false otherwise. Removed vertices are marked as EMPTY_VERTEX.
+ */
 bool bundle::remove_intron_contamination()
 {
 	bool flag = false;
@@ -1029,8 +1052,17 @@ bool bundle::remove_intron_contamination()
 		edge_descriptor ee = p.first;
 		double we = gr.get_edge_weight(ee);
 
-		if(wv > we) continue;
-		if(wv > max_intron_contamination_coverage) continue;
+		if(remove_retained_intron)
+		{
+			double we1 = gr.get_edge_weight(e1);
+			double we2 = gr.get_edge_weight(e2);
+			if(wv > we * 2 && we1 > we && we2 > we) continue;
+		}
+		else
+		{
+			if(wv > we) continue;
+			if(wv > max_intron_contamination_coverage) continue;
+		}
 
 		if(verbose >= 2) printf("clear intron contamination %d, weight = %.2lf, length = %d, edge weight = %.2lf\n", i, wv, vi.length, we);
 
