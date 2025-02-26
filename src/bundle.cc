@@ -1059,7 +1059,7 @@ bool bundle::remove_intron_contamination()
 		{
 			double we1 = gr.get_edge_weight(e1);
 			double we2 = gr.get_edge_weight(e2);
-			if(wv > we * 2 && we1 > we && we2 > we) continue;
+			if(wv > we  && we1 > we * 0.5 && we2 > we * 0.5) continue;
 		}
 		else
 		{
@@ -1139,7 +1139,7 @@ bool bundle::remove_intron_retention()
 		
 		if (remove_retained_intron)
 		{
-			if (wv > max_hovering_junc_weight * 2 && we > max_hovering_junc_weight * 2) continue;
+			if (wv > max_hovering_junc_weight * 0.5 && we > max_hovering_junc_weight * 0.5) continue;
 		}
 		else
 		{
