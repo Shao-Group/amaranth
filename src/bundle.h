@@ -85,6 +85,7 @@ public:
 	bool remove_small_exons();
 	bool remove_inner_boundaries();
 	bool remove_intron_contamination();
+	bool remove_intron_retention();
 	bool remove_false_boundaries();
 	bool tackle_false_boundaries();
 	int find_contamination_chain();

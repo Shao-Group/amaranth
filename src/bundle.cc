@@ -544,6 +544,9 @@ int bundle::revise_splice_graph()
 		b = remove_intron_contamination();
 		if(b == true) continue;
 
+		b = remove_intron_retention();
+		if(b == true) continue;
+
 		b = remove_small_junctions();
 		if(b == true) refine_splice_graph();
 		if(b == true) continue;
@@ -1065,6 +1068,86 @@ bool bundle::remove_intron_contamination()
 		}
 
 		if(verbose >= 2) printf("clear intron contamination %d, weight = %.2lf, length = %d, edge weight = %.2lf\n", i, wv, vi.length, we);
+
+		//gr.clear_vertex(i);
+		vi.type = EMPTY_VERTEX;
+		gr.set_vertex_info(i, vi);
+
+		flag = true;
+	}
+	return flag;
+}
+
+//remove_retained_intron
+// implement irtools criteria 1 and 2
+bool bundle::remove_intron_retention()
+{
+	bool flag = false;
+	for(int i = 1; i < gr.num_vertices(); i++)
+	{
+		vertex_info vi = gr.get_vertex_info(i);
+		if(vi.type == EMPTY_VERTEX) continue;
+
+		if(gr.in_degree(i) != 1) continue;
+		if(gr.out_degree(i) != 1) continue;
+
+		edge_iterator it1, it2;
+		PEEI pei = gr.in_edges(i);
+		it1 = pei.first;
+		edge_descriptor e1 = (*it1);
+		pei = gr.out_edges(i);
+		it1 = pei.first;
+		edge_descriptor e2 = (*it1);
+		int s = e1->source();
+		int t = e2->target();
+		double wv = gr.get_vertex_weight(i);
+
+		if(s == 0 && t == gr.num_vertices() - 1) continue;	// single exon tx
+		if(s != 0 && t != gr.num_vertices() - 1) continue;	// not criteria 1 or 2
+
+		
+		double max_hovering_junc_weight = 0;
+		double we = 0;
+		if(s == 0 && t != gr.num_vertices() - 1)			// potential criterion 1
+		{
+			we = gr.get_edge_weight(e2);
+			if(gr.get_vertex_info(t).lpos != vi.rpos) continue;
+			PEEI pei = gr.in_edges(t);
+			for (edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+			{
+				edge_descriptor e = (*it1);
+				double w = gr.get_edge_weight(e);
+				if (w > max_hovering_junc_weight) max_hovering_junc_weight = w;
+			}
+		}
+		else if(s != 0 && t == gr.num_vertices() - 1)		// potential criterion 2
+		{
+			we = gr.get_edge_weight(e1);
+			if(gr.get_vertex_info(s).rpos != vi.lpos) continue;
+			PEEI pei = gr.out_edges(s);
+			for (edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
+			{
+				edge_descriptor e = (*it1);
+				double w = gr.get_edge_weight(e);
+				if (w > max_hovering_junc_weight) max_hovering_junc_weight = w;
+			}
+		}
+		else
+		{
+			assert(false); // should not reach here
+		}
+		
+		if (remove_retained_intron)
+		{
+			if (wv > max_hovering_junc_weight * 2 && we > max_hovering_junc_weight * 2) continue;
+		}
+		else
+		{
+			if (wv > max_hovering_junc_weight) continue;
+			if (wv > max_intron_contamination_coverage) continue;
+		}
+
+		if(verbose >= 2) printf("clear intron retention %d, weight = %.2lf, length = %d, edge weight = %.2lf\n", i, wv, vi.length, we);
 
 		//gr.clear_vertex(i);
 		vi.type = EMPTY_VERTEX;
