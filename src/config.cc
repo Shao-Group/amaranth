@@ -66,6 +66,7 @@ double min_subregion_ave = 1.5;
 // for amaranth
 amaranth_mode amaranthMode = amaranth_mode::ASSEMBLER;
 amaranth_strategy amaranthStrategy = amaranth_strategy::HEAVY;
+seq tech = seq::UNKNOWN;
 bool doesFastDnC = false;
 
 // for revising/decomposing splice graph
@@ -323,7 +324,7 @@ int parse_arguments(int argc, const char ** argv)
 			else if(s == "STAT") amaranthMode = amaranth_mode::STAT_ONLY;
 			else if(s == "MINI") amaranthMode = amaranth_mode::MINI;
 			else if(s == "ASSEMBLY") amaranthMode = amaranth_mode::ASSEMBLER;
-			else throw runtime_error("received unknown --amaranthMode MDOE.");
+			else throw runtime_error("received unknown --amaranthMode value: " + s + " (must be REF/STAT/MINI/ASSEMBLY)");
 			i++;
 		}
 		else if(string(argv[i]) == "--amaranthStrategy" || string(argv[i]) == "-s")
@@ -332,7 +333,16 @@ int parse_arguments(int argc, const char ** argv)
 			if(s == "LONG") amaranthStrategy = amaranth_strategy::LONG;
 			else if(s == "SHORT") amaranthStrategy = amaranth_strategy::SHORT;
 			else if(s == "HEAVY") amaranthStrategy = amaranth_strategy::HEAVY;
-			else throw runtime_error("received unknown --amaranthStrategy value.");
+			else throw runtime_error("received unknown --amaranthStrategy value: " + s + " (must be LONG/SHORT/HEAVY)");
+			i++;
+		}
+		else if(string(argv[i]) == "--tech")
+		{
+			string s(argv[i + 1]);
+			if(s == "SC") tech = seq::SC;
+			else if(s == "BULK") tech = seq::BULK;
+			else if(s == "UNKNOWN") tech = seq::UNKNOWN; 
+			else throw runtime_error("received unknown --tech value: " + s + " (must be SC/BULK)");
 			i++;
 		}
 		else if(string(argv[i]) == "--fast")
@@ -368,9 +378,10 @@ int parse_arguments(int argc, const char ** argv)
 		{
 			string s(argv[i + 1]);
 			if(s == "empty") library_type = EMPTY;
-			if(s == "unstranded") library_type = UNSTRANDED;
-			if(s == "first") library_type = FR_FIRST;
-			if(s == "second") library_type = FR_SECOND;
+			else if(s == "unstranded") library_type = UNSTRANDED;
+			else if(s == "first") library_type = FR_FIRST;
+			else if(s == "second") library_type = FR_SECOND;
+			else throw runtime_error("received unknown --library_type value: " + s + " (must be empty/unstranded/first/second)");
 			i++;
 		}
 		else if(string(argv[i]) == "--use_second_alignment")
@@ -604,6 +615,11 @@ int print_help()
 	printf(" %-42s  %s\n", "", "    LONG: use longest subpath as anchor");
 	printf(" %-42s  %s\n", "", "    SHORT: use shortest subpath as anchor");
 	printf(" %-42s  %s\n", "", "    HEAVY: use highest coverage subpath as anchor");
+
+	// amaranth - sequencing technology
+	printf(" %-42s  %s\n", "--tech <SC|BULK>", "set sequencing technology (default: BULK):");
+	printf(" %-42s  %s\n", "", "    SC: single-cell RNA-seq");
+	printf(" %-42s  %s\n", "", "    BULK: bulk RNA-seq");
 
 	return 0;
 }

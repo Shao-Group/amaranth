@@ -97,8 +97,10 @@ extern double min_subregion_ave;
 // for amaranth
 enum class amaranth_mode {REF, STAT_ONLY, MINI, ASSEMBLER};
 enum class amaranth_strategy {LONG, SHORT, HEAVY};
+enum class seq {SC, BULK, UNKNOWN};
 extern amaranth_mode amaranthMode;
 extern amaranth_strategy amaranthStrategy;
+extern seq tech;
 extern bool doesFastDnC;
 
 // for subsetsum and router
