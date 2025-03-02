@@ -273,6 +273,8 @@ int hit::set_strand()
 {
 	strand = '.';
 	
+	if(umi == "") return 0;	// non-umi reads are not stranded
+
 	if(library_type == FR_FIRST && ((flag & 0x1) >= 1))
 	{
 		if((flag & 0x10) <= 0 && (flag & 0x40) >= 1 && (flag & 0x80) <= 0) strand = '-';
