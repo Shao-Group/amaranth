@@ -36,6 +36,7 @@ int library_type = EMPTY;
 int max_preview_reads = 2000000;
 int max_preview_spliced_reads = 50000;
 int min_preview_spliced_reads = 10000;
+int max_preview_umi_reads = 10000;
 double preview_infer_ratio = 0.85;
 bool preview_only = false;
 double insertsize_ave = 300;
