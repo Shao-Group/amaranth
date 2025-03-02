@@ -35,6 +35,7 @@ private:
 	int close_file();
 	int solve_strandness();
 	int solve_insertsize();
+	int solve_tech();
 	int process_bundle(bundle_base& bb, map<int32_t, int>& m);
 };
 

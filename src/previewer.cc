@@ -33,6 +33,13 @@ int previewer::close_file()
 
 int previewer::preview()
 {
+	if(tech == seq::UNKNOWN)
+	{
+		open_file();
+		solve_tech();
+		close_file();
+	}
+
 	if(library_type == EMPTY)
 	{
 		open_file();
@@ -50,9 +57,61 @@ int previewer::preview()
 	return 0;
 }
 
+int	previewer::solve_tech()
+{
+	int total = 0;
+	int umi_reads = 0;
+	int hid = 0;
+
+	while(sam_read1(sfn, hdr, b1t) >= 0)
+	{
+		if(total >= max_preview_reads) break;
+		if(umi_reads >= max_preview_umi_reads) break;
+
+		bam1_core_t &p = b1t->core;
+
+		if((p.flag & 0x4) >= 1) continue;										// read is not mapped
+		if(remove_dup && ((p.flag & 0x400) >= 1)) continue;						// read is PCR or optical duplicate
+		if((p.flag & 0x100) >= 1 && use_second_alignment == false) continue;	// qstrandary alignment
+		if(p.n_cigar > max_num_cigar) continue;									// ignore hits with more than max-num-cigar types
+		if(p.qual < min_mapping_quality) continue;								// ignore hits with small quality
+		if(p.n_cigar < 1) continue;												// should never happen
+
+		total++;
+		
+		hit ht(b1t, hid++);
+		ht.set_tags(b1t);
+		
+		if(ht.umi != "") umi_reads += 1;
+	}
+
+	seq inferred_tech = seq::UNKNOWN;
+
+	// umi reads are at least 5000 and 1/16 of total reads. This loose threshold is to tolerate PCR duplicates
+	if (umi_reads * 2 >= max_preview_umi_reads  && total < umi_reads * 16) inferred_tech = seq::SC;	
+	else inferred_tech = seq::BULK;
+	
+	string tech_str = tech == seq::SC ? "SC" : (tech == seq::BULK ? "Bulk" : "None");
+	string inferred_tech_str = inferred_tech == seq::SC ? "SC" : (inferred_tech == seq::BULK ? "Bulk" : "UNKNOWN");
+
+	if(verbose >= 1)
+	{
+		printf("preview technology: sampled reads = %d, umi reads = %d, inferred tech = %s, input tech = %s\n", 
+				total, umi_reads, inferred_tech_str.c_str(), tech_str.c_str());
+	}
+
+	if (tech == seq::UNKNOWN) tech = inferred_tech;
+
+	return 0;
+}
+
+
+// solve strandness
+// note: for BULK data, use all reads; for SC data, use only umi reads
 int previewer::solve_strandness()
 {
 	int total = 0;
+	int umi_reads = 0;
 	int single = 0;
 	int paired = 0;
 
@@ -71,6 +130,7 @@ int previewer::solve_strandness()
 		bam1_core_t &p = b1t->core;
 
 		if((p.flag & 0x4) >= 1) continue;										// read is not mapped
+		if(remove_dup && ((p.flag & 0x400) >= 1)) continue;						// read is PCR or optical duplicate
 		if((p.flag & 0x100) >= 1 && use_second_alignment == false) continue;	// qstrandary alignment
 		if(p.n_cigar > max_num_cigar) continue;									// ignore hits with more than max-num-cigar types
 		if(p.qual < min_mapping_quality) continue;								// ignore hits with small quality
@@ -80,6 +140,10 @@ int previewer::solve_strandness()
 
 		hit ht(b1t, hid++);
 		ht.set_tags(b1t);
+
+		// only use umi reads for single cell data
+		if(tech == seq::SC && ht.umi == "") continue;
+		if(tech == seq::SC && ht.umi != "") umi_reads += 1;
 
 		if((ht.flag & 0x1) >= 1) paired ++;
 		if((ht.flag & 0x1) <= 0) single ++;
@@ -124,10 +188,24 @@ int previewer::solve_strandness()
 	vv.push_back("second");
 
 	int s1 = UNSTRANDED;
-	if(sp >= min_preview_spliced_reads && first > preview_infer_ratio * 2.0 * sp) s1 = FR_FIRST;
-	if(sp >= min_preview_spliced_reads && second > preview_infer_ratio * 2.0 * sp) s1 = FR_SECOND;
+	if (tech == seq::SC)
+	{
+		double umi_ratio = (double)umi_reads / total;
+		if(sp >= min_preview_spliced_reads * umi_ratio && first > preview_infer_ratio * 2.0 * sp) s1 = FR_FIRST;
+		if(sp >= min_preview_spliced_reads * umi_ratio && second > preview_infer_ratio * 2.0 * sp) s1 = FR_SECOND;
+	}
+	else
+	{
+		if(sp >= min_preview_spliced_reads && first > preview_infer_ratio * 2.0 * sp) s1 = FR_FIRST;
+		if(sp >= min_preview_spliced_reads && second > preview_infer_ratio * 2.0 * sp) s1 = FR_SECOND;
+	}
 
-	if(verbose >= 1)
+	if(verbose >= 1 && tech == seq::SC)
+	{
+		printf("preview strandness: sampled reads = %d, umi reads = %d, single = %d, paired = %d, first = %d, second = %d, inferred = %s, given = %s\n",
+			total, umi_reads, single, paired, first, second, vv[s1 + 1].c_str(), vv[library_type + 1].c_str());
+	}
+	else if(verbose >= 1 && tech != seq::SC)
 	{
 		printf("preview strandness: sampled reads = %d, single = %d, paired = %d, first = %d, second = %d, inferred = %s, given = %s\n",
 			total, single, paired, first, second, vv[s1 + 1].c_str(), vv[library_type + 1].c_str());
@@ -153,6 +231,7 @@ int previewer::solve_insertsize()
 		bam1_core_t &p = b1t->core;
 
 		if((p.flag & 0x4) >= 1) continue;										// read is not mapped
+		if(remove_dup && ((p.flag & 0x400) >= 1)) continue;						// read is PCR or optical duplicate
 		if((p.flag & 0x100) >= 1) continue;										// secondary alignment
 		if(p.n_cigar > max_num_cigar) continue;									// ignore hits with more than max-num-cigar types
 		if(p.qual < min_mapping_quality) continue;								// ignore hits with small quality
