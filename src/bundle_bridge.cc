@@ -645,18 +645,18 @@ int bundle_bridge::build_fragments()
 			}
 
 			fr.b2 = true;
-                	if(v2.size() <= 1)
-                	{
-                        	fr.b2 = false;
-                	}
-                	else if(v2.size() >= 2 || v2[1] == v2.front() + 1)
-                	{
-                        	if(regions[v2.front()].rpos - fr.h2->pos > max_misalignment1 + fr.h2->nm) fr.b2 = false;
-                	}
-                	else if(v2.size() >= 2 || v2[1] != v2.front() + 1)
-                	{
-                        	if(regions[v2.front()].rpos - fr.h2->pos > max_misalignment2 + fr.h2->nm) fr.b2 = false;
-                	}
+			if(v2.size() <= 1)
+			{
+					fr.b2 = false;
+			}
+			else if(v2.size() >= 2 || v2[1] == v2.front() + 1)
+			{
+					if(regions[v2.front()].rpos - fr.h2->pos > max_misalignment1 + fr.h2->nm) fr.b2 = false;
+			}
+			else if(v2.size() >= 2 || v2[1] != v2.front() + 1)
+			{
+					if(regions[v2.front()].rpos - fr.h2->pos > max_misalignment2 + fr.h2->nm) fr.b2 = false;
+			}
 
 			fragments.push_back(fr);
 			bb.hits[hidx1].paired = true;
