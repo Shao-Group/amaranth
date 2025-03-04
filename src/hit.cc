@@ -40,6 +40,7 @@ hit& hit::operator=(const hit &h)
 	rpos = h.rpos;
 	qlen = h.qlen;
 	qname = h.qname;
+	cigar_str = h.cigar_str;
 	strand = h.strand;
 	spos = h.spos;
 	xs = h.xs;
@@ -70,6 +71,7 @@ hit::hit(const hit &h)
 	rpos = h.rpos;
 	qlen = h.qlen;
 	qname = h.qname;
+	cigar_str = h.cigar_str;
 	strand = h.strand;
 	spos = h.spos;
 	xs = h.xs;
@@ -109,6 +111,7 @@ hit::hit(bam1_t *b, int id)
 	assert(n_cigar <= max_num_cigar);
 	assert(n_cigar >= 1);
 	uint32_t * cigar = bam_get_cigar(b);
+	cigar_str = get_cigar_str(cigar);
 
 	// build splice positions
 	spos.clear();
@@ -190,6 +193,18 @@ string hit::get_qname(bam1_t *b)
 	memcpy(buf, q, l);
 	buf[l] = '\0';
 	return string(buf);
+}
+
+string hit::get_cigar_str(uint32_t *cigar)
+{
+	stringstream ss;
+	for(int k = 0; k < n_cigar; k++)
+	{
+		int op = bam_cigar_op(cigar[k]);
+		int len = bam_cigar_oplen(cigar[k]);
+		ss << len << "MIDNSHP=X"[op];
+	}
+	return ss.str();
 }
 
 int hit::set_tags(bam1_t *b)

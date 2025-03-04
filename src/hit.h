@@ -77,6 +77,7 @@ public:
 	char xs;								// XS aux in sam
 	char ts;								// ts tag used in minimap2
 	string qname;							// query name
+	string cigar_str;						// cigar string
 	hit *next;								// next hit that is equivalent with current one
 
 	// UMI
@@ -86,6 +87,7 @@ public:
 
 public:
  	static string get_qname(bam1_t *b);
+	string get_cigar_str(uint32_t * cigar);
 	int set_tags(bam1_t *b);
 	int set_strand();
 	int set_concordance();
