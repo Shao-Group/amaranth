@@ -338,6 +338,9 @@ int previewer::process_bundle(bundle_base &bb, map<int32_t, int>& m)
 	if(bb.tid < 0) return 0;
 
 	int cnt = 0;
+	
+	bb.rm_duplicated_reads();
+	bb.build_maps();
 
 	bundle_bridge br(bb);
 

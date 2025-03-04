@@ -142,6 +142,8 @@ int assembler::process(int n)
 	for(int i = 0; i < pool.size(); i++)
 	{
 		bundle_base &bb = pool[i];
+		bb.rm_duplicated_reads();
+		bb.build_maps();
 
 		int cnt1 = 0;
 		int cnt2 = 0;
