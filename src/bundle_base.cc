@@ -45,6 +45,10 @@ int bundle_base::add_hit(const hit &ht)
 	if(hits.size() <= 1) strand = ht.strand;
 	assert(strand == ht.strand);
 
+	// counts
+	total++;
+	if(ht.umi != "") umi_reads++;
+
 	// DEBUG
 	/*
 	if(strand != ht.strand)
@@ -119,12 +123,17 @@ int bundle_base::rm_duplicated_reads()
 		else p2++;
 	}
 	sort(ikeep.begin(), ikeep.end());
+
+	// update hits and counts
+	total = ikeep.size();
+	umi_reads = 0;
 	vector<hit> v;
 	for (int i = 0; i < ikeep.size(); i++) 
 	{
 		if (i >= 1) assert(ikeep[i] > ikeep[i -1]);
 		assert(ikeep[i] < hits.size());
 		v.push_back(hits[ikeep[i]]);
+		if(hits[ikeep[i]].umi != "") umi_reads++;
 	}
 	hits = v;
 	return 0;

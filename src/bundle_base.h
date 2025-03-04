@@ -32,6 +32,8 @@ public:
 	vector<hit> hits;				// hits
 	split_interval_map mmap;		// matched interval map
 	split_interval_map imap;		// indel interval map
+	int umi_reads;					// number of UMI reads
+	int total;						// total number of reads
 
 public:
 	int rm_duplicated_reads();
