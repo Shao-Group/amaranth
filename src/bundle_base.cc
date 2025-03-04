@@ -52,29 +52,43 @@ int bundle_base::add_hit(const hit &ht)
 		printf("strand = %c, ht.strand = %c, ht.xs = %c,\n", strand, ht.strand, ht.xs);
 	}
 	*/
+	return 0;
+}
 
-	for(int k = 0; k < ht.itvm.size(); k++)
 	{
-		int32_t s = high32(ht.itvm[k]);
-		int32_t t = low32(ht.itvm[k]);
-		//printf(" add interval %d-%d\n", s, t);
-		mmap += make_pair(ROI(s, t), 1);
+	}
+	{
+	}
+	{
 	}
 
-	for(int k = 0; k < ht.itvi.size(); k++)
+int bundle_base::build_maps()
+{
+	for (const auto& ht: hits)
 	{
-		int32_t s = high32(ht.itvi[k]);
-		int32_t t = low32(ht.itvi[k]);
-		imap += make_pair(ROI(s, t), 1);
-	}
 
-	for(int k = 0; k < ht.itvd.size(); k++)
-	{
-		int32_t s = high32(ht.itvd[k]);
-		int32_t t = low32(ht.itvd[k]);
-		imap += make_pair(ROI(s, t), 1);
-	}
+		for(int k = 0; k < ht.itvm.size(); k++)
+		{
+			int32_t s = high32(ht.itvm[k]);
+			int32_t t = low32(ht.itvm[k]);
+			//printf(" add interval %d-%d\n", s, t);
+			mmap += make_pair(ROI(s, t), 1);
+		}
 
+		for(int k = 0; k < ht.itvi.size(); k++)
+		{
+			int32_t s = high32(ht.itvi[k]);
+			int32_t t = low32(ht.itvi[k]);
+			imap += make_pair(ROI(s, t), 1);
+		}
+
+		for(int k = 0; k < ht.itvd.size(); k++)
+		{
+			int32_t s = high32(ht.itvd[k]);
+			int32_t t = low32(ht.itvd[k]);
+			imap += make_pair(ROI(s, t), 1);
+		}
+	}
 	return 0;
 }
 
