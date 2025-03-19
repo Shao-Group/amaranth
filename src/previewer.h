@@ -34,9 +34,9 @@ private:
 	int open_file();
 	int close_file();
 	int solve_strandness();
-	int solve_insertsize();
+	int solve_insertsize(bool b);	//bool: true - normal rm_dup; false: skip rm_dup
 	int solve_tech();
-	int process_bundle(bundle_base& bb, map<int32_t, int>& m);
+	int process_bundle(bundle_base& bb, map<int32_t, int>& m, bool b); //bool: true - normal rm_dup; false: skip rm_dup
 };
 
 #endif

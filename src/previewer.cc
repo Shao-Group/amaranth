@@ -50,7 +50,14 @@ int previewer::preview()
 	if(insertsize_median < 0)
 	{
 		open_file();
-		solve_insertsize();
+		solve_insertsize(true);
+		close_file();
+	}
+	
+	if(insertsize_median < 0)	// second try without rm_dup
+	{
+		open_file();
+		solve_insertsize(false);
 		close_file();
 	}
 
@@ -216,7 +223,7 @@ int previewer::solve_strandness()
 	return 0;
 }
 
-int previewer::solve_insertsize()
+int previewer::solve_insertsize(bool use_rm_policy = true)
 {
 	map<int32_t, int> m;
 	bundle_base bb1;
@@ -244,13 +251,13 @@ int previewer::solve_insertsize()
 		// truncate
 		if(ht.tid != bb1.tid || ht.pos > bb1.rpos + min_bundle_gap)
 		{
-			cnt += process_bundle(bb1, m);
+			cnt += process_bundle(bb1, m, use_rm_policy);
 			bb1.clear();
 			bb1.strand = '+';
 		}
 		if(ht.tid != bb2.tid || ht.pos > bb2.rpos + min_bundle_gap)
 		{
-			cnt += process_bundle(bb2, m);
+			cnt += process_bundle(bb2, m, use_rm_policy);
 			bb2.clear();
 			bb2.strand = '-';
 		}
@@ -278,10 +285,20 @@ int previewer::solve_insertsize()
 	}
 
 	if(total < 100) // single-cell data may have low number of paired-end reads
-	//if(total < 10000)
 	{
-		printf("not enough paired-end reads to create the profile (%d collected)\n", total);
-		exit(0);
+		if (use_rm_policy && (remove_dup >= 1))
+		{
+			insertsize_ave = 0;
+			insertsize_low = -1;
+			insertsize_high = -1;
+			insertsize_median = -1;
+			return 0; // will try again without rm_dup
+		}
+		else
+		{
+			printf("not enough paired-end reads to create the profile (%d collected)\n", total);
+			exit(0);
+		}
 	}
 
 	int n = 0;
@@ -332,14 +349,14 @@ int previewer::solve_insertsize()
 	return 0;
 }
 
-int previewer::process_bundle(bundle_base &bb, map<int32_t, int>& m)
+int previewer::process_bundle(bundle_base &bb, map<int32_t, int>& m, bool use_rm_policy)
 {
 	if(bb.hits.size() < 50) return 0;
 	if(bb.tid < 0) return 0;
 
 	int cnt = 0;
 	
-	bb.rm_duplicated_reads();
+	if (use_rm_policy) bb.rm_duplicated_reads();
 	bb.build_maps();
 
 	bundle_bridge br(bb);
