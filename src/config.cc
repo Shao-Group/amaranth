@@ -104,7 +104,7 @@ string output_file1;
 
 // for controling
 bool remove_retained_intron = false;
-bool remove_dup = false;
+int remove_dup = 0;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
 bool use_filter = true;
 bool output_tex_files = false;
 bool output_graphviz_files = false;
@@ -360,11 +360,8 @@ int parse_arguments(int argc, const char ** argv)
 		}
 		else if(string(argv[i]) == "--remove-pcr-duplicates")
 		{
-			remove_dup = true;
-		}
-		else if(string(argv[i]) == "--no-remove-pcr-duplicates")
-		{
-			remove_dup = false;
+			remove_dup = atoi(argv[i + 1]);
+			i++;
 		}
 		else if(string(argv[i]) == "--remove-reteind-intron")
 		{
@@ -601,7 +598,7 @@ int print_help()
 
 	printf(" %-42s  %s\n", "--use-filter",  "use filtering to select subpaths before final assembly, default: use-filter");
 	printf(" %-42s  %s\n", "--no-filter",   "disable filtering, use all subpaths in final assembly,  default: use-filter");
-	printf(" %-42s  %s\n", "--remove-pcr-duplicates",     "remove PCR duplicates in the input bam file, default: not-remove");
+	printf(" %-42s  %s\n", "--remove-pcr-duplicates <int>",     "remove PCR duplicates using strategy: 0,1, or 2, default: 0");
 	printf(" %-42s  %s\n", "--no-remove-pcr-duplicates",  "not remove PCR duplicates in the input bam file, default: not-remove");
 
 	// amaranth - mode
