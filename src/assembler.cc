@@ -144,6 +144,18 @@ int assembler::process(int n)
 		bundle_base &bb = pool[i];
 		bb.rm_duplicated_reads();
 		bb.build_maps();
+		
+		// if UMI reads are too few/ low proportion, we should skip it
+		bool deficient_umi_num = (bb.umi_reads < min_umi_reads_bundle);
+		bool deficient_umi_ratio = ((float(bb.umi_reads) / float(bb.hits.size())) < min_umi_ratio_bundle);
+		if(both_umi_support)
+		{
+			if(deficient_umi_num || deficient_umi_ratio) continue;
+		}
+		else
+		{
+			if(deficient_umi_num && deficient_umi_ratio) continue;
+		}
 
 		int cnt1 = 0;
 		int cnt2 = 0;

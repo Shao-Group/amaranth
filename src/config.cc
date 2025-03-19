@@ -103,6 +103,9 @@ string output_file;
 string output_file1;
 
 // for controling
+int min_umi_reads_bundle = 0;
+double min_umi_ratio_bundle = 0;
+bool both_umi_support = false;
 bool remove_retained_intron = false;
 int remove_dup = 0;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
 bool use_filter = true;
@@ -371,6 +374,28 @@ int parse_arguments(int argc, const char ** argv)
 		{
 			remove_retained_intron = false;
 		}
+		else if(string(argv[i]) == "--min_umi_reads_bundle")
+		{
+			min_umi_reads_bundle = atoi(argv[i + 1]);
+			i++;
+		}
+		else if(string(argv[i]) == "--min_umi_ratio_bundle")
+		{
+			min_umi_ratio_bundle = atof(argv[i + 1]);
+			if (min_umi_ratio_bundle < 0 || min_umi_ratio_bundle > 1)
+			{
+				throw runtime_error("min_umi_ratio_bundle must be between 0 and 1.");
+			}
+			i++;
+		}
+		else if(string(argv[i]) == "--both_umi_support")
+		{
+			string s(argv[i + 1]);
+			if(s == "true" || s == "True" || s == "TRUE" || s == "T") both_umi_support = true;
+			else if(s == "false" || s == "False" || s == "FALSE" || s == "F") both_umi_support = false;
+			else throw runtime_error("received unknown --both_umi_support value: " + s + " (must be true/false)");
+			i++;
+		}
 
 		else if(string(argv[i]) == "--library_type")
 		{
@@ -600,6 +625,11 @@ int print_help()
 	printf(" %-42s  %s\n", "--no-filter",   "disable filtering, use all subpaths in final assembly,  default: use-filter");
 	printf(" %-42s  %s\n", "--remove-pcr-duplicates <int>",     "remove PCR duplicates using strategy: 0,1, or 2, default: 0");
 	printf(" %-42s  %s\n", "--no-remove-pcr-duplicates",  "not remove PCR duplicates in the input bam file, default: not-remove");
+
+	// umi support settings
+	printf(" %-42s  %s\n", "--min_umi_reads_bundle <integer>", "minimum number of UMI reads required in a bundle, default: 0");
+	printf(" %-42s  %s\n", "--min_umi_ratio_bundle <float>", "minimum ratio of UMI reads required in a bundle, default: 0");
+	printf(" %-42s  %s\n", "--both_umi_support <true|false>", "require satisfactory UMI support for [both/either] condition, default: false(either)");
 
 	// amaranth - mode
 	printf(" %-42s  %s\n", "-m/--amaranthMode <REF|STAT|MINI|ASSEMBLY>", "set AMARANTH operation mode (default: ASSEMBLY):");
