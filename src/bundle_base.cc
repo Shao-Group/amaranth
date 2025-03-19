@@ -61,8 +61,13 @@ int bundle_base::add_hit(const hit &ht)
 
 // remove duplicated hits
 // duplicated hits are defined as hit-pairs (wrt qname) with the same alignment and CIGAR
+// FIXME:TODO: examine and test function. Print reads
 int bundle_base::rm_duplicated_reads()
 {
+	if(remove_dup <= 0) return 0;
+	set<int> ikeep;
+	vector<hit> v;
+
 	// vector <qname, hit-index>
 	vector<pair<string, int>> qh;	
 	for(int i = 0; i < hits.size(); i++)
@@ -96,6 +101,10 @@ int bundle_base::rm_duplicated_reads()
 			current_info.clear();
 		}
 		// get all hits with the same qname and hash their alignment and CIGAR
+		if (remove_dup == 2 && hits[i].cigar_str.find('S') == string::npos)
+		{
+			ikeep.insert(i);
+		}
 		current_info << hits[i].pos  << "-" << hits[i].cigar_str << ".";
 	}
 	int hh = string_hash(current_info.str());
@@ -110,30 +119,29 @@ int bundle_base::rm_duplicated_reads()
 	sort(qkeep.begin(), qkeep.end());
 
 	// keep hits with survived qnames
-	vector<int> ikeep;
 	int p1 = 0, p2 = 0;
 	while(p1 < qh.size() && p2 < qkeep.size())
 	{
 		if(qh[p1].first == qkeep[p2])
 		{
-			ikeep.push_back(qh[p1].second);
+			ikeep.insert(qh[p1].second);
 			p1++;
 		}
 		else if(qh[p1].first < qkeep[p2]) p1++;
 		else p2++;
 	}
-	sort(ikeep.begin(), ikeep.end());
-
+	vector<int> vikeep(ikeep.begin(), ikeep.end());
+	sort(vikeep.begin(), vikeep.end());
 	// update hits and counts
-	total = ikeep.size();
+	v.clear();
+	total = vikeep.size();
 	umi_reads = 0;
-	vector<hit> v;
-	for (int i = 0; i < ikeep.size(); i++) 
+	for (int i = 0; i < vikeep.size(); i++) 
 	{
-		if (i >= 1) assert(ikeep[i] > ikeep[i -1]);
-		assert(ikeep[i] < hits.size());
-		v.push_back(hits[ikeep[i]]);
-		if(hits[ikeep[i]].umi != "") umi_reads++;
+		if (i >= 1) assert(vikeep[i] > vikeep[i -1]);
+		assert(vikeep[i] < hits.size());
+		v.push_back(hits[vikeep[i]]);
+		if(hits[vikeep[i]].umi != "") umi_reads++;
 	}
 	hits = v;
 	return 0;
