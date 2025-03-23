@@ -13,7 +13,6 @@ class vertex_info
 {
 public:
 	vertex_info();
-	vertex_info(int l);
 	vertex_info(const vertex_info &vi);
 
 public:
