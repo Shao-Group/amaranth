@@ -27,6 +27,7 @@ public:
 	char lstrand;		// left side strand
 	char rstrand;		// right side strand	
 	bool regional;		// if a vertex is regional
+	int umi_support;
 };
 
 #endif

@@ -19,6 +19,7 @@ vertex_info::vertex_info()
 	lstrand = '.';
 	rstrand = '.';
 	regional = false;
+	umi_support = 0;
 }
 
 vertex_info::vertex_info(const vertex_info &vi)
@@ -34,4 +35,5 @@ vertex_info::vertex_info(const vertex_info &vi)
 	lstrand = vi.lstrand;
 	rstrand = vi.rstrand;
 	regional = vi.regional;
+	umi_support = vi.umi_support;
 }
