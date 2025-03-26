@@ -45,6 +45,7 @@ int bundle::prepare()
 int bundle::build(int mode, bool revise)
 {
 	build_splice_graph(mode);
+	compute_umi_support();
 	if(revise == true) revise_splice_graph();
 	build_hyper_set();
 	return 0;
@@ -521,6 +522,35 @@ int bundle::build_splice_graph(int mode)
 
 	gr.strand = bb.strand;
 	gr.chrm = bb.chrm;
+	return 0;
+}
+
+int bundle::compute_umi_support()
+{
+	map<vector<int>, int> m;	
+	for(int k = 0; k < bb.hits.size(); k++)
+	{
+		hit &h = bb.hits[k];
+		if(h.umi == "") continue;
+		vector<int> v = align_hit(h);
+		
+		if(m.find(v) == m.end()) m.insert(pair<vector<int>, int>(v, 1));
+		else m[v] += 1;
+	}
+
+	for(map<vector<int>, int>::iterator it = m.begin(); it != m.end(); it++)
+	{
+		const vector<int> &v = it->first;
+		int c = it->second;
+		for(int i = 0; i < v.size(); i++)
+		{
+			int k = v[i];
+			vertex_info vi = gr.get_vertex_info(k + 1);
+			vi.umi_support += c;
+			gr.set_vertex_info(k + 1, vi);
+		}
+		//TODO: umi support for edges
+	}
 	return 0;
 }
 
