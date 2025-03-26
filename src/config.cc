@@ -103,7 +103,7 @@ string output_file;
 string output_file1;
 
 // for controling
-int min_umi_reads_bundle = 0;
+int min_umi_reads_bundle = 1;
 double min_umi_ratio_bundle = 0;
 bool both_umi_support = false;
 bool remove_retained_intron = false;

@@ -1660,6 +1660,14 @@ int amaranth::get_transcripts()
 				empty = true;
 				break;
 			}
+			if (i == 1)
+			{
+				if (gr.get_vertex_info(v[i]).umi_support < min_umi_reads_bundle)
+				{
+					empty = true;
+					break;
+				}
+			}
 		}
 		p.nf = empty? 1:0;
 	}
