@@ -284,7 +284,7 @@ int previewer::solve_insertsize(bool use_rm_policy = true)
 		total += it->second;
 	}
 
-	if(total < 100) // single-cell data may have low number of paired-end reads
+	if(total < 50) // single-cell data may have low number of paired-end reads
 	{
 		if (use_rm_policy && (remove_dup >= 1))
 		{
