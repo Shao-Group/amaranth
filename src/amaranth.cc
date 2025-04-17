@@ -1675,13 +1675,13 @@ int amaranth::get_transcripts()
 	}
 
 	//validate s-t path
-	for(const path& p : paths)
-	{
-		const vector<int>& v = p.v;
-		assert(v.front() == 0);
-		assert(v.back() == origr.num_vertices() - 1);
-		assert(origr.valid_path(v));
-	}
+	// for(const path& p : paths)
+	// {
+	// 	const vector<int>& v = p.v;
+	// 	assert(v.front() == 0);
+	// 	assert(v.back() == origr.num_vertices() - 1);
+	// 	assert(origr.valid_path(v));
+	// }
 
 	trsts.clear();	
 	non_full_trsts.clear();

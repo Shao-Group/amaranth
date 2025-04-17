@@ -437,6 +437,7 @@ int bundle::build_splice_graph(int mode)
 	gr.set_vertex_info(pexons.size() + 1, vin);
 
 	// edges: each junction => and e2w
+	//FIXME: adjacent edge weight should be from the 'junction' not node weights
 	for(int i = 0; i < junctions.size(); i++)
 	{
 		const junction &b = junctions[i];
@@ -525,6 +526,8 @@ int bundle::build_splice_graph(int mode)
 	return 0;
 }
 
+// Make alternative TSS using UMI reads
+//FIXME: each umi can only be counted for 1 once
 int bundle::compute_umi_support()
 {
 	map<vector<int>, int> m;	
@@ -1054,6 +1057,7 @@ bool bundle::remove_inner_boundaries()
  */
 bool bundle::remove_intron_contamination()
 {
+	//TODO: the introns should not be contributed by UMI reads, if yes, keep the intron
 	bool flag = false;
 	for(int i = 1; i < gr.num_vertices(); i++)
 	{
@@ -1090,6 +1094,8 @@ bool bundle::remove_intron_contamination()
 			double we1 = gr.get_edge_weight(e1);
 			double we2 = gr.get_edge_weight(e2);
 			if(wv > we  && we1 > we * 0.5 && we2 > we * 0.5) continue;
+			//TODO：node weight should not be siginificantly higher than adjacent edge weight
+			// FIXME: TODO: unless the node is partial exon of terminal nodes?
 		}
 		else
 		{
@@ -1108,7 +1114,8 @@ bool bundle::remove_intron_contamination()
 	return flag;
 }
 
-//remove_retained_intron
+//TODO: the introns should not be contributed by UMI reads, if yes, keep the intron
+// remove_retained_intron
 // implement irtools criteria 1 and 2
 bool bundle::remove_intron_retention()
 {
@@ -1131,7 +1138,7 @@ bool bundle::remove_intron_retention()
 		int s = e1->source();
 		int t = e2->target();
 		double wv = gr.get_vertex_weight(i);
-
+		//TODO: retained intron but potential partial-exons is not adjacent to exon
 		if(s == 0 && t == gr.num_vertices() - 1) continue;	// single exon tx
 		if(s != 0 && t != gr.num_vertices() - 1) continue;	// not criteria 1 or 2
 
