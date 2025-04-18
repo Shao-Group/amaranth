@@ -106,7 +106,7 @@ string output_file1;
 int min_umi_reads_bundle = 1;
 double min_umi_ratio_bundle = 0;
 bool both_umi_support = false;
-bool remove_retained_intron = false;
+bool remove_retained_intron = true;
 int remove_dup = 0;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
 bool use_filter = true;
 bool output_tex_files = false;
