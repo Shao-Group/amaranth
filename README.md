@@ -113,6 +113,13 @@ to additional explanations below the table.
  --min_num_hits_in_bundle     | 5 | the minimum number of reads required in a bundle
  --min_flank_length           | 3 | the minimum match length required in each side for a spliced read
  --min_splice_bundary_hits    | 1 | the minimum number of spliced reads required to support a junction
+ --min_umi_reads_bundle | 1 |(int) Bundle with less UMI reads than this threshold will be ignored
+ --min_umi_ratio_bundle           | 0.0           | (float) Bundle with lower UMI reads ratio than this threshold will be ignored 
+ --both_umi_support               | not used      | If set a bundle need to satisfy both `min_umi_reads_bundle` and `min_umi_ratio_bundle`. Otherwise, satisfy either of them is ok 
+ --no-remove-reteind-intron       | not used      |                                                              
+ --remove-reteind-intron          | used          |                                                              
+ --remove-pcr-duplicates          | 0             | 0 (not remove) or 1 (remove w.r.t alignment coordinates and CIGAR string) 
+
 
 1. For `--verbose`, 0: quiet; 1: one line for each splice graph; 2: details of graph decomposition.
 
