@@ -121,6 +121,7 @@ Here is a list of supported parameters. Please refer to additional explanations 
  --min_umi_reads_bundle | 1 |(int) Bundle with less UMI reads than this threshold will be ignored
  --min_umi_ratio_bundle           | 0.0           | (float) Bundle with lower UMI reads ratio than this threshold will be ignored 
  --both_umi_support               | not used      | If set a bundle need to satisfy both `min_umi_reads_bundle` and `min_umi_ratio_bundle`. Otherwise, satisfy either of them is ok 
+--min_umi_reads_start_exon | 1 | (int) mininum number of UMI reads support of the first exon in a valid transcript 
  --no-remove-reteind-intron       | not used      |
  --remove-reteind-intron          | used          |
  --remove-pcr-duplicates          | 0             | 0 (not remove) or 1 (remove w.r.t alignment coordinates and CIGAR string) 

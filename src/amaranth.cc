@@ -1664,7 +1664,7 @@ int amaranth::get_transcripts()
 			// TSS support
 			if ((i == 1 && gr.strand == '+') || (i == v.size() - 2 && gr.strand == '-'))
 			{
-				if (gr.get_vertex_info(v[i]).umi_support < min_umi_reads_bundle)
+				if (gr.get_vertex_info(v[i]).umi_support < min_umi_reads_start_exon)
 				{
 					empty = true;
 					break;

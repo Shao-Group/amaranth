@@ -140,6 +140,7 @@ extern string output_file1;
 extern int min_umi_reads_bundle;
 extern double min_umi_ratio_bundle;
 extern bool both_umi_support;
+extern int  min_umi_reads_start_exon;
 
 // filtering & retention
 extern bool remove_retained_intron;

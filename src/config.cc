@@ -106,6 +106,7 @@ string output_file1;
 int min_umi_reads_bundle = 1;
 double min_umi_ratio_bundle = 0;
 bool both_umi_support = false;
+int min_umi_reads_start_exon = 1;
 
 // filtering & retention
 bool remove_retained_intron = true;
@@ -400,7 +401,11 @@ int parse_arguments(int argc, const char ** argv)
 			else throw runtime_error("received unknown --both_umi_support value: " + s + " (must be true/false)");
 			i++;
 		}
-
+		else if(string(argv[i]) == "--min_umi_reads_start_exon")
+		{
+			min_umi_reads_start_exon = atoi(argv[i + 1]);
+			i++;
+		}
 		else if(string(argv[i]) == "--library_type")
 		{
 			string s(argv[i + 1]);
