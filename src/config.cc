@@ -102,13 +102,17 @@ string ref_file;
 string output_file;
 string output_file1;
 
-// for controling
+// umi & hybrid parameters
 int min_umi_reads_bundle = 1;
 double min_umi_ratio_bundle = 0;
 bool both_umi_support = false;
+
+// filtering & retention
 bool remove_retained_intron = true;
 int remove_dup = 0;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
 bool use_filter = true;
+
+// for controling
 bool output_tex_files = false;
 bool output_graphviz_files = false;
 string fixed_gene_name = "";

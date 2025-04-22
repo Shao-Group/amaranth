@@ -136,13 +136,17 @@ extern string ref_file;
 extern string output_file;
 extern string output_file1;
 
-// for controling
+// umi & hybrid parameters
 extern int min_umi_reads_bundle;
 extern double min_umi_ratio_bundle;
 extern bool both_umi_support;
+
+// filtering & retention
 extern bool remove_retained_intron;
 extern int remove_dup;
 extern bool use_filter;
+
+// for controling
 extern bool output_tex_files;
 extern bool output_graphviz_files;
 extern string fixed_gene_name;
