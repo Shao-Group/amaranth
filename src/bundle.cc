@@ -1032,28 +1032,17 @@ bool bundle::remove_inner_boundaries()
 	return flag;
 }
 
+//TODO: the introns should not be contributed by UMI reads, if yes, keep the intron
 /**
- * @brief Removes potential intron contamination from the splice graph. (criteria 1 & 2)
- * 
- * This function identifies and removes vertices that likely represent intron contamination 
- * by checking these conditions:
+ * @brief Removes potential FULL intron reteintion (irtools criteria 3)
+ * Potentially consider those:
  * - The vertex has exactly one incoming and one outgoing edge
- * - The vertex is not connected to source (0) or sink vertices
+ * - The vertex is not connected to source NOR sink vertices
  * - The vertex positions match with its adjacent vertices
  * 
  * Criteria for removal:
- * if remove_retained_intron is true:
- *   - Vertex weight is greater than double the direct edge weight AND
- *   - Both adjacent edge weights are greater than the direct edge weight 
- *   Then the vertex is kept (continue)
- * 
- * if remove_retained_intron is false:
- *   - Vertex weight must be less than the direct edge weight AND
- *   - Vertex weight must be less than max_intron_contamination_coverage
- *   Then vertex is removed
  *
- * @return bool Returns true if any vertex was identified and marked as intron contamination,
- *              false otherwise. Removed vertices are marked as EMPTY_VERTEX.
+ * @return bool Returns true if any vertex was marked
  */
 bool bundle::remove_intron_contamination()
 {
@@ -1093,9 +1082,12 @@ bool bundle::remove_intron_contamination()
 		{
 			double we1 = gr.get_edge_weight(e1);
 			double we2 = gr.get_edge_weight(e2);
-			if(wv > we  && we1 > we * 0.5 && we2 > we * 0.5) continue;
-			//TODO：node weight should not be siginificantly higher than adjacent edge weight
-			// FIXME: TODO: unless the node is partial exon of terminal nodes?
+
+			//node weight should be higher than the skipping edge weight
+			bool greater_than_skip_edge = (wv > we * max_ir_full_ratio_v) && (we1 > we * max_ir_full_ratio_e) && (we2 > we * max_ir_full_ratio_e);
+			//node weight should not be siginificantly higher than adjacent edge weight // FIXME: TODO: unless the node is partial exon of terminal nodes?
+			bool greater_than_adjc_edge = (wv > we1 * max_ir_full_ratio_i) && (wv > we2 * max_ir_full_ratio_i);
+			if(greater_than_skip_edge && (!greater_than_adjc_edge)) continue;
 		}
 		else
 		{
@@ -1115,8 +1107,16 @@ bool bundle::remove_intron_contamination()
 }
 
 //TODO: the introns should not be contributed by UMI reads, if yes, keep the intron
-// remove_retained_intron
-// implement irtools criteria 1 and 2
+/**
+ * @brief Removes potential PARTIAL intron contamination (irtools criteria 1 and 2)
+ * 
+ * Potentially consider those:
+ * - The vertex has exactly one incoming and one outgoing edge
+ * - The vertex is connected to source XOR sink vertices
+ * - The vertex positions match with its adjacent vertices
+ * 
+ * @return bool Returns true if any vertex was marked
+ */
 bool bundle::remove_intron_retention()
 {
 	bool flag = false;
@@ -1139,8 +1139,8 @@ bool bundle::remove_intron_retention()
 		int t = e2->target();
 		double wv = gr.get_vertex_weight(i);
 		//TODO: retained intron but potential partial-exons is not adjacent to exon
-		if(s == 0 && t == gr.num_vertices() - 1) continue;	// single exon tx
-		if(s != 0 && t != gr.num_vertices() - 1) continue;	// not criteria 1 or 2
+		if(s == 0 && t == gr.num_vertices() - 1) continue;	// skip for single exon tx
+		if(s != 0 && t != gr.num_vertices() - 1) continue;	// has to be start or end boundary (criteria 1 or 2)
 
 		
 		double max_hovering_junc_weight = 0;
@@ -1148,7 +1148,7 @@ bool bundle::remove_intron_retention()
 		if(s == 0 && t != gr.num_vertices() - 1)			// potential criterion 1
 		{
 			we = gr.get_edge_weight(e2);
-			if(gr.get_vertex_info(t).lpos != vi.rpos) continue;
+			if(gr.get_vertex_info(t).lpos != vi.rpos) continue; // adjacent exon //TODO: intron reteion is not necessarily adjacent
 			PEEI pei = gr.in_edges(t);
 			for (edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
 			{
@@ -1160,7 +1160,7 @@ bool bundle::remove_intron_retention()
 		else if(s != 0 && t == gr.num_vertices() - 1)		// potential criterion 2
 		{
 			we = gr.get_edge_weight(e1);
-			if(gr.get_vertex_info(s).rpos != vi.lpos) continue;
+			if(gr.get_vertex_info(s).rpos != vi.lpos) continue; // adjacent exon //TODO: intron reteion is not necessarily adjacent
 			PEEI pei = gr.out_edges(s);
 			for (edge_iterator it1 = pei.first, it2 = pei.second; it1 != it2; it1++)
 			{
@@ -1176,7 +1176,7 @@ bool bundle::remove_intron_retention()
 		
 		if (remove_retained_intron)
 		{
-			if (wv > max_hovering_junc_weight * 0.5 && we > max_hovering_junc_weight * 0.5) continue;
+			if (wv > max_hovering_junc_weight * max_ir_part_ratio_v && we > max_hovering_junc_weight * max_ir_part_ratio_e) continue;
 		}
 		else
 		{
