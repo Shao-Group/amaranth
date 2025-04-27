@@ -124,6 +124,11 @@ Here is a list of supported parameters. Please refer to additional explanations 
 --min_umi_reads_start_exon | 1 | (int) mininum number of UMI reads support of the first exon in a valid transcript 
  --no-remove-reteind-intron       | not used      |
  --remove-reteind-intron          | used          |
+ --max_ir_part_ratio_v | 0.5 | the ratio threshold of retained node to skip edge for partial introns (if greater than threshold, consider true transcript)
+ --max_ir_part_ratio_e | 0.5 | the ratio threshold of retained node's edge to skip edge for partial introns (if greater than threshold, consider true transcript)
+ --max_ir_full_ratio_v | 1.0 | the ratio threshold of retained node to skip edge for full introns (if greater than threshold, consider true transcript)
+ --max_ir_full_ratio_e | 0.5 | the ratio threshold of retained node's edge to skip edge for full introns (if greater than threshold, consider true transcript)
+ --max_ir_full_ratio_i | 10.0 | the ratio threshold of retained node to its own edge for full introns (if greater than threshold, consider true RETENTION) 
  --remove-pcr-duplicates          | 0             | 0 (not remove) or 1 (remove w.r.t alignment coordinates and CIGAR string) 
 
 

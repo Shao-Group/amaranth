@@ -110,6 +110,11 @@ int min_umi_reads_start_exon = 1;
 
 // filtering & retention
 bool remove_retained_intron = true;
+double max_ir_part_ratio_v = 0.5;	// reteined node to skip edge, 		  if less than this, consider as retained intron for partial intron
+double max_ir_part_ratio_e = 0.5;	// reteined node's edge to skip edge, if less than this, consider as retained intron for partial intron
+double max_ir_full_ratio_v = 1.0;   // reteined node to skip edge, 		  if less than this, consider as retained intron for full intron
+double max_ir_full_ratio_e = 0.5;	// reteined node's edge to skip edge, if less than this, consider as retained intron for full intron
+double max_ir_full_ratio_i = 10.0;	// reteined node to its own edge, 	  if GREATER than this, consider as retained intron for full intron
 int remove_dup = 0;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
 bool use_filter = true;
 
@@ -378,6 +383,31 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--no-remove-reteind-intron")
 		{
 			remove_retained_intron = false;
+		}
+		else if(string(argv[i]) == "--max_ir_part_ratio_v")
+		{
+			max_ir_part_ratio_v = atof(argv[i + 1]);
+			i++;
+		}
+		else if(string(argv[i]) == "--max_ir_part_ratio_e")
+		{
+			max_ir_part_ratio_e = atof(argv[i + 1]); 
+			i++;
+		}
+		else if(string(argv[i]) == "--max_ir_full_ratio_v")
+		{
+			max_ir_full_ratio_v = atof(argv[i + 1]);
+			i++;
+		}
+		else if(string(argv[i]) == "--max_ir_full_ratio_e")
+		{
+			max_ir_full_ratio_e = atof(argv[i + 1]);
+			i++;
+		}
+		else if(string(argv[i]) == "--max_ir_full_ratio_i")
+		{
+			max_ir_full_ratio_i = atof(argv[i + 1]);
+			i++;
 		}
 		else if(string(argv[i]) == "--min_umi_reads_bundle")
 		{
