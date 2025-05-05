@@ -110,6 +110,8 @@ int min_umi_reads_start_exon = 1;
 
 // filtering & retention
 bool remove_retained_intron = true;
+double max_ir_umi_support_full = 2;
+double max_ir_umi_support_part = 2;
 double max_ir_part_ratio_v = 0.5;	// reteined node to skip edge, 		  if less than this, consider as retained intron for partial intron
 double max_ir_part_ratio_e = 0.5;	// reteined node's edge to skip edge, if less than this, consider as retained intron for partial intron
 double max_ir_full_ratio_v = 1.0;   // reteined node to skip edge, 		  if less than this, consider as retained intron for full intron
@@ -383,6 +385,16 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--no-remove-reteind-intron")
 		{
 			remove_retained_intron = false;
+		}
+		else if (string(argv[i]) == "--max_ir_umi_support_full")
+		{
+			max_ir_umi_support_full = atof(argv[i + 1]);
+			i++;
+		}
+		else if (string(argv[i]) == "--max_ir_umi_support_part")
+		{
+			max_ir_umi_support_part = atof(argv[i + 1]);
+			i++;
 		}
 		else if(string(argv[i]) == "--max_ir_part_ratio_v")
 		{

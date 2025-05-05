@@ -1055,6 +1055,7 @@ bool bundle::remove_intron_contamination()
 
 		if(gr.in_degree(i) != 1) continue;
 		if(gr.out_degree(i) != 1) continue;
+		if(vi.umi_support >= max_ir_umi_support_full) continue;
 
 		edge_iterator it1, it2;
 		PEEI pei = gr.in_edges(i);
@@ -1127,6 +1128,7 @@ bool bundle::remove_intron_retention()
 
 		if(gr.in_degree(i) != 1) continue;
 		if(gr.out_degree(i) != 1) continue;
+		if(vi.umi_support >= max_ir_umi_support_part) continue;
 
 		edge_iterator it1, it2;
 		PEEI pei = gr.in_edges(i);
