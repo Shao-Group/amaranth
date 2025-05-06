@@ -113,8 +113,8 @@ int min_umi_reads_start_exon = 1;
 
 // filtering & retention
 bool remove_retained_intron = true;
-double max_ir_umi_support_full = 2;
-double max_ir_umi_support_part = 2;
+double max_ir_umi_support_full = 3;
+double max_ir_umi_support_part = 5;
 double max_ir_part_ratio_v = 0.5;	// reteined node to skip edge, 		  if less than this, consider as retained intron for partial intron
 double max_ir_part_ratio_e = 0.5;	// reteined node's edge to skip edge, if less than this, consider as retained intron for partial intron
 double max_ir_full_ratio_v = 1.0;   // reteined node to skip edge, 		  if less than this, consider as retained intron for full intron
