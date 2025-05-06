@@ -33,7 +33,7 @@ int previewer::close_file()
 
 int previewer::preview()
 {
-	if(tech == seq::UNKNOWN)
+	if(true) // always solve tech
 	{
 		open_file();
 		solve_tech();
@@ -69,6 +69,8 @@ int	previewer::solve_tech()
 	int total = 0;
 	int umi_reads = 0;
 	int hid = 0;
+	int umi_length_total = 0;
+	int int_length_total = 0;
 
 	while(sam_read1(sfn, hdr, b1t) >= 0)
 	{
@@ -89,7 +91,15 @@ int	previewer::solve_tech()
 		hit ht(b1t, hid++);
 		ht.set_tags(b1t);
 		
-		if(ht.umi != "") umi_reads += 1;
+		if(ht.umi != "") 
+		{
+			umi_reads += 1;
+			umi_length_total += ht.qlen;
+		}
+		else
+		{
+			int_length_total += ht.qlen;
+		}
 	}
 
 	seq inferred_tech = seq::UNKNOWN;
@@ -106,7 +116,9 @@ int	previewer::solve_tech()
 		printf("preview technology: sampled reads = %d, umi reads = %d, inferred tech = %s, input tech = %s\n", 
 				total, umi_reads, inferred_tech_str.c_str(), tech_str.c_str());
 	}
-
+	umi_ratio = (double)umi_reads / total;
+	if (umi_reads > 0) umi_read_length = umi_length_total / umi_reads;
+	if (total > 0)     int_read_length = int_length_total / (total - umi_reads);
 	if (tech == seq::UNKNOWN) tech = inferred_tech;
 
 	return 0;

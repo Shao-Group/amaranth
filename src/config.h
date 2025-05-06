@@ -78,6 +78,9 @@ extern int insertsize_high;
 extern double insertsize_low_percentile;
 extern double insertsize_high_percentile;
 extern vector<double> insertsize_profile;
+extern double umi_ratio;
+extern int int_read_length;
+extern int umi_read_length;
 
 // for bridging
 extern double min_bridging_score;

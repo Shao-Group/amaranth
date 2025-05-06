@@ -47,6 +47,9 @@ int insertsize_high = -1;
 double insertsize_low_percentile = 0.005;
 double insertsize_high_percentile = 0.998;
 vector<double> insertsize_profile;
+double umi_ratio = -1.0;
+int int_read_length = 0;
+int umi_read_length = 0;
 
 // for bridging
 double min_bridging_score = 0.5;
