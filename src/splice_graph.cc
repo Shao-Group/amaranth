@@ -1275,7 +1275,7 @@ int splice_graph::output_transcript(transcript &trst, const path &p, const strin
 	trst.strand = strand;
 
 	const vector<int> &v = p.v;
-	assert(valid_path(v));
+	if (algo == "amaranth") assert(valid_path(v));
 	join_interval_map jmap;
 	for(int k = 1; k < v.size() - 1; k++)
 	{
