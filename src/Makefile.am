@@ -42,6 +42,7 @@ amaranth_SOURCES = splice_graph.h splice_graph.cc \
 				   filter.h filter.cc \
 				   amaranth_aux.hpp \
 				   amaranth.h amaranth.cc \
+				   scallop.h scallop.cc \
 				   analyzer.h analyzer.cc \
 				   basic_algo.h basic_algo.cc \
 				   main.cc
