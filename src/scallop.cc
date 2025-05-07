@@ -1381,6 +1381,15 @@ int scallop::collect_path(int e)
 	for(int i = 0; i < v.size(); i++)
 	{
 		if(gr.get_vertex_info(v[i]).type == EMPTY_VERTEX) empty = true;
+
+		// TSS support
+		if ((i == 1 && gr.strand == '+') || (i == v.size() - 2 && gr.strand == '-'))
+		{
+			if (gr.get_vertex_info(v[i]).umi_support < min_umi_reads_start_exon)
+			{
+				empty = true;
+			}
+		}
 		//if(empty == true) break;
 		if(empty == true)
 		{
