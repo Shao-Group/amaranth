@@ -164,6 +164,12 @@ int parse_arguments(int argc, const char ** argv)
 		}
 
 		// internal use
+		else if(string(argv[i]) == "--algo")
+		{
+			algo = string(argv[i + 1]);
+			if (algo != "amaranth" && algo != "scallop") throw runtime_error("received unknown --algo value: " + algo + " (must be amaranth/scallop)");
+			i++;
+		}
 		else if(string(argv[i]) == "-g")
 		{
 			fixed_gene_name = string(argv[i + 1]);
