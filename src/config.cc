@@ -388,19 +388,19 @@ int parse_arguments(int argc, const char ** argv)
 			remove_dup = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--remove-retaind-intron")
+		else if(string(argv[i]) == "--remove-retained-intron")
 		{
 			remove_retained_intron = true;
 		}
-		else if(string(argv[i]) == "--no-remove-retaind-intron")
+		else if(string(argv[i]) == "--no-remove-retained-intron")
 		{
 			remove_retained_intron = false;
 		}
-		else if(string(argv[i]) == "--remove-retaind-intron-hard")
+		else if(string(argv[i]) == "--remove-retained-intron-hard")
 		{
 			remove_retained_intron_hard = true;
 		}
-		else if(string(argv[i]) == "--no-remove-retaind-intron-hard")
+		else if(string(argv[i]) == "--no-remove-retained-intron-hard")
 		{
 			remove_retained_intron_hard = false;
 		}

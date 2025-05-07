@@ -122,8 +122,8 @@ Here is a list of supported parameters. Please refer to additional explanations 
  --min_umi_ratio_bundle           | 0.0           | (float) Bundle with lower UMI reads ratio than this threshold will be ignored 
  --both_umi_support               | not used      | If set a bundle need to satisfy both `min_umi_reads_bundle` and `min_umi_ratio_bundle`. Otherwise, satisfy either of them is ok 
 --min_umi_reads_start_exon | 1 | (int) mininum number of UMI reads support of the first exon in a valid transcript 
- --no-remove-retaind-intron       | not used      |
- --remove-retaind-intron          | used          |
+ --no-remove-retained-intron       | not used      |
+ --remove-retained-intron          | used          |
  --max_ir_part_ratio_v | 0.5 | the ratio threshold of retained node to skip edge for partial introns (if greater than threshold, consider true transcript)
  --max_ir_part_ratio_e | 0.5 | the ratio threshold of retained node's edge to skip edge for partial introns (if greater than threshold, consider true transcript)
  --max_ir_full_ratio_v | 1.0 | the ratio threshold of retained node to skip edge for full introns (if greater than threshold, consider true transcript)
