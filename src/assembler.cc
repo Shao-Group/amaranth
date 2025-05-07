@@ -14,6 +14,7 @@ See LICENSE for licensing.
 #include "gtf.h"
 #include "genome.h"
 #include "assembler.h"
+#include "scallop.h"
 #include "bundle.h"
 #include "amaranth.h"
 #include "sgraph_compare.h"
@@ -243,21 +244,45 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 		{
 			string gid = "gene." + tostring(index) + "." + tostring(k) + "." + tostring(r);
 			gr.gid = gid;
-
-			amaranth amaranthInstance(gr, hs, true);//FIXME: add strategy mode
-			if(verbose >= 2)
+			
+			if (algo == "amaranth")
 			{
-				printf("assembly with r = %d, total %lu transcripts, run 1:\n", r, amaranthInstance.trsts.size());
-				for(int i = 0; i < amaranthInstance.trsts.size(); i++) amaranthInstance.trsts[i].write(cout);
+				amaranth amaranthInstance(gr, hs, true);
+				if(verbose >= 2)
+				{
+					printf("assembly with r = %d, total %lu transcripts, run 1:\n", r, amaranthInstance.trsts.size());
+					for(int i = 0; i < amaranthInstance.trsts.size(); i++) amaranthInstance.trsts[i].write(cout);
+				}
+	
+				for(int i = 0; i < amaranthInstance.trsts.size(); i++)
+				{
+					ts1.add(amaranthInstance.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				}
+				for(int i = 0; i < amaranthInstance.non_full_trsts.size(); i++)
+				{
+					ts2.add(amaranthInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				}
 			}
-
-			for(int i = 0; i < amaranthInstance.trsts.size(); i++)
+			else if (algo == "scallop")
 			{
-				ts1.add(amaranthInstance.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				scallop scallopInstance(gr, hs, true);
+				if(verbose >= 2)
+				{
+					printf("assembly with r = %d, total %lu transcripts, run 1:\n", r, scallopInstance.trsts.size());
+					for(int i = 0; i < scallopInstance.trsts.size(); i++) scallopInstance.trsts[i].write(cout);
+				}
+				for(int i = 0; i < scallopInstance.trsts.size(); i++)
+				{
+					ts1.add(scallopInstance.trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				}
+				for(int i = 0; i < scallopInstance.non_full_trsts.size(); i++)
+				{
+					ts2.add(scallopInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				}
 			}
-			for(int i = 0; i < amaranthInstance.non_full_trsts.size(); i++)
+			else 
 			{
-				ts2.add(amaranthInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
+				throw std::runtime_error("Unknown algorithm: " + algo);
 			}
 		}
 	}
