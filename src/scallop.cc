@@ -31,6 +31,8 @@ scallop::scallop(const splice_graph &g, const hyper_set &h, bool r)
 	init_vertex_map();
 	init_inner_weights();
 	init_nonzeroset();
+
+	assemble();
 }
 
 scallop::~scallop()
