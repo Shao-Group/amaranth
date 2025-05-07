@@ -147,6 +147,7 @@ extern int  min_umi_reads_start_exon;
 
 // filtering & retention
 extern bool remove_retained_intron;
+extern bool remove_retained_intron_hard;
 extern double max_ir_umi_support_full;
 extern double max_ir_umi_support_part;
 extern double max_ir_part_ratio_v;

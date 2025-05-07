@@ -113,6 +113,7 @@ int min_umi_reads_start_exon = 1;
 
 // filtering & retention
 bool remove_retained_intron = true;
+bool remove_retained_intron_hard = true; // true: remove ir vertex from graph, false: mark as empty vertex; must be true for amaranth
 double max_ir_umi_support_full = 3;
 double max_ir_umi_support_part = 5;
 double max_ir_part_ratio_v = 0.5;	// reteined node to skip edge, 		  if less than this, consider as retained intron for partial intron
@@ -387,13 +388,21 @@ int parse_arguments(int argc, const char ** argv)
 			remove_dup = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--remove-reteind-intron")
+		else if(string(argv[i]) == "--remove-retaind-intron")
 		{
 			remove_retained_intron = true;
 		}
-		else if(string(argv[i]) == "--no-remove-reteind-intron")
+		else if(string(argv[i]) == "--no-remove-retaind-intron")
 		{
 			remove_retained_intron = false;
+		}
+		else if(string(argv[i]) == "--remove-retaind-intron-hard")
+		{
+			remove_retained_intron_hard = true;
+		}
+		else if(string(argv[i]) == "--no-remove-retaind-intron-hard")
+		{
+			remove_retained_intron_hard = false;
 		}
 		else if (string(argv[i]) == "--max_ir_umi_support_full")
 		{
@@ -573,7 +582,13 @@ int parse_arguments(int argc, const char ** argv)
 			throw runtime_error("error: amaranthMode is ref, but reference-file is missing.");
 		}
 	}
-
+	if(algo == "amaranth")
+	{
+		if(remove_retained_intron_hard == false)
+		{
+			throw runtime_error("error: --remove_retained_intron_hard must be true for amaranth.");
+		}
+	}
 
 	return 0;
 }
