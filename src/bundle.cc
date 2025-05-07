@@ -1048,7 +1048,7 @@ bool bundle::remove_inner_boundaries()
 
 //TODO: the introns should not be contributed by UMI reads, if yes, keep the intron
 /**
- * @brief Removes potential FULL intron reteintion (irtools criteria 3)
+ * @brief Removes potential FULL intron retaintion (irtools criteria 3)
  * Potentially consider those:
  * - The vertex has exactly one incoming and one outgoing edge
  * - The vertex is not connected to source NOR sink vertices

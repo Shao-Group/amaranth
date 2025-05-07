@@ -116,11 +116,11 @@ bool remove_retained_intron = true;
 bool remove_retained_intron_hard = true; // true: remove ir vertex from graph, false: mark as empty vertex; must be true for amaranth
 double max_ir_umi_support_full = 3;
 double max_ir_umi_support_part = 5;
-double max_ir_part_ratio_v = 0.5;	// reteined node to skip edge, 		  if less than this, consider as retained intron for partial intron
-double max_ir_part_ratio_e = 0.5;	// reteined node's edge to skip edge, if less than this, consider as retained intron for partial intron
-double max_ir_full_ratio_v = 1.0;   // reteined node to skip edge, 		  if less than this, consider as retained intron for full intron
-double max_ir_full_ratio_e = 0.5;	// reteined node's edge to skip edge, if less than this, consider as retained intron for full intron
-double max_ir_full_ratio_i = 10.0;	// reteined node to its own edge, 	  if GREATER than this, consider as retained intron for full intron
+double max_ir_part_ratio_v = 0.5;	// retained node to skip edge, 		  if less than this, consider as retained intron for partial intron
+double max_ir_part_ratio_e = 0.5;	// retained node's edge to skip edge, if less than this, consider as retained intron for partial intron
+double max_ir_full_ratio_v = 1.0;   // retained node to skip edge, 		  if less than this, consider as retained intron for full intron
+double max_ir_full_ratio_e = 0.5;	// retained node's edge to skip edge, if less than this, consider as retained intron for full intron
+double max_ir_full_ratio_i = 10.0;	// retained node to its own edge, 	  if GREATER than this, consider as retained intron for full intron
 int remove_dup = 0;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
 bool use_filter = true;
 
