@@ -601,9 +601,23 @@ int bundle::revise_splice_graph()
 		break;
 	}
 
+	if(remove_retained_intron_hard) purge_empty_vertex();
+
 	//find_contamination_chain();
 	refine_splice_graph();
 
+	return 0;
+}
+
+
+int bundle::purge_empty_vertex()
+{
+	for(int i = 0; i < gr.num_vertices(); i++)
+	{
+		if(gr.get_vertex_info(i).type == EMPTY_VERTEX) gr.clear_vertex(i);
+		if(verbose >= 2) printf("purge empty_vertex %d\n", i);
+	}
+	gr.refine_splice_graph();
 	return 0;
 }
 

@@ -57,7 +57,7 @@ private:
 	int init_nonzeroset();
 	int add_pseudo_hyper_edges();
 	int refine_splice_graph();
-
+	
 	// resolve iteratively
 	bool resolve_trivial_vertex(int type, double jump_ratio);
 	bool resolve_trivial_vertex_fast(double jump_ratio);

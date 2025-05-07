@@ -90,6 +90,7 @@ public:
 	bool remove_false_boundaries();
 	bool tackle_false_boundaries();
 	int find_contamination_chain();
+	int purge_empty_vertex();
 
 	// hyper set
 	int build_hyper_set();
