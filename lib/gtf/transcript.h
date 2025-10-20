@@ -14,6 +14,7 @@ See LICENSE for licensing.
 #include <string>
 #include <vector>
 #include <set>
+#include <variant>
 #include "item.h"
 
 using namespace std;
@@ -50,6 +51,7 @@ public:
 	double TPM;
 
 	vector<PI32> exons;
+	map<string, std::variant<string, int, double>> features;
 
 public:
 	int add_exon(int s, int t);
@@ -71,6 +73,7 @@ public:
 	int extend_bounds(const transcript &t);
 	string label() const;
 	int write(ostream &fout, double cov2 = -1, int count = -1) const;
+	int write_features(ostream &fout) const;
 };
 
 #endif

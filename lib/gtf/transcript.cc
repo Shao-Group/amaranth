@@ -65,6 +65,7 @@ bool transcript::operator< (const transcript &t) const
 int transcript::clear()
 {
 	exons.clear();
+	features.clear();
 	seqname = "";
 	source = "";
 	feature = "";
@@ -350,5 +351,38 @@ int transcript::write(ostream &fout, double cov2, int count) const
 		fout<<"transcript_id \""<<transcript_id.c_str()<<"\"; ";
 		fout<<"exon \""<<k + 1<<"\"; "<<endl;
 	}
+	return 0;
+}
+
+int transcript::write_features(ostream &fout) const
+{
+	fout.precision(4);
+	fout<<fixed;
+
+	if(exons.size() == 0) return 0;
+
+	PI32 p = get_bounds();
+
+	// Write basic transcript information (tab-separated)
+	fout<<seqname<<"\t";
+	fout<<source<<"\t";
+	fout<<"transcript"<<"\t";
+	fout<<p.first + 1<<"\t";
+	fout<<p.second<<"\t";
+	fout<<strand<<"\t";
+	fout<<gene_id<<"\t";
+	fout<<transcript_id<<"\t";
+	fout<<coverage<<"\t";
+
+	// Write all features from the map
+	for(const auto& kv : features)
+	{
+		std::visit([&fout](const auto& value) {
+			fout << value;
+		}, kv.second);
+		fout<<"\t";
+	}
+
+	fout << endl;
 	return 0;
 }
