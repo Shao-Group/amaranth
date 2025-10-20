@@ -138,6 +138,7 @@ extern string input_file;
 extern string ref_file;
 extern string output_file;
 extern string output_file1;
+extern string output_feat;
 
 // umi & hybrid parameters
 extern int min_umi_reads_bundle;

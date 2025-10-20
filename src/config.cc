@@ -104,6 +104,7 @@ string input_file;
 string ref_file;
 string output_file;
 string output_file1;
+string output_feat;
 
 // umi & hybrid parameters
 int min_umi_reads_bundle = 1;
@@ -156,6 +157,11 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--transcript_fragments")
 		{
 			output_file1 = string(argv[i + 1]);
+			i++;
+		}
+		else if(string(argv[i]) == "--feature_output")
+		{
+			output_feat = string(argv[i + 1]);
 			i++;
 		}
 		else if(string(argv[i]) == "-r")
