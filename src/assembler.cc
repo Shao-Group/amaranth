@@ -322,15 +322,105 @@ int assembler::write()
 	}
 	fout.close();
 
-	ofstream fout1(output_file1.c_str());
-	if(fout1.fail()) return 0;
+	if (output_file1 != "") 
+	{
+		ofstream fout1(output_file1.c_str());
+		if(!fout1.fail()) 
+		{
+			for(int i = 0; i < non_full_trsts.size(); i++)
+			{
+				transcript &t = non_full_trsts[i];
+				t.write(fout1);
+			}
+			fout1.close();
+		}
+	}
+
+	// Write features if output_feat is specified
+	if(output_feat != "")
+	{
+		write_features();
+	}
+
+	return 0;
+}
+
+int assembler::write_features()
+{
+	if(output_feat == "") return 0;
+
+	ofstream fout(output_feat.c_str());
+	if(fout.fail())
+	{
+		cerr << "Error: Cannot open feature output file " << output_feat << endl;
+		return 0;
+	}
+
+	// Combine all transcripts for feature output
+	vector<transcript*> all_trsts;
+	for(int i = 0; i < trsts.size(); i++)
+	{
+		all_trsts.push_back(&trsts[i]);
+	}
 	for(int i = 0; i < non_full_trsts.size(); i++)
 	{
-		transcript &t = non_full_trsts[i];
-		t.write(fout1);
+		all_trsts.push_back(&non_full_trsts[i]);
 	}
-	fout1.close();
 
+	if(all_trsts.empty()) return 0;
+
+	// Get all feature keys from the first transcript
+	vector<string> feature_keys;
+	for(const auto &kv : all_trsts[0]->features)
+	{
+		feature_keys.push_back(kv.first);
+	}
+	sort(feature_keys.begin(), feature_keys.end());  // Sort for consistent column order
+
+	// Write header: basic info first, then features
+	fout << "chr,start,end,strand,transcript_id,gene_id";
+	for(const auto &key : feature_keys)
+	{
+		fout << "," << key;
+	}
+	fout << endl;
+
+	// Write features for each transcript
+	for(int i = 0; i < all_trsts.size(); i++)
+	{
+		transcript *t = all_trsts[i];
+
+		// Assert that all transcripts have the same keys
+		assert(t->features.size() == all_trsts[0]->features.size());
+		for(const auto &key : feature_keys)
+		{
+			assert(t->features.find(key) != t->features.end());
+		}
+
+		// Get transcript bounds
+		PI32 bounds = t->get_bounds();
+
+		// Write basic transcript information
+		fout << t->seqname << ",";           // chr
+		fout << bounds.first + 1 << ",";     // start (1-based)
+		fout << bounds.second << ",";        // end
+		fout << t->strand << ",";            // strand
+		fout << t->transcript_id << ",";     // transcript_id
+		fout << t->gene_id;                  // gene_id
+
+		// Write feature values
+		for(const auto &key : feature_keys)
+		{
+			fout << ",";
+			// Use std::visit to handle variant types
+			std::visit([&fout](const auto& value) {
+				fout << value;
+			}, t->features[key]);
+		}
+		fout << endl;
+	}
+
+	fout.close();
 	return 0;
 }
 

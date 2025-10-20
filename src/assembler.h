@@ -49,6 +49,7 @@ private:
 	int assemble(const splice_graph &gr, const hyper_set &hs, transcript_set &ts1, transcript_set &ts2);
 	int assign_RPKM();
 	int write();
+	int write_features();
 	int compare(splice_graph &gr, const string &ref, const string &tex = "");
 	bool determine_regional_graph(splice_graph &gr);
 };
