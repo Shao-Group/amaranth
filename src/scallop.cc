@@ -108,10 +108,13 @@ int scallop::assemble()
 
 	trsts.clear();
 	//gr.output_transcripts(trsts, paths);
-	
+
 	non_full_trsts.clear();
 	gr.output_transcripts1(trsts, non_full_trsts, paths);
 	//printf("in scallop.cc: trsts.size = %d, non full length trsts.size = %d\n", trsts.size(), non_full_trsts.size());
+
+	// Extract features for all transcripts
+	extract_features();
 
 	if(verbose >= 2) 
 	{
@@ -1540,5 +1543,221 @@ int scallop::draw_splice_graph(const string &file)
 	
 	vector<int> tp = topological_sort();
 	gr.draw(file, mis, mes, 4.5, tp);
+	return 0;
+}
+
+// Helper functions for computing statistics
+namespace {
+	double compute_min(const vector<double> &v) {
+		if(v.empty()) return 0.0;
+		return *std::min_element(v.begin(), v.end());
+	}
+
+	double compute_max(const vector<double> &v) {
+		if(v.empty()) return 0.0;
+		return *std::max_element(v.begin(), v.end());
+	}
+
+	double compute_mean(const vector<double> &v) {
+		if(v.empty()) return 0.0;
+		double sum = 0.0;
+		for(auto x : v) sum += x;
+		return sum / v.size();
+	}
+
+	double compute_median(vector<double> v) {
+		if(v.empty()) return 0.0;
+		std::sort(v.begin(), v.end());
+		size_t n = v.size();
+		if(n % 2 == 0) return (v[n/2 - 1] + v[n/2]) / 2.0;
+		else return v[n/2];
+	}
+
+	double compute_std(const vector<double> &v) {
+		if(v.empty()) return 0.0;
+		double mean = compute_mean(v);
+		double sum_sq = 0.0;
+		for(auto x : v) {
+			double diff = x - mean;
+			sum_sq += diff * diff;
+		}
+		return sqrt(sum_sq / v.size());
+	}
+}
+
+int scallop::extract_features()
+{
+	// Iterate through all paths and extract features for corresponding transcripts
+	// Paths are split into trsts (nf=0) and non_full_trsts (nf=1), not sequential
+	int full_idx = 0;
+	int non_full_idx = 0;
+
+	for(int i = 0; i < paths.size(); i++)
+	{
+		const path &p = paths[i];
+		if(p.nf == 0)  // full-length transcript
+		{
+			extract_transcript_features(trsts[full_idx], i);
+			full_idx++;
+		}
+		else if(p.nf == 1)  // non-full-length transcript
+		{
+			extract_transcript_features(non_full_trsts[non_full_idx], i);
+			non_full_idx++;
+		}
+	}
+	assert(full_idx == trsts.size());
+	assert(non_full_idx == non_full_trsts.size());
+	return 0;
+}
+
+int scallop::extract_transcript_features(transcript &t, int path_index)
+{
+	// Shrink transcript to merge consecutive exons first
+	t.shrink();
+
+	// Get the corresponding path
+	const path &p = paths[path_index];
+	const vector<int> &v = p.v;  // vertex indices in the path
+
+	// 1. Bottleneck coverage and highest coverage
+	double bottleneck_cov = 1e9;
+	double highest_cov = 0.0;
+	vector<double> comp_cov;  // component coverages (vertices)
+
+	// Iterate through vertices in the path (skip source and sink)
+	for(int j = 1; j < v.size() - 1; j++)
+	{
+		int vertex_id = v[j];
+		double cov = gr.get_vertex_weight(vertex_id);
+		comp_cov.push_back(cov);
+		if(cov < bottleneck_cov) bottleneck_cov = cov;
+		if(cov > highest_cov) highest_cov = cov;
+	}
+
+	// 2. Number of junctions (after shrinking, this is exons - 1)
+	int num_junctions = t.exons.size() > 0 ? t.exons.size() - 1 : 0;
+
+	// 3. Junction coverage statistics
+	vector<double> junc_cov;
+	for(int j = 1; j < v.size() - 1; j++)
+	{
+		int s = v[j];
+		int t_vertex = v[j + 1];
+		PEB pe = gr.edge(s, t_vertex);
+		if(pe.second)  // edge exists
+		{
+			double w = gr.get_edge_weight(pe.first);
+			junc_cov.push_back(w);
+		}
+	}
+
+	// 4. UMI support (collect per-vertex UMI support)
+	int num_UMI_support = 0;
+	int total_umi = 0;
+	vector<double> umi_support_per_vertex;
+
+	for(int j = 1; j < v.size() - 1; j++)
+	{
+		int vertex_id = v[j];
+		vertex_info vi = gr.get_vertex_info(vertex_id);
+		num_UMI_support += vi.umi_support;
+		umi_support_per_vertex.push_back(vi.umi_support);
+		total_umi++;
+	}
+
+	// 5. Compute UMI support per exon (after shrinking)
+	// Need to map vertices back to exons
+	vector<double> umi_support_per_exon;
+	for(int exon_idx = 0; exon_idx < t.exons.size(); exon_idx++)
+	{
+		PI32 exon = t.exons[exon_idx];
+		double exon_umi = 0;
+		int count = 0;
+
+		// Find all vertices that fall within this exon
+		for(int j = 1; j < v.size() - 1; j++)
+		{
+			int vertex_id = v[j];
+			vertex_info vi = gr.get_vertex_info(vertex_id);
+
+			// Check if this vertex overlaps with the exon
+			if(!(vi.rpos < exon.first || vi.lpos > exon.second))
+			{
+				exon_umi += vi.umi_support;
+				count++;
+			}
+		}
+
+		if(count > 0)
+		{
+			umi_support_per_exon.push_back(exon_umi / count);  // average UMI per vertex in this exon
+		}
+	}
+
+	// Get UMI support for 1st exon (considering strandness)
+	double umi_support_1st_exon = 0.0;
+	if(umi_support_per_exon.size() > 0)
+	{
+		// Check strand: '+' means first exon is at index 0, '-' means last exon
+		if(t.strand == '+')
+		{
+			umi_support_1st_exon = umi_support_per_exon[0];
+		}
+		else if(t.strand == '-')
+		{
+			umi_support_1st_exon = umi_support_per_exon[umi_support_per_exon.size() - 1];
+		}
+		else  // strand unknown, use first exon by position
+		{
+			umi_support_1st_exon = umi_support_per_exon[0];
+		}
+	}
+
+	// Store features in transcript.features map
+	t.features["bottleneck_coverage"] = bottleneck_cov;
+	t.features["highest_coverage"] = highest_cov;
+	t.features["num_junctions"] = num_junctions;
+
+	// Component coverage statistics
+	t.features["min_comp_cov"] = compute_min(comp_cov);
+	t.features["max_comp_cov"] = compute_max(comp_cov);
+	t.features["median_comp_cov"] = compute_median(comp_cov);
+	t.features["mean_comp_cov"] = compute_mean(comp_cov);
+	t.features["std_comp_cov"] = compute_std(comp_cov);
+
+	// Junction coverage statistics
+	t.features["min_junc_cov"] = compute_min(junc_cov);
+	t.features["max_junc_cov"] = compute_max(junc_cov);
+	t.features["median_junc_cov"] = compute_median(junc_cov);
+	t.features["mean_junc_cov"] = compute_mean(junc_cov);
+	t.features["std_junc_cov"] = compute_std(junc_cov);
+
+	// UMI statistics
+	t.features["num_UMI_support"] = num_UMI_support;
+	double ratio_UMI = total_umi > 0 ? (double)num_UMI_support / total_umi : 0.0;
+	t.features["ratio_UMI_support"] = ratio_UMI;
+
+	int transcript_length = t.length();
+	double avg_UMI_per_exon = t.exons.size() > 0 ? (double)num_UMI_support / t.exons.size() : 0.0;
+	double avg_UMI_per_nt = transcript_length > 0 ? (double)num_UMI_support / transcript_length : 0.0;
+	t.features["avg_UMI_per_exon"] = avg_UMI_per_exon;
+	t.features["avg_UMI_per_nt"] = avg_UMI_per_nt;
+
+	// Additional UMI statistics
+	t.features["UMI_support_1st_exon"] = umi_support_1st_exon;
+	t.features["min_UMI_support"] = compute_min(umi_support_per_vertex);
+	t.features["max_UMI_support"] = compute_max(umi_support_per_vertex);
+	t.features["std_UMI_support"] = compute_std(umi_support_per_vertex);
+
+
+	// Fragment coverage statistics (placeholders)
+	t.features["num_fragments"] = 0;
+	t.features["min_frag_cov"] = 0.0;
+	t.features["max_frag_cov"] = 0.0;
+	t.features["median_frag_cov"] = 0.0;
+	t.features["mean_frag_cov"] = 0.0;
+	t.features["std_frag_cov"] = 0.0;
+
 	return 0;
 }

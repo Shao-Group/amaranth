@@ -92,6 +92,10 @@ private:
 	int compute_length(const path &p);
 	int greedy_decompose();
 
+	// feature extraction
+	int extract_features();
+	int extract_transcript_features(transcript &t, int path_index);
+
 	// stats, print, and draw
 	int print();
 	int stats();
