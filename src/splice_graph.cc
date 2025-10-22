@@ -1269,8 +1269,8 @@ int splice_graph::output_transcript(transcript &trst, const path &p, const strin
 {
 	trst.seqname = chrm;
 	trst.source = "amaranth";
-	trst.gene_id = gid;
-	trst.transcript_id = tid;
+	trst.gene_id = gene_name_prefix + gid;
+	trst.transcript_id = gene_name_prefix + tid;
 	trst.coverage = p.abd;
 	trst.strand = strand;
 
