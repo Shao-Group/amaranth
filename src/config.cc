@@ -129,6 +129,7 @@ bool use_filter = true;
 bool output_tex_files = false;
 bool output_graphviz_files = false;
 string fixed_gene_name = "";
+string gene_name_prefix = "";
 int batch_bundle_size = 100;
 int verbose = 1;
 int assemble_duplicates = 1; //TODO:
@@ -180,6 +181,11 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "-g")
 		{
 			fixed_gene_name = string(argv[i + 1]);
+			i++;
+		}
+		else if(string(argv[i]) == "--gene_name_prefix")
+		{
+			gene_name_prefix = string(argv[i + 1]);
 			i++;
 		}
 		else if(string(argv[i]) == "-t")
@@ -657,6 +663,7 @@ int print_parameters()
 	printf("output_tex_files = %c\n", output_tex_files ? 'T' : 'F');
 	printf("output_graphviz_files = %c\n", output_graphviz_files ? 'T' : 'F');
 	printf("fixed_gene_name = %s\n", fixed_gene_name.c_str());
+	printf("gene_name_prefix = %s\n", gene_name_prefix.c_str());
 	printf("use_second_alignment = %c\n", use_second_alignment ? 'T' : 'F');
 	printf("uniquely_mapped_only = %c\n", uniquely_mapped_only ? 'T' : 'F');
 	printf("verbose = %d\n", verbose);
@@ -729,6 +736,8 @@ int print_help()
 	printf(" %-42s  %s\n", "--tech <SC|BULK>", "set sequencing technology (default: BULK):");
 	printf(" %-42s  %s\n", "", "    SC: single-cell RNA-seq");
 	printf(" %-42s  %s\n", "", "    BULK: bulk RNA-seq");
+
+	printf(" %-42s  %s\n", "--gene_name_prefix <string>", "prefix to add to gene names in output GTF");
 
 	return 0;
 }

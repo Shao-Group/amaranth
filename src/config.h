@@ -163,6 +163,7 @@ extern bool use_filter;
 extern bool output_tex_files;
 extern bool output_graphviz_files;
 extern string fixed_gene_name;
+extern string gene_name_prefix;
 extern int max_num_bundles;
 extern int library_type;
 extern int min_gtf_transcripts_num;
