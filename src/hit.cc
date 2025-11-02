@@ -60,6 +60,7 @@ hit& hit::operator=(const hit &h)
 	next = h.next;
 
 	umi = h.umi;
+	cell_barcode = h.cell_barcode;
 
 	return *this;
 }
@@ -91,6 +92,7 @@ hit::hit(const hit &h)
 	next = h.next;
 
 	umi = h.umi;
+	cell_barcode = h.cell_barcode;
 }
 
 hit::hit(bam1_t *b, int id) 
@@ -248,9 +250,9 @@ int hit::set_tags(bam1_t *b)
 	if(p5 && (*p5) == 'c') nm = bam_aux2i(p5);
 
 	// set umi
-        umi = "";
-        uint8_t *p6 = bam_aux_get(b, "UB");
-        if(p6 && (*p6) == 'H') umi = bam_aux2Z(p6);
+	umi = "";
+	uint8_t *p6 = bam_aux_get(b, "UB");
+	if(p6 && (*p6) == 'H') umi = bam_aux2Z(p6);
 	if(p6 && (*p6) == 'Z') umi = bam_aux2Z(p6);
 
 	/*	
