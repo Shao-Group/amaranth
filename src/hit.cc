@@ -255,6 +255,14 @@ int hit::set_tags(bam1_t *b)
 	if(p6 && (*p6) == 'H') umi = bam_aux2Z(p6);
 	if(p6 && (*p6) == 'Z') umi = bam_aux2Z(p6);
 
+	// set cell barcode
+	cell_barcode = "";
+	uint8_t *p7 = bam_aux_get(b, "BC");
+	if(p7 && (*p7) == 'H') cell_barcode = bam_aux2Z(p7);
+	if(p7 && (*p7) == 'Z') cell_barcode = bam_aux2Z(p7);
+
+	
+
 	/*	
 	// TODO: check if UB = UX
 	uint8_t *p7 = bam_aux_get(b, "UX");
@@ -335,8 +343,8 @@ bool hit::operator<(const hit &h) const
 int hit::print() const
 {
 	// print basic information
-	printf("Hit %s: hid = %d, [%d-%d), mpos = %d, flag = %d, quality = %d, strand = %c, xs = %c, ts = %c, isize = %d, qlen = %d, hi = %d, nh = %d, umi = %s, bridged = %c\n", 
-			qname.c_str(), hid, pos, rpos, mpos, flag, qual, strand, xs, ts, isize, qlen, hi, nh, umi.c_str(), bridged ? 'T' : 'F');
+	printf("Hit %s: hid = %d, [%d-%d), mpos = %d, flag = %d, quality = %d, strand = %c, xs = %c, ts = %c, isize = %d, qlen = %d, hi = %d, nh = %d, umi = %s, CB = %s, bridged = %c\n",
+			qname.c_str(), hid, pos, rpos, mpos, flag, qual, strand, xs, ts, isize, qlen, hi, nh, umi.c_str(), cell_barcode.c_str(), bridged ? 'T' : 'F');
 
 	/*
 	printf(" start position (%d - )\n", pos);
