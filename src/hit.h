@@ -82,6 +82,7 @@ public:
 
 	// UMI
 	string umi;
+	string cell_barcode;
 	int pi;							// paired hits index
 	int fidx;						// its fragments index
 
