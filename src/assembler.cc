@@ -9,6 +9,7 @@ See LICENSE for licensing.
 #include <cstdio>
 #include <cassert>
 #include <sstream>
+#include <map>
 
 #include "config.h"
 #include "gtf.h"
@@ -133,6 +134,8 @@ int assembler::assemble()
 
 	write();
 	
+	if (meta_cell_assembly) write_individual_cell();
+
 	return 0;
 }
 
@@ -322,10 +325,10 @@ int assembler::write()
 	}
 	fout.close();
 
-	if (output_file1 != "") 
+	if (output_file1 != "")
 	{
 		ofstream fout1(output_file1.c_str());
-		if(!fout1.fail()) 
+		if(!fout1.fail())
 		{
 			for(int i = 0; i < non_full_trsts.size(); i++)
 			{

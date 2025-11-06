@@ -50,6 +50,7 @@ private:
 	int assign_RPKM();
 	int write();
 	int write_features();
+	int write_individual_cell();
 	int compare(splice_graph &gr, const string &ref, const string &tex = "");
 	bool determine_regional_graph(splice_graph &gr);
 };
