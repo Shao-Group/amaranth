@@ -33,7 +33,7 @@ public:
 	char rstrand;		// right side strand	
 	bool regional;		// if a vertex is regional
 	int umi_support;
-	map<string, set<string>> cb_tags;
+	map<string, set<string>> cb_tags;  // <CB, <UMI> >
 
 	int cell_support(); // return number cell support (size of cb_tags)
 };
