@@ -75,6 +75,7 @@ public:
 	string label() const;
 	int write(ostream &fout, double cov2 = -1, int count = -1) const;
 	int write_features(ostream &fout) const;
+	int cell_support() const;
 };
 
 #endif

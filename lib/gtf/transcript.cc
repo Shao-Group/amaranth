@@ -387,3 +387,8 @@ int transcript::write_features(ostream &fout) const
 	fout << endl;
 	return 0;
 }
+
+int transcript::cell_support() const
+{
+	return cell_barcodes.size();
+}
