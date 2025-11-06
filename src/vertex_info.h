@@ -8,6 +8,11 @@ See LICENSE for licensing.
 #define __VERTEX_INFO__
 
 #include <stdint.h>
+#include <set>
+#include <string>
+#include <map>
+
+using namespace std;
 
 class vertex_info
 {
@@ -28,6 +33,9 @@ public:
 	char rstrand;		// right side strand	
 	bool regional;		// if a vertex is regional
 	int umi_support;
+	map<string, set<string>> cb_tags;
+
+	int cell_support(); // return number cell support (size of cb_tags)
 };
 
 #endif

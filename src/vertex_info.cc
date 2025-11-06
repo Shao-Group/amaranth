@@ -20,6 +20,7 @@ vertex_info::vertex_info()
 	rstrand = '.';
 	regional = false;
 	umi_support = 0;
+	cb_tags.clear();
 }
 
 vertex_info::vertex_info(const vertex_info &vi)
@@ -36,4 +37,10 @@ vertex_info::vertex_info(const vertex_info &vi)
 	rstrand = vi.rstrand;
 	regional = vi.regional;
 	umi_support = vi.umi_support;
+	cb_tags = vi.cb_tags;
+}
+
+int vertex_info::cell_support()
+{
+	return cb_tags.size();
 }
