@@ -45,7 +45,7 @@ int bundle::prepare()
 int bundle::build(int mode, bool revise)
 {
 	build_splice_graph(mode);
-	compute_umi_support();
+	compute_cell_and_umi_support();
 	if(revise == true) revise_splice_graph();
 	build_hyper_set();
 	return 0;
@@ -526,33 +526,63 @@ int bundle::build_splice_graph(int mode)
 	return 0;
 }
 
-// Make alternative TSS using UMI reads
-//FIXME: each umi can only be counted for 1 once
-int bundle::compute_umi_support()
+int bundle::compute_cell_and_umi_support()
 {
-	map<vector<int>, int> m;	
+	map<vector<int>, map<string, set<string>>> m;
 	for(int k = 0; k < bb.hits.size(); k++)
 	{
 		hit &h = bb.hits[k];
-		if(h.umi == "") continue;
+		if(h.cell_barcode == "" || h.umi == "") continue;
 		vector<int> v = align_hit(h);
+		if(v.size() == 0) continue;
 		
-		if(m.find(v) == m.end()) m.insert(pair<vector<int>, int>(v, 1));
-		else m[v] += 1;
+		m[v][h.cell_barcode].insert(h.umi);
 	}
 
-	for(map<vector<int>, int>::iterator it = m.begin(); it != m.end(); it++)
+	for(map<vector<int>, map<string, set<string>>>::iterator it = m.begin(); it != m.end(); it++)
 	{
 		const vector<int> &v = it->first;
-		int c = it->second;
+		const map<string, set<string>> &s = it->second;
 		for(int i = 0; i < v.size(); i++)
 		{
 			int k = v[i];
 			vertex_info vi = gr.get_vertex_info(k + 1);
-			vi.umi_support += c;
+			vi.cb_tags.clear();
+			vi.umi_support = 0;
+			for(map<string, set<string>>::const_iterator it2 = s.begin(); it2 != s.end(); it2++)
+			{
+				const string &cb = it2->first;
+				const set<string> &umis = it2->second;
+				vi.cb_tags[cb].insert(umis.begin(), umis.end());
+				vi.umi_support += umis.size();
+			}
 			gr.set_vertex_info(k + 1, vi);
 		}
-		//TODO: umi support for edges
+	}
+	
+	if (verbose >= 1) //CLEAN:
+	{
+		fprintf(stderr, "--- Debugging vertex_info in compute_cell_and_umi_support ---\n");
+		for (int i = 0; i < gr.num_vertices(); ++i)
+		{
+			vertex_info vi = gr.get_vertex_info(i);
+			fprintf(stderr, "Vertex %d: lpos=%d, rpos=%d, umi_support=%d, cb_tags_size=%lu\n",
+				i, vi.lpos, vi.rpos, vi.umi_support, vi.cb_tags.size());
+			fprintf(stderr, "  cb_tags contents:\n");
+			for (const auto& cb_pair : vi.cb_tags)
+			{
+				fprintf(stderr, "    CB: %s, UMIs: [", cb_pair.first.c_str());
+				bool first = true;
+				for (const auto& umi : cb_pair.second)
+				{
+					if (!first) fprintf(stderr, ", ");
+					fprintf(stderr, "%s", umi.c_str());
+					first = false;
+				}
+				fprintf(stderr, "]\n");
+			}
+		}
+		fprintf(stderr, "--- End Debugging vertex_info ---\n");
 	}
 	return 0;
 }

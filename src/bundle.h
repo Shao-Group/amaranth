@@ -68,6 +68,7 @@ public:
 	int link_partial_exons();
 	int build_splice_graph(int mode);
 	int compute_umi_support();
+	int compute_cell_and_umi_support();
 	int build_partial_exon_map();
 	int locate_left_partial_exon(int32_t x);
 	int locate_right_partial_exon(int32_t x);
