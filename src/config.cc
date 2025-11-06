@@ -112,6 +112,7 @@ double min_umi_ratio_bundle = 0;
 bool both_umi_support = false;
 int min_umi_reads_start_exon = 1;
 bool meta_cell_assembly = false;
+double cb_supp_ratio = 0.5;
 
 // filtering & retention
 bool remove_retained_intron = true;
@@ -477,6 +478,11 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--min_umi_reads_start_exon")
 		{
 			min_umi_reads_start_exon = atoi(argv[i + 1]);
+			i++;
+		}
+		else if(string(argv[i]) == "--min_cb_ratio")
+		{
+			cb_supp_ratio = atoi(argv[i + 1]);
 			i++;
 		}
 		else if(string(argv[i]) == "--meta")
