@@ -312,7 +312,8 @@ int assembler::assign_RPKM()
 
 int assembler::write()
 {
-	ofstream fout(output_file.c_str());
+	string fname = meta_cell_assembly? output_file1 + ".meta.gtf": output_file1 + ".gtf";
+	ofstream fout(fname.c_str());
 	if(fout.fail()) return 0;
 	for(int i = 0; i < trsts.size(); i++)
 	{
@@ -323,7 +324,8 @@ int assembler::write()
 
 	if (output_file1 != "")
 	{
-		ofstream fout1(output_file1.c_str());
+		string fname1 = meta_cell_assembly? output_file1 + ".meta.gtf": output_file1 + ".gtf";
+		ofstream fout1(fname1.c_str());
 		if(!fout1.fail())
 		{
 			for(int i = 0; i < non_full_trsts.size(); i++)
