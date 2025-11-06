@@ -37,7 +37,7 @@ int amaranth::assemble()
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
 	assert(gr.num_vertices() > 2);
-	
+
 	try
 	{
 		divide_conquer();
@@ -1890,6 +1890,33 @@ int amaranth::extract_transcript_features(transcript &t, int path_index)
 	t.features["min_UMI_support"] = compute_min(umi_support_per_vertex);
 	t.features["max_UMI_support"] = compute_max(umi_support_per_vertex);
 	t.features["std_UMI_support"] = compute_std(umi_support_per_vertex);
+
+	// 6. Cell support (collect per-vertex cell support)
+	// Count how many nodes each barcode supports
+	map<string, int> cb_node_count;
+	int total_nodes = v.size() - 2; // exclude first and last vertices
+	for(int j = 1; j < v.size() - 1; j++)
+	{
+		int vertex_id = v[j];
+		vertex_info vi = origr.get_vertex_info(vertex_id);
+		for(map<string, set<string>>::const_iterator it = vi.cb_tags.begin(); it != vi.cb_tags.end(); it++)
+		{
+			cb_node_count[it->first]++;
+		}
+	}
+
+	// Only keep barcodes that support >=50% of nodes
+	set<string> cb_tags;
+	double threshold = total_nodes * cb_supp_ratio;
+	for(map<string, int>::const_iterator it = cb_node_count.begin(); it != cb_node_count.end(); it++)
+	{
+		if(it->second >= threshold)
+		{
+			cb_tags.insert(it->first);
+		}
+	}
+	t.cell_barcodes.assign(cb_tags.begin(), cb_tags.end());
+	t.features["num_cell_support"] = static_cast<int>(t.cell_support());
 
 	
 	// Fragment coverage statistics (placeholders)
