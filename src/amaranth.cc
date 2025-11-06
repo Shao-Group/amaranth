@@ -37,14 +37,7 @@ int amaranth::assemble()
 	if(gr.num_edges() == 0) return 0;
 	if(gr.num_vertices() == 2) return 0;
 	assert(gr.num_vertices() > 2);
-
-	if(gr.num_vertices() > 1000) //TODO:CLEAN:
-	{
-		cerr << gr.gid <<" graph is very big to process with D&C, but still do " << gr.num_vertices() << endl; 
-		// successStatus = false;
-		// return 0;
-	}	
-
+	
 	try
 	{
 		divide_conquer();

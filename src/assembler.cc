@@ -248,7 +248,7 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 			string gid = "gene." + tostring(index) + "." + tostring(k) + "." + tostring(r);
 			gr.gid = gid;
 			
-			if (algo == "amaranth")
+			if (algo == "amaranth" && gr.num_vertices() < 1000)
 			{
 				amaranth amaranthInstance(gr, hs, true);
 				if(verbose >= 2)
@@ -266,7 +266,7 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 					ts2.add(amaranthInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 				}
 			}
-			else if (algo == "scallop")
+			else
 			{
 				scallop scallopInstance(gr, hs, true);
 				if(verbose >= 2)
@@ -282,10 +282,6 @@ int assembler::assemble(const splice_graph &gr0, const hyper_set &hs0, transcrip
 				{
 					ts2.add(scallopInstance.non_full_trsts[i], 1, 0, TRANSCRIPT_COUNT_ADD_COVERAGE_MIN, TRANSCRIPT_COUNT_ADD_COVERAGE_ADD);
 				}
-			}
-			else 
-			{
-				throw std::runtime_error("Unknown algorithm: " + algo);
 			}
 		}
 	}
