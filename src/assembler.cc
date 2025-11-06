@@ -344,6 +344,88 @@ int assembler::write()
 	return 0;
 }
 
+int assembler::write_individual_cell()
+{
+	// group full-length transcripts by cell barcode
+	map<string, vector<transcript*>> m_full;
+	for(int i = 0; i < trsts.size(); i++)
+	{
+		for(int k = 0; k < trsts[i].cell_barcodes.size(); k++)
+		{
+			string bc = trsts[i].cell_barcodes[k];
+			if(m_full.find(bc) == m_full.end())
+			{
+				vector<transcript*> v;
+				v.push_back(&(trsts[i]));
+				m_full.insert(pair<string, vector<transcript*>>(bc, v));
+			}
+			else
+			{
+				m_full[bc].push_back(&(trsts[i]));
+			}
+		}
+	}
+
+	// group non-full-length transcripts by cell barcode
+	map<string, vector<transcript*>> m_non_full;
+	for(int i = 0; i < non_full_trsts.size(); i++)
+	{
+		for(int k = 0; k < non_full_trsts[i].cell_barcodes.size(); k++)
+		{
+			string bc = non_full_trsts[i].cell_barcodes[k];
+			if(m_non_full.find(bc) == m_non_full.end())
+			{
+				vector<transcript*> v;
+				v.push_back(&(non_full_trsts[i]));
+				m_non_full.insert(pair<string, vector<transcript*>>(bc, v));
+			}
+			else
+			{
+				m_non_full[bc].push_back(&(non_full_trsts[i]));
+			}
+		}
+	}
+
+	// write full-length transcripts to individual gtf files
+	printf("Number of cell barcodes found (full-length): %lu\n", m_full.size());
+	for(map<string, vector<transcript*>>::iterator it = m_full.begin(); it != m_full.end(); it++)
+	{
+		string file = output_file + "." + it->first + ".gtf";
+		printf("Writing to file: %s\n", file.c_str());
+		ofstream fout(file.c_str());
+		if(fout.fail()) continue;
+		vector<transcript*> &v = it->second;
+		printf("Number of full-length transcripts for this cell barcode: %lu\n", v.size());
+		for(int i = 0; i < v.size(); i++)
+		{
+			v[i]->write(fout);
+		}
+		fout.close();
+	}
+
+	// write non-full-length transcripts to individual gtf files
+	if(output_file1 != "")
+	{
+		printf("Number of cell barcodes found (non-full-length): %lu\n", m_non_full.size());
+		for(map<string, vector<transcript*>>::iterator it = m_non_full.begin(); it != m_non_full.end(); it++)
+		{
+			string file = output_file1 + "." + it->first + ".gtf";
+			printf("Writing to file: %s\n", file.c_str());
+			ofstream fout(file.c_str());
+			if(fout.fail()) continue;
+			vector<transcript*> &v = it->second;
+			printf("Number of non-full-length transcripts for this cell barcode: %lu\n", v.size());
+			for(int i = 0; i < v.size(); i++)
+			{
+				v[i]->write(fout);
+			}
+			fout.close();
+		}
+	}
+
+	return 0;
+}
+
 int assembler::write_features()
 {
 	if(output_feat == "") return 0;
