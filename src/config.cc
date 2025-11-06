@@ -111,6 +111,7 @@ int min_umi_reads_bundle = 1;
 double min_umi_ratio_bundle = 0;
 bool both_umi_support = false;
 int min_umi_reads_start_exon = 1;
+bool meta_cell_assembly = false;
 
 // filtering & retention
 bool remove_retained_intron = true;
@@ -477,6 +478,10 @@ int parse_arguments(int argc, const char ** argv)
 		{
 			min_umi_reads_start_exon = atoi(argv[i + 1]);
 			i++;
+		}
+		else if(string(argv[i]) == "--meta")
+		{
+			meta_cell_assembly = true;
 		}
 		else if(string(argv[i]) == "--library_type")
 		{
