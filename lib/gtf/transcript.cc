@@ -66,6 +66,7 @@ int transcript::clear()
 {
 	exons.clear();
 	features.clear();
+	cell_barcodes.clear();
 	seqname = "";
 	source = "";
 	feature = "";

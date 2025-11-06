@@ -52,6 +52,7 @@ public:
 
 	vector<PI32> exons;
 	map<string, std::variant<string, int, double>> features;
+	vector<string> cell_barcodes;
 
 public:
 	int add_exon(int s, int t);
