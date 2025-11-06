@@ -107,7 +107,7 @@ private:
 
 	int get_transcripts();
 	int extract_features();
-	int extract_transcript_features(transcript &t, int path_index);
+	int extract_transcript_features(transcript &t, int path_index, bool is_nf);
 
 	string tp2v_to_string() const;
 	int make_stats();

@@ -1597,12 +1597,12 @@ int scallop::extract_features()
 		const path &p = paths[i];
 		if(p.nf == 0)  // full-length transcript
 		{
-			extract_transcript_features(trsts[full_idx], i);
+			extract_transcript_features(trsts[full_idx], i, false);
 			full_idx++;
 		}
 		else if(p.nf == 1)  // non-full-length transcript
 		{
-			extract_transcript_features(non_full_trsts[non_full_idx], i);
+			extract_transcript_features(non_full_trsts[non_full_idx], i, true);
 			non_full_idx++;
 		}
 	}
@@ -1611,7 +1611,7 @@ int scallop::extract_features()
 	return 0;
 }
 
-int scallop::extract_transcript_features(transcript &t, int path_index)
+int scallop::extract_transcript_features(transcript &t, int path_index, bool is_nf)
 {
 	// Shrink transcript to merge consecutive exons first
 	t.shrink();
@@ -1766,7 +1766,7 @@ int scallop::extract_transcript_features(transcript &t, int path_index)
 
 	// Only keep barcodes that support >=50% of nodes
 	set<string> cb_tags;
-	double threshold = total_nodes * 0.5;
+	double threshold = is_nf? 0.0: total_nodes * cb_supp_ratio;
 	for(map<string, int>::const_iterator it = cb_node_count.begin(); it != cb_node_count.end(); it++)
 	{
 		if(it->second >= threshold)

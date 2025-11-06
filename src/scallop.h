@@ -94,7 +94,7 @@ private:
 
 	// feature extraction
 	int extract_features();
-	int extract_transcript_features(transcript &t, int path_index);
+	int extract_transcript_features(transcript &t, int path_index, bool is_nf);
 
 	// stats, print, and draw
 	int print();
