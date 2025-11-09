@@ -560,30 +560,30 @@ int bundle::compute_cell_and_umi_support()
 		}
 	}
 	
-	if (verbose >= 1) //CLEAN:
-	{
-		fprintf(stderr, "--- Debugging vertex_info in compute_cell_and_umi_support ---\n");
-		for (int i = 0; i < gr.num_vertices(); ++i)
-		{
-			vertex_info vi = gr.get_vertex_info(i);
-			fprintf(stderr, "Vertex %d: lpos=%d, rpos=%d, umi_support=%d, cb_tags_size=%lu\n",
-				i, vi.lpos, vi.rpos, vi.umi_support, vi.cb_tags.size());
-			fprintf(stderr, "  cb_tags contents:\n");
-			for (const auto& cb_pair : vi.cb_tags)
-			{
-				fprintf(stderr, "    CB: %s, UMIs: [", cb_pair.first.c_str());
-				bool first = true;
-				for (const auto& umi : cb_pair.second)
-				{
-					if (!first) fprintf(stderr, ", ");
-					fprintf(stderr, "%s", umi.c_str());
-					first = false;
-				}
-				fprintf(stderr, "]\n");
-			}
-		}
-		fprintf(stderr, "--- End Debugging vertex_info ---\n");
-	}
+	// if (verbose >= 1)
+	// {
+	// 	fprintf(stderr, "--- Debugging vertex_info in compute_cell_and_umi_support ---\n");
+	// 	for (int i = 0; i < gr.num_vertices(); ++i)
+	// 	{
+	// 		vertex_info vi = gr.get_vertex_info(i);
+	// 		fprintf(stderr, "Vertex %d: lpos=%d, rpos=%d, umi_support=%d, cb_tags_size=%lu\n",
+	// 			i, vi.lpos, vi.rpos, vi.umi_support, vi.cb_tags.size());
+	// 		fprintf(stderr, "  cb_tags contents:\n");
+	// 		for (const auto& cb_pair : vi.cb_tags)
+	// 		{
+	// 			fprintf(stderr, "    CB: %s, UMIs: [", cb_pair.first.c_str());
+	// 			bool first = true;
+	// 			for (const auto& umi : cb_pair.second)
+	// 			{
+	// 				if (!first) fprintf(stderr, ", ");
+	// 				fprintf(stderr, "%s", umi.c_str());
+	// 				first = false;
+	// 			}
+	// 			fprintf(stderr, "]\n");
+	// 		}
+	// 	}
+	// 	fprintf(stderr, "--- End Debugging vertex_info ---\n");
+	// }
 	return 0;
 }
 
