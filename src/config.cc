@@ -579,6 +579,16 @@ int parse_arguments(int argc, const char ** argv)
 		}
 	}
 
+	// Ensure outputs' prefix; Remove .gtf suffix if present
+	if(output_file.ends_with(".gtf"))
+	{
+		output_file = output_file.substr(0, output_file.size() - 4);
+	}
+	if(output_file1.ends_with(".gtf"))
+	{
+		output_file1 = output_file1.substr(0, output_file1.size() - 4);
+	}
+
 	if(min_surviving_edge_weight < 0.1 + min_transcript_coverage) 
 	{
 		min_surviving_edge_weight = 0.1 + min_transcript_coverage;
