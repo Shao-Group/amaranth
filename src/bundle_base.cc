@@ -63,7 +63,6 @@ int bundle_base::add_hit(const hit &ht)
 
 // remove duplicated hits
 // duplicated hits are defined as hit-pairs (wrt qname) with the same alignment and CIGAR
-// FIXME:TODO: examine and test function. Print reads
 int bundle_base::rm_duplicated_reads()
 {
 	if(remove_dup <= 0) return 0;

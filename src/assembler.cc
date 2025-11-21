@@ -122,7 +122,10 @@ int assembler::assemble()
 	pool.push_back(bb2);
 	process(0);
 
-	amaranth::print_stats();
+	// if (algo == "amaranth" && verbose >= 3)
+	// {
+	// 	amaranth::print_stats();
+	// }
 
 	assign_RPKM();
 

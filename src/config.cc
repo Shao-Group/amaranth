@@ -359,25 +359,6 @@ int parse_arguments(int argc, const char ** argv)
 			min_router_count = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--amaranthMode" || string(argv[i]) == "-m")
-		{
-			string s(argv[i + 1]);
-			if(s == "REF") amaranthMode = amaranth_mode::REF;
-			else if(s == "STAT") amaranthMode = amaranth_mode::STAT_ONLY;
-			else if(s == "MINI") amaranthMode = amaranth_mode::MINI;
-			else if(s == "ASSEMBLY") amaranthMode = amaranth_mode::ASSEMBLER;
-			else throw runtime_error("received unknown --amaranthMode value: " + s + " (must be REF/STAT/MINI/ASSEMBLY)");
-			i++;
-		}
-		else if(string(argv[i]) == "--amaranthStrategy" || string(argv[i]) == "-s")
-		{
-			string s(argv[i + 1]);
-			if(s == "LONG") amaranthStrategy = amaranth_strategy::LONG;
-			else if(s == "SHORT") amaranthStrategy = amaranth_strategy::SHORT;
-			else if(s == "HEAVY") amaranthStrategy = amaranth_strategy::HEAVY;
-			else throw runtime_error("received unknown --amaranthStrategy value: " + s + " (must be LONG/SHORT/HEAVY)");
-			i++;
-		}
 		else if(string(argv[i]) == "--tech")
 		{
 			string s(argv[i + 1]);
@@ -610,13 +591,6 @@ int parse_arguments(int argc, const char ** argv)
 		}
 		
 	}
-	if(amaranthMode == amaranth_mode::REF)
-	{
-		if(ref_file == "") 
-		{
-			throw runtime_error("error: amaranthMode is ref, but reference-file is missing.");
-		}
-	}
 	if(algo == "amaranth")
 	{
 		if(remove_retained_intron_hard == false)
@@ -734,26 +708,13 @@ int print_help()
 
 	printf(" %-42s  %s\n", "--use-filter",  "use filtering to select subpaths before final assembly, default: use-filter");
 	printf(" %-42s  %s\n", "--no-filter",   "disable filtering, use all subpaths in final assembly,  default: use-filter");
-	printf(" %-42s  %s\n", "--remove-pcr-duplicates <int>",     "remove PCR duplicates using strategy: 0,1, or 2, default: 0");
+	printf(" %-42s  %s\n", "--remove-pcr-duplicates <int>",     "remove PCR duplicates using strategy: 0,1, or 2, default: 1");
 	printf(" %-42s  %s\n", "--no-remove-pcr-duplicates",  "not remove PCR duplicates in the input bam file, default: not-remove");
 
 	// umi support settings
 	printf(" %-42s  %s\n", "--min_umi_reads_bundle <integer>", "minimum number of UMI reads required in a bundle, default: 0");
 	printf(" %-42s  %s\n", "--min_umi_ratio_bundle <float>", "minimum ratio of UMI reads required in a bundle, default: 0");
 	printf(" %-42s  %s\n", "--both_umi_support <true|false>", "require satisfactory UMI support for [both/either] condition, default: false(either)");
-
-	// amaranth - mode
-	printf(" %-42s  %s\n", "-m/--amaranthMode <REF|STAT|MINI|ASSEMBLY>", "set AMARANTH operation mode (default: ASSEMBLY):");
-	printf(" %-42s  %s\n", "", "    REF: reference-guided assembly mode");
-	printf(" %-42s  %s\n", "", "    STAT: statistical analysis only mode");
-	printf(" %-42s  %s\n", "", "    MINI: minimal assembly mode");
-	printf(" %-42s  %s\n", "", "    ASSEMBLY: full assembly mode");
-
-	// amaranth - path selection modes
-	printf(" %-42s  %s\n", "-s/--amaranthStrategy <LONG|SHORT|HEAVY>", "set AMARANTH path selection strategy (default: HEAVY):");
-	printf(" %-42s  %s\n", "", "    LONG: use longest subpath as anchor");
-	printf(" %-42s  %s\n", "", "    SHORT: use shortest subpath as anchor");
-	printf(" %-42s  %s\n", "", "    HEAVY: use highest coverage subpath as anchor");
 
 	// amaranth - sequencing technology
 	printf(" %-42s  %s\n", "--tech <SC|BULK>", "set sequencing technology (default: BULK):");

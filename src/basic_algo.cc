@@ -60,11 +60,6 @@ int basic_algo::needleman_wunsch(const vector<int>& s, const vector<int>& r,  in
     return opt[m - 1][n - 1];
 }
 
-/* TODO: test cases
-*  align r to s, r should be all comsumed but s does not have to be comsumed up
-*  e.g. r is read, s is genome; r is phasing path, s is complete path
-*/ 
-
 int basic_algo::ref_sw_query_nw(const vector<int>& ref_s, const vector<int>& query_r,  int gap_panelty, int mis_panelty, int match_reward)
 {
     const vector<int>& s = ref_s;

@@ -439,7 +439,6 @@ int bundle::build_splice_graph(int mode)
 	gr.set_vertex_info(pexons.size() + 1, vin);
 
 	// edges: each junction => and e2w
-	//FIXME: adjacent edge weight should be from the 'junction' not node weights
 	for(int i = 0; i < junctions.size(); i++)
 	{
 		const junction &b = junctions[i];
@@ -1092,7 +1091,6 @@ bool bundle::remove_inner_boundaries()
  */
 bool bundle::remove_intron_contamination()
 {
-	//TODO: the introns should not be contributed by UMI reads, if yes, keep the intron
 	bool flag = false;
 	for(int i = 1; i < gr.num_vertices(); i++)
 	{
@@ -1133,7 +1131,7 @@ bool bundle::remove_intron_contamination()
 
 			//node weight should be higher than the skipping edge weight
 			bool greater_than_skip_edge = (wv > we * max_ir_full_ratio_v) && (we1 > we * max_ir_full_ratio_e) && (we2 > we * max_ir_full_ratio_e);
-			//node weight should not be siginificantly higher than adjacent edge weight // FIXME: TODO: unless the node is partial exon of terminal nodes?
+			//node weight should not be siginificantly higher than adjacent edges' weight
 			bool greater_than_adjc_edge = (wv > we1 * max_ir_full_ratio_i) && (wv > we2 * max_ir_full_ratio_i);
 			if(greater_than_skip_edge && (!greater_than_adjc_edge)) continue;
 		}
