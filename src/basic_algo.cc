@@ -1,3 +1,9 @@
+/*
+Part of Amaranth Transcript Assembler
+(c) 2025 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
+See LICENSE for licensing.
+*/
+
 #include "basic_algo.h"
 
 int basic_algo::smith_waterman(const vector<int>& s, const vector<int>& r, int gap_panelty, int mis_panelty, int match_reward)

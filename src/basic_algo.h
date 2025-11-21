@@ -1,3 +1,8 @@
+/*
+Part of Amaranth Transcript Assembler
+(c) 2025 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
+See LICENSE for licensing.
+*/
 
 #ifndef __BASIC_ALGO_H__
 #define __BASIC_ALGO_H__

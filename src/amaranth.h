@@ -1,6 +1,6 @@
 /*
-Part of Amaranth Assembler
-(c) 2024 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
+Part of Amaranth Transcript Assembler
+(c) 2025 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
 See LICENSE for licensing.
 */
 

@@ -6,6 +6,9 @@ Part of Coral, an efficient tool to bridge mate pairs
 (c) 2018 by Mingfu Shao and The Pennsylvania State University.
 (c) 2019 by Mingfu Shao and The Pennsylvania State University.
 
+Part of Amaranth Transcript Assembler
+(c) 2025 by Xiaofei Carl Zang, Mingfu Shao, and The Pennsylvania State University.
+
 See LICENSE for licensing.
 */
 
