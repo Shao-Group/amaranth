@@ -6,79 +6,7 @@ The development of Amaranth has been based on the [Scallop2](https://github.com/
 
 # Installation
 
-Install from source code: clone the source code of Amaranth from
-
-`git clone https://github.com/Shao-Group/amaranth.git`
-
-Amaranth uses additional libraries of Boost and htslib. 
-If they have not been installed in your system, you first
-need to download and install them. You might also need to
-export the runtime library path to certain environmental
-variable (for example, `LD_LIBRARY_PATH`, for most linux distributions).
-After install these dependencies, you then compile the source code of Amaranth.
-If some of the above dependencies are not installed to the default system 
-directories (for example, `/usr/local`, for most linux distributions),
-their corresponding installing paths should be specified to `configure` of Amaranth.
-The entire installation typically takes a few minutes to complete.
-
-## Download Boost
-
-If Boost has not been downloaded/installed, download Boost
-[(license)](http://www.boost.org/LICENSE_1_0.txt) from (http://www.boost.org).
-Uncompress it somewhere (compiling and installing are not necessary).
-
-## Install htslib
-
-If htslib has not been installed, download htslib 
-[(license)](https://github.com/samtools/htslib/blob/develop/LICENSE)
-from (http://www.htslib.org/) with version 1.5 or higher.
-Note that htslib relies on zlib. So if zlib has not been installed in your system,
-you need to install zlib first. To do so, download zlib
-[(license)](https://zlib.net/zlib_license.html) at (https://zlib.net/).
-Use the following commands to install zlib:
-
-```
-./configure
-make
-make install
-```
-
-After installing zlib, use the following commands to build htslib:
-
-```
-./configure --disable-bz2 --disable-lzma --disable-gcs --disable-s3 --enable-libcurl=no
-make
-make install
-```
-
-The default installation location of htslib is `/usr/lib`.
-If you would install it to a different location, replace the above `configure` line with
-the following (by adding `--prefix=/path/to/your/htslib` to the end):
-
-```
-./configure --disable-bz2 --disable-lzma --disable-gcs --disable-s3 --enable-libcurl=no --prefix=/path/to/your/htslib
-```
-
-In this case, you also need to export the runtime library path (note that there
-is an additional `lib` following the installation path):
-
-```
-export LD_LIBRARY_PATH=/path/to/your/htslib/lib:$LD_LIBRARY_PATH
-```
-
-## Build 
-
-Use the following to compile:
-
-```
-./configure --with-htslib=/path/to/your/htslib --with-boost=/path/to/your/boost
-make
-```
-
-If some of the dependencies are installed in the default system directory (for example, `/usr/lib`),
-then the corresponding `--with-` option might not be necessary.
-The executable file `amaranth` will appear at `src/amaranth`.
-
+To install from source code, please read [INSTALL.md](./INSTALL.md).
 
 # Usage
 
@@ -106,7 +34,7 @@ Here is a list of supported parameters. Please refer to additional explanations 
  --preview | | show the inferred `library_type` and exit
  --verbose | 1 | chosen from {0, 1, 2}
  -f/--transcript_fragments    | | file to which the assembled non-full-length transcripts will be written to
- --library_type               | empty | chosen from {empty, unstranded, first, second}
+ --library_type               | empty | chosen from {empty, unstranded, first, second}; If empty, Amaranth will try to infer automatically. 
  --assemble_duplicates		  | 10 | the number of consensus runs of the decomposition
  --min_transcript_coverage    | 1.5 | the minimum coverage required to output a multi-exon transcript
  --min_single_exon_coverage   | 20 | the minimum coverage required to output a single-exon transcript
@@ -149,3 +77,11 @@ out transcripts whose (predicted) raw counts (number of moleculars) is less than
 short transcripts: the minimum length of a transcript is given by `--min_transcript_length_base`
 \+ `--min_transcript_length_increase` * num-of-exons-in-this-transcript. Transcripts that are less
 than this number will be filtered out.
+
+# Example
+
+Example test data is provided in `example/`. Users can use the following command to do a basic example run.
+
+```bash
+amaranth -i example/example-input.bam -o test_output
+```
