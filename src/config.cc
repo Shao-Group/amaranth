@@ -101,7 +101,7 @@ int simulation_num_edges = 0;
 int simulation_max_edge_weight = 0;
 
 // input and output
-string algo = "amaranth";
+string algo = "scallop";
 string input_file;
 string ref_file;
 string output_file;
@@ -110,15 +110,15 @@ string output_feat;
 
 // umi & hybrid parameters
 int min_umi_reads_bundle = 1;
-double min_umi_ratio_bundle = 0;
+double min_umi_ratio_bundle = 0.0;
 bool both_umi_support = false;
 int min_umi_reads_start_exon = 1;
 bool meta_cell_assembly = false;
-double cb_supp_ratio = 0.5;
+double cb_supp_ratio = 0.3;
 
 // filtering & retention
 bool remove_retained_intron = true;
-bool remove_retained_intron_hard = true; // true: remove ir vertex from graph, false: mark as empty vertex; must be true for amaranth
+bool remove_retained_intron_hard = true; // always true; true: remove ir vertex from graph, false: mark as empty vertex; must be true for amaranth
 double max_ir_umi_support_full = 3;
 double max_ir_umi_support_part = 5;
 double max_ir_part_ratio_v = 0.5;	// retained node to skip edge, 		  if less than this, consider as retained intron for partial intron
@@ -126,7 +126,7 @@ double max_ir_part_ratio_e = 0.5;	// retained node's edge to skip edge, if less 
 double max_ir_full_ratio_v = 1.0;   // retained node to skip edge, 		  if less than this, consider as retained intron for full intron
 double max_ir_full_ratio_e = 0.5;	// retained node's edge to skip edge, if less than this, consider as retained intron for full intron
 double max_ir_full_ratio_i = 10.0;	// retained node to its own edge, 	  if GREATER than this, consider as retained intron for full intron
-int remove_dup = 0;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
+int remove_dup = 1;              		// 0: nothing, 1: by algin+cigar, 2: algin+cigar.w.S
 bool use_filter = true;
 
 // for controling
@@ -136,7 +136,7 @@ string fixed_gene_name = "";
 string gene_name_prefix = "";
 int batch_bundle_size = 100;
 int verbose = 1;
-int assemble_duplicates = 1; //TODO:
+int assemble_duplicates = 1;
 string version = "v0.1";
 
 int parse_arguments(int argc, const char ** argv)
@@ -179,7 +179,9 @@ int parse_arguments(int argc, const char ** argv)
 		else if(string(argv[i]) == "--algo")
 		{
 			algo = string(argv[i + 1]);
-			if (algo != "amaranth" && algo != "scallop") throw runtime_error("received unknown --algo value: " + algo + " (must be amaranth/scallop)");
+			if (algo != "amaranth" && algo != "scallop") {
+				throw runtime_error("received unknown --algo value: " + algo + " (must be amaranth/scallop)");
+			}
 			i++;
 		}
 		else if(string(argv[i]) == "-g")
@@ -393,55 +395,47 @@ int parse_arguments(int argc, const char ** argv)
 		{
 			remove_retained_intron = false;
 		}
-		else if(string(argv[i]) == "--remove-retained-intron-hard")
-		{
-			remove_retained_intron_hard = true;
-		}
-		else if(string(argv[i]) == "--no-remove-retained-intron-hard")
-		{
-			remove_retained_intron_hard = false;
-		}
-		else if (string(argv[i]) == "--max_ir_umi_support_full")
+		else if (string(argv[i]) == "--max-ir-umi-support-full")
 		{
 			max_ir_umi_support_full = atof(argv[i + 1]);
 			i++;
 		}
-		else if (string(argv[i]) == "--max_ir_umi_support_part")
+		else if (string(argv[i]) == "--max-ir-umi-support-part")
 		{
 			max_ir_umi_support_part = atof(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--max_ir_part_ratio_v")
+		else if(string(argv[i]) == "--max-ir-part-ratio-v")
 		{
 			max_ir_part_ratio_v = atof(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--max_ir_part_ratio_e")
+		else if(string(argv[i]) == "--max-ir-part-ratio-e")
 		{
 			max_ir_part_ratio_e = atof(argv[i + 1]); 
 			i++;
 		}
-		else if(string(argv[i]) == "--max_ir_full_ratio_v")
+		else if(string(argv[i]) == "--max-ir-full-ratio-v")
 		{
 			max_ir_full_ratio_v = atof(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--max_ir_full_ratio_e")
+		else if(string(argv[i]) == "--max-ir-full-ratio-e")
 		{
 			max_ir_full_ratio_e = atof(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--max_ir_full_ratio_i")
+		else if(string(argv[i]) == "--max-ir-full-ratio-i")
 		{
 			max_ir_full_ratio_i = atof(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--min_umi_reads_bundle")
+		else if(string(argv[i]) == "--min-umi-reads-bundle")
 		{
 			min_umi_reads_bundle = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--min_umi_ratio_bundle")
+		else if(string(argv[i]) == "--min-umi-ratio-bundle")
 		{
 			min_umi_ratio_bundle = atof(argv[i + 1]);
 			if (min_umi_ratio_bundle < 0 || min_umi_ratio_bundle > 1)
@@ -450,20 +444,20 @@ int parse_arguments(int argc, const char ** argv)
 			}
 			i++;
 		}
-		else if(string(argv[i]) == "--both_umi_support")
+		else if(string(argv[i]) == "--both-umi-support")
 		{
 			string s(argv[i + 1]);
 			if(s == "true" || s == "True" || s == "TRUE" || s == "T") both_umi_support = true;
 			else if(s == "false" || s == "False" || s == "FALSE" || s == "F") both_umi_support = false;
-			else throw runtime_error("received unknown --both_umi_support value: " + s + " (must be true/false)");
+			else throw runtime_error("received unknown --both-umi-support value: " + s + " (must be true/false)");
 			i++;
 		}
-		else if(string(argv[i]) == "--min_umi_reads_start_exon")
+		else if(string(argv[i]) == "--min-umi-reads-start-exon")
 		{
 			min_umi_reads_start_exon = atoi(argv[i + 1]);
 			i++;
 		}
-		else if(string(argv[i]) == "--min_cb_ratio")
+		else if(string(argv[i]) == "--min-cb-ratio" || string(argv[i]) == "--cb-supp-ratio")
 		{
 			cb_supp_ratio = atoi(argv[i + 1]);
 			i++;
@@ -688,8 +682,8 @@ int print_help()
 	printf("Usage: amaranth -i <bam-file> -o <gtf-file> [options]\n");
 	printf("\n");
 	printf("Options:\n");
-	printf(" %-42s  %s\n", "--help",  "print usage of Scallop and exit");
-	printf(" %-42s  %s\n", "--version",  "print current version of Scallop and exit");
+	printf(" %-42s  %s\n", "--help",  "print usage of Amaranth and exit");
+	printf(" %-42s  %s\n", "--version",  "print current version of Amaranth and exit");
 	printf(" %-42s  %s\n", "--preview",  "determine fragment-length-range and library-type and exit");
 	printf(" %-42s  %s\n", "--verbose <0, 1, 2>",  "0: quiet; 1: one line for each graph; 2: with details, default: 1");
 	printf(" %-42s  %s\n", "-f/--transcript_fragments <filename>",  "file to which the assembled non-full-length transcripts will be written to");
@@ -712,14 +706,30 @@ int print_help()
 	printf(" %-42s  %s\n", "--no-remove-pcr-duplicates",  "not remove PCR duplicates in the input bam file, default: not-remove");
 
 	// umi support settings
-	printf(" %-42s  %s\n", "--min_umi_reads_bundle <integer>", "minimum number of UMI reads required in a bundle, default: 0");
-	printf(" %-42s  %s\n", "--min_umi_ratio_bundle <float>", "minimum ratio of UMI reads required in a bundle, default: 0");
-	printf(" %-42s  %s\n", "--both_umi_support <true|false>", "require satisfactory UMI support for [both/either] condition, default: false(either)");
+	printf(" %-42s  %s\n", "--min-umi-reads-bundle <integer>", "minimum number of UMI reads required in a bundle, default: 1");
+	printf(" %-42s  %s\n", "--min-umi-ratio-bundle <float>", "minimum ratio of UMI reads required in a bundle, default: 0");
+	printf(" %-42s  %s\n", "--both-umi-support <true|false>", "require satisfactory UMI support for [both/either] condition, default: false(either)");
+	printf(" %-42s  %s\n", "--min-umi-reads-start-exon <integer>", "minimum number of UMI reads supporting the first exon, default: 1");
+
+	// retained intron filtering
+	printf(" %-42s  %s\n", "--remove-retained-intron", "remove retained introns, default: used");
+	printf(" %-42s  %s\n", "--no-remove-retained-intron", "do not remove retained introns");
+	printf(" %-42s  %s\n", "--max-ir-umi-support-full <integer>", "max UMI reads to support full intron retention, default: 3");
+	printf(" %-42s  %s\n", "--max-ir-umi-support-part <integer>", "max UMI reads to support partial intron retention, default: 5");
+	printf(" %-42s  %s\n", "--max-ir-part-ratio-v <float>", "ratio threshold of retained node to skip edge (partial), default: 0.5");
+	printf(" %-42s  %s\n", "--max-ir-part-ratio-e <float>", "ratio threshold of retained edge to skip edge (partial), default: 0.5");
+	printf(" %-42s  %s\n", "--max-ir-full-ratio-v <float>", "ratio threshold of retained node to skip edge (full), default: 1.0");
+	printf(" %-42s  %s\n", "--max-ir-full-ratio-e <float>", "ratio threshold of retained edge to skip edge (full), default: 0.5");
+	printf(" %-42s  %s\n", "--max-ir-full-ratio-i <float>", "ratio threshold of retained node to its own edge (full), default: 10.0");
+
+	// meta-assembly
+	printf(" %-42s  %s\n", "--meta", "enable meta-assembly mode for multiple cells");
+	printf(" %-42s  %s\n", "--min-cb-ratio <float>", "minimum ratio of exons supported by cell barcode, default: 0.3");
 
 	// amaranth - sequencing technology
-	printf(" %-42s  %s\n", "--tech <SC|BULK>", "set sequencing technology (default: BULK):");
-	printf(" %-42s  %s\n", "", "    SC: single-cell RNA-seq");
-	printf(" %-42s  %s\n", "", "    BULK: bulk RNA-seq");
+	// printf(" %-42s  %s\n", "--tech <SC|BULK>", "set sequencing technology (default: BULK):");
+	// printf(" %-42s  %s\n", "", "    SC: single-cell RNA-seq");
+	// printf(" %-42s  %s\n", "", "    BULK: bulk RNA-seq");
 
 	printf(" %-42s  %s\n", "--gene_name_prefix <string>", "prefix to add to gene names in output GTF");
 
@@ -728,7 +738,7 @@ int print_help()
 
 int print_copyright()
 {
-	printf("Amaranth assembler %s (c) 2024 Xiaofei Carl Zang, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
+	printf("Amaranth assembler %s (c) 2025 Xiaofei Carl Zang, and Mingfu Shao, The Pennsylvania State University\n", version.c_str());
 	return 0;
 }
 
