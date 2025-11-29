@@ -137,7 +137,7 @@ string gene_name_prefix = "";
 int batch_bundle_size = 100;
 int verbose = 1;
 int assemble_duplicates = 1;
-string version = "v0.1";
+string version = "v0.1.0";
 
 int parse_arguments(int argc, const char ** argv)
 {

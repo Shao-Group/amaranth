@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT(amaranth, 0.1, xbz5174@psu.edu)
+AC_INIT(amaranth, 0.1.0, mxs2589@psu.edu)
 AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_HEADERS([config.h])
