@@ -11,6 +11,7 @@ See LICENSE for licensing.
 #include <cassert>
 //#include <tuple>
 #include <algorithm>
+#include <stdexcept>
 
 using namespace std;
 
