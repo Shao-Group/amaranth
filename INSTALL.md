@@ -1,8 +1,13 @@
 # Install from source 
 
-clone the source code of Amaranth from
+Download the source code (`amaranth-{version}.tar.gz`) of Amaranth from [Releases](https://github.com/Shao-Group/amaranth/releases).
 
-`git clone https://github.com/Shao-Group/amaranth.git`
+```bash
+# For example, to download v0.1.0 source code
+wget https://github.com/Shao-Group/amaranth/releases/latest/download/amaranth-0.1.0.tar.gz
+tar -zxf amaranth-0.1.0.tar.gz
+cd amaranth-0.1.0
+```
 
 Amaranth uses additional libraries of Boost and htslib. 
 If they have not been installed in your system, you first

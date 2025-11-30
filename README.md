@@ -1,9 +1,18 @@
-# Introduction
+# ![image](docs/image.jpeg) Amaranth: Single-Cell Transcript Assembler
+
+<a href="http://bioconda.github.io/recipes/amaranth-assembler/README.html"><img src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat" alt="install with bioconda"></a> <a href="https://github.com/Shao-Group/amaranth/releases"><img src="https://img.shields.io/github/v/tag/Shao-Group/Amaranth" alt="GitHub tag (latest SemVer)"></a> <a href="https://github.com/Shao-Group/amaranth/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Shao-Group/Amaranth" alt="GitHub License"></a>
 
 Amaranth is a reference-based transcript assembler specifically optimized for single-cell RNA-seq data. The development of Amaranth has been based on the [Scallop2](https://github.com/Shao-Group/scallop2)/[Scallop](https://github.com/Kingsford-Group/scallop) assembler series.
 
 # Installation
 
+It is recommended to install with `conda`. 
+
+```bash
+conda install bioconda::amaranth-assembler
+```
+
+Otherwise, to download pre-compiled binary for Linux, please check out GitHub Releases (` amaranth-{version}-linux` in [Latest Release](https://github.com/Shao-Group/amaranth/releases/latest)).  
 To install from source code, please read [INSTALL.md](./INSTALL.md).
 
 # Usage
