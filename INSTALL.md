@@ -9,6 +9,8 @@ tar -zxf amaranth-0.1.0.tar.gz
 cd amaranth-0.1.0
 ```
 
+Amaranth is implemented in C++. A compiler that supports C++20 is needed.
+
 Amaranth uses additional libraries of Boost and htslib. 
 If they have not been installed in your system, you first
 need to download and install them. You might also need to
