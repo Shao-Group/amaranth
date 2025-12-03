@@ -6,11 +6,13 @@ Amaranth is a reference-based transcript assembler specifically optimized for si
 
 # Installation
 
-It is recommended to install with `conda`. 
+It is recommended to install with [bioconda](http://bioconda.github.io/recipes/amaranth-assembler/README.html). 
 
 ```bash
-conda install bioconda::amaranth-assembler
+conda install -c conda-forge bioconda::amaranth-assembler
 ```
+
+Note that `conda-forge` channel is necessary for amaranth's dependencies. 
 
 Otherwise, to download pre-compiled binary for Linux, please check out GitHub Releases (`amaranth-{version}-linux` in [Latest Release](https://github.com/Shao-Group/amaranth/releases/latest)). To install from source code, please read [INSTALL.md](./INSTALL.md).
 
@@ -119,3 +121,7 @@ amaranth -i example/example-input.bam -o test_output
 ```
 
 The assembled transcripts will be in `test_output.gtf`.
+
+# Questions and Bug Report
+Please raise an issue on [GitHub](https://github.com/Shao-Group/amaranth/issues).
+

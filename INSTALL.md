@@ -1,3 +1,26 @@
+# Install from bioconda
+The easiest way to install `amaranth` is using bioconda:
+```bash
+conda install bioconda::amaranth-assembler`
+```
+
+
+
+# Download pre-compiled binary
+
+We provide pre-compiled binary executable of `amaranth` (for Linux only). Please check out GitHub Releases (`amaranth-{version}-linux` in [Latest Release](https://github.com/Shao-Group/amaranth/releases/latest)).
+
+Use `chmod` to make it executable, if not yet. You can test whether it works by printing the help message.
+
+```bash
+# make executable
+chmod +x ./amaranth-*-linux
+# test 
+./amaranth-*-linux --help
+```
+
+
+
 # Install from source 
 
 Download the source code (`amaranth-{version}.tar.gz`) of Amaranth from [Releases](https://github.com/Shao-Group/amaranth/releases).
@@ -67,7 +90,7 @@ is an additional `lib` following the installation path):
 export LD_LIBRARY_PATH=/path/to/your/htslib/lib:$LD_LIBRARY_PATH
 ```
 
-## Build 
+## Build Amaranth
 
 Use the following to compile:
 
@@ -79,3 +102,8 @@ make
 If some of the dependencies are installed in the default system directory (for example, `/usr/lib`),
 then the corresponding `--with-` option might not be necessary.
 The executable file `amaranth` will appear at `src/amaranth`.
+
+You can test whether amaranth is correctly installed by printing the help message:
+```bash
+./src/amaranth --help
+```
