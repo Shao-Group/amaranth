@@ -265,10 +265,26 @@ Here is a list of supported parameters. Please refer to additional explanations 
 
 # Example
 
-Example test data is provided in `example/`. Users can use the following command to do a basic example run.
+Example test data is provided in `example/`. The example data is also available in [Release](https://github.com/Shao-Group/amaranth/releases/tag/v0.1.0).
+
+Users can also use the following link to download from GitHub Release:
 
 ```bash
-amaranth -i example/example-input.bam -o test_output
+wget https://github.com/Shao-Group/amaranth/releases/download/v0.1.0/example-input.bam
+```
+
+> ‼️ Note that `wget` works only with GitHub Release, but it does NOT work with GitHub repo files. It will be truncated if you use wget to download GitHub files directly from a repo,
+
+You can use `sha256` to test the integrity of downloaded data.
+
+```bash
+sha256 example-input.bam  # should be `59e036720e6539336600409bb7a466dd82a51e8ad98a30016951aea42f21fba6`
+```
+
+Users can use the following command to do a basic example run (assuming you are in the same directory as `example-input.bam`)
+
+```bash
+amaranth -i example-input.bam -o test_output
 ```
 
 The assembled transcripts will be in `test_output.gtf`.
