@@ -157,9 +157,11 @@ The `-v $(pwd):/data` mounts your current directory to `/data` inside the contai
 
 ## Installation from source code (with external libraries)
 
-Download the source code that contains external libraries (htslib, boost, and zlib) from [releases](https://github.com/Shao-Group/amaranth/releases/download/v0.1.0/amaranth-0.1.0-full.tar.gz). Use the following commands to uncompress and install:
+Download the source code that contains external libraries (htslib, boost, and zlib) from a full-version of source code in [releases](https://github.com/Shao-Group/amaranth/releases/). Use the following commands to uncompress and install:
 
 ```
+# for example, to download/install v0.1.0 
+wget https://github.com/Shao-Group/amaranth/releases/download/v0.1.0/amaranth-0.1.0-full.tar.gz
 tar xzvf amaranth-0.1.0-full.tar.gz
 cd amaranth-0.1.0
 ./build.sh
