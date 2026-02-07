@@ -1,3 +1,4 @@
+<!--
 # Install from bioconda
 The easiest way to install `amaranth` is using bioconda:
 ```bash
@@ -18,7 +19,7 @@ chmod +x ./amaranth-*-linux
 # test 
 ./amaranth-*-linux --help
 ```
-
+-->
 
 
 # Install from source 
