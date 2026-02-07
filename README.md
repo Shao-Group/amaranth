@@ -155,10 +155,21 @@ docker run -v $(pwd):/data quay.io/biocontainers/amaranth-assembler:0.1.0--h5ca1
 
 The `-v $(pwd):/data` mounts your current directory to `/data` inside the container so you can access your files. That’s why `/data/` is also added before both input and output files’ local paths. Otherwise the input/ output files won’t be accessible to Docker.
 
+## Installation from source code (with external libraries)
+
+Download the source code that contains external libraries (htslib, boost, and zlib) from [releases](https://github.com/Shao-Group/amaranth/releases/download/v0.1.0/amaranth-0.1.0-full.tar.gz). Use the following commands to uncompress and install:
+
+```
+tar xzvf amaranth-0.1.0-full.tar.gz
+cd amaranth-0.1.0
+./build.sh
+```
+The executable will appear as `src/amaranth`.
+
+
 ## Other installation methods and FAQs
 
-
-For other installation methods, such as installing from source code, please read [INSTALL.md](./INSTALL.md). If you have questions on installation, please check [Installation FAQ](./INSTALL.md/#Installation-FAQ) or open an issue on github. 
+For other installation methods, such as installing from source code (without external libraries), please read [INSTALL.md](./INSTALL.md). If you have questions on installation, please check [Installation FAQ](./INSTALL.md/#Installation-FAQ) or open an issue on github. 
 
 # Usage
 
